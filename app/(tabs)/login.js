@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, View, Button, Alert } from 'react-native';
+import { Text, TextInput, View, Button, Alert} from 'react-native';
 import axios from 'axios';
 
 const PizzaTranslator = () => {
@@ -8,24 +8,24 @@ const PizzaTranslator = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.1.107:3000/users', {
-        Email,
-        Password,
+      const response = await axios.post('http://10.128.201.19:8081/users/login', {
+        Email: Email.trim(),
+        Password: Password.trim(),
       });
+      console.log('Server response:', response.data);
       Alert.alert('Login Response', response.data.message);
     } catch (error) {
-      // Enhanced error handling for more detailed feedback
       if (error.response) {
-        // If the error is from the server (e.g., 401 or 500 error)
-        console.error(error.response.data);
+        console.error('Server error response:', error.response.data);
         Alert.alert('Error', error.response.data.message || 'An error occurred');
       } else {
-        // If it's a network issue or no response
-        console.error(error);
+        console.error('Network or other error:', error);
         Alert.alert('Error', 'Failed to connect to server');
       }
     }
   };
+  
+  
 
   return (
     <View style={{ padding: 10 }}>
@@ -45,6 +45,7 @@ const PizzaTranslator = () => {
         value={Password}
       />
       <Button title="Login" onPress={handleLogin} />
+      <a style={{ textAlign: 'center'}} href="http://localhost:8081/register">You do not have an account?</a>
     </View>
   );
 };

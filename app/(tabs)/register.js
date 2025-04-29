@@ -1,30 +1,46 @@
 import React from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 
+// Function to generate a random 6-digit numeric user ID
+function generateShortId(length = 6) {
+  let id = '';
+  for (let i = 0; i < length; i++) {
+    id += Math.floor(Math.random() * 10); // 0–9
+  }
+  return Number(id);
+}
+
 export default function RegisterForm() {
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
-      userId: '',
       email: '',
       password: '',
     },
   });
 
   const onSubmit = async (data) => {
+    const userId = generateShortId(6); // generate new ID each time
+    const payload = {
+      ...data,
+      userId,
+    };
+
     try {
-      const response = await axios.post('http://10.128.201.19:8081/users/register', data);
+      const response = await axios.post('http://10.128.201.19:8081/users/register', payload);
       console.log('Server response:', response.data);
+      Alert.alert('Success', 'Registration successful');
+      reset(); // clear the form after successful registration
     } catch (error) {
       console.error('Error submitting form:', error.response ? error.response.data : error.message);
+      Alert.alert('Error', error.response?.data?.message || 'Registration failed');
     }
   };
 
   return (
     <View style={styles.container}>
-      {[
-        { name: 'userId', placeholder: 'User ID', secure: false },
+      {[ 
         { name: 'email', placeholder: 'Email', secure: false },
         { name: 'password', placeholder: 'Password', secure: true },
       ].map(({ name, placeholder, secure }) => (
@@ -44,7 +60,7 @@ export default function RegisterForm() {
           )}
         />
       ))}
-      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+      <Button title="Register" onPress={handleSubmit(onSubmit)} />
     </View>
   );
 }

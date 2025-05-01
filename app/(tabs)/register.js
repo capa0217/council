@@ -28,7 +28,7 @@ export default function RegisterForm() {
     };
 
     try {
-      const response = await axios.post('http://10.128.201.19:8081/users/register', payload);
+      const response = await axios.post('http://localhost:8081/users/register', payload);
       console.log('Server response:', response.data);
       Alert.alert('Success', 'Registration successful');
       reset(); // clear the form after successful registration

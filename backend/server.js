@@ -6,6 +6,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const PORT = 8081;
+
 const db = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
@@ -22,35 +24,71 @@ db.connect((err) => {
 });
 
 app.post('/users/register', (req, res) => {
-  const { userId, email, password } = req.body;
+  const { user_id, website_login, password } = req.body;
 
-  const query = 'INSERT INTO new_table (User_id, Email, Password) VALUES (?, ?, ?)';
-  db.query(query, [userId, email, password], (err, result) => {
+  const loginQuery = 'INSERT INTO member_logins (user_id, website_login, password) VALUES (?, ?, ?)';
+  db.query(loginQuery, [user_id, website_login, password], (err, result) => {
     if (err) {
       console.error('Database error:', err);
-      return res.status(500).json({ message: 'Database error' });
+      return res.status(500).json({ message: 'Database Error' });
     }
-    return res.status(200).json({ message: 'User added successfully' });
+    return res.status(200).json({ message: 'User Added Successfully' });
+  });
+});
+
+app.post('/users/newMember', (req, res) => {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var yyyy = today.getFullYear();
+
+  const { user_id, first_name, last_name, email} = req.body;
+  var join_date = yyyy + '-' + mm + '-' + dd;
+
+  const memberQuery = 'INSERT INTO members (user_id, first_name, last_name, email, join_date) VALUES (?, ?, ?, ?, ?)';
+  db.query(memberQuery, [user_id, first_name, last_name, email, join_date], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    return res.status(200).json({ message: 'Member Added' });
+  });
+});
+
+app.post('/users/checkMonthlyMembers', (req, res) => {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var yyyy = today.getFullYear();
+
+  const monthlyMembersQuery = "SELECT * FROM members WHERE join_date between '" + yyyy + "-" + mm + "-" + "01' and '" + yyyy + "-" + mm + "-" + dd + "'";
+  db.query(monthlyMembersQuery, (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    return res.status(200).json({ monthlyMembers: result.length + 1, message: 'Query Successful' });
   });
 });
 
 app.post('/users/login', (req, res) => {
-  const { Email, Password } = req.body;
+  const { website_login, password } = req.body;
 
   // SQL query with placeholders for Email and Password
-  const query = 'SELECT * FROM new_table WHERE Email = ? AND Password = ?';
+  const query = 'SELECT * FROM member_logins WHERE website_login = ? AND password = ?';
 
   db.query(query, [Email, Password], (err, result) => {
     if (err) {
-      return res.status(500).json({ message: 'Database error' });
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
     }
     if (result.length > 0) {
-      return res.status(200).json({ message: 'Login successful' });
+      return res.status(200).json({ message: 'Login Successful' });
     } else {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid Credentials' });
     }
   });
 });
-app.listen(8081, '0.0.0.0', () => {
-  console.log(`Server running on port 3000`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ` + PORT);
 });

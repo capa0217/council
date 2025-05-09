@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Text, TextInput, View, Button, Alert} from 'react-native';
+import { Text, Image, TextInput, View,  Alert, StyleSheet, TouchableOpacity} from 'react-native';
 import axios from 'axios';
+import { useRouter } from 'expo-router';
+
 
 const PizzaTranslator = () => {
+  const router = useRouter();
+
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
 
@@ -28,26 +32,87 @@ const PizzaTranslator = () => {
   
 
   return (
-    <View style={{ padding: 10 }}>
-      <Text>Email:</Text>
+    <View >
+      <Image
+        source={{
+          uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png',
+        }}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <View style={styles.container}>
+      <View style={styles.inputs}><Text>Email:</Text>
       <TextInput
-        style={{ height: 40, borderWidth: 1, marginBottom: 10 }}
+        style={styles.EmailText}
         placeholder="Please enter your email"
         onChangeText={setEmail}
         value={Email}
       />
       <Text>Password:</Text>
       <TextInput
-        style={{ height: 40, borderWidth: 1 }}
+        style={styles.PasswordText}
         placeholder="Please enter your password"
         secureTextEntry
         onChangeText={setPassword}
         value={Password}
-      />
-      <Button title="Login" onPress={handleLogin} />
-      <a style={{ textAlign: 'center'}} href="http://localhost:8081/register">You do not have an account?</a>
+      /></View>
+      
+<View         style={styles.function}
+><TouchableOpacity style={styles.button} onPress={() => router.push('./register')}>
+  <Text >Register</Text>
+</TouchableOpacity>
+
+  <TouchableOpacity style={styles.button} onPress={handleLogin}>
+  <Text >Login</Text>
+</TouchableOpacity></View>
+
+
+      </View>
+      
+      
     </View>
   );
 };
+const styles = StyleSheet.create({
+  logo: {
+    width: 150,
+    height: 60,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: 'orange',
+    width: 130,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    marginVertical: 10,  // Adds top and bottom spacing
+    marginRight:30,
+  },
+  EmailText:{
+    width: 300,            // fixed width
+    height: 50, 
+  },
+  PasswordText:{
+    width: 300,            // fixed width
+    height: 50, 
+  },
+  inputs:{
+    alignItems: 'center',
+  },
+  container:{
+    marginTop:220,
+    width:400,
+    height: 300,
+    justifyContent:'center',
+    marginLeft: 430,
+  },
+  function:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft:55,
+    marginTop:10
+  }
+});
 
 export default PizzaTranslator;

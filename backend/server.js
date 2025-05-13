@@ -23,6 +23,7 @@ db.connect((err) => {
   console.log('Connected to MySQL database.');
 });
 
+//Registers a members login and password into the member_logins table. This is done when a club treasurer confirms that the member has paid.
 app.post('/users/register', (req, res) => {
   const { user_id, website_login, password } = req.body;
 
@@ -35,7 +36,7 @@ app.post('/users/register', (req, res) => {
     return res.status(200).json({ message: 'User Added Successfully' });
   });
 });
-
+//Adds a new member to the members table.
 app.post('/users/newMember', (req, res) => {
   var today = new Date();
   var dd = String(today.getDate()).padStart(2, '0');
@@ -54,7 +55,7 @@ app.post('/users/newMember', (req, res) => {
     return res.status(200).json({ message: 'Member Added' });
   });
 });
-
+//Checks how many members have joined in the past month. Used to determine a new members sequential number.
 app.post('/users/checkMonthlyMembers', (req, res) => {
   var today = new Date();
   var dd = String(today.getDate()).padStart(2, '0');
@@ -70,14 +71,31 @@ app.post('/users/checkMonthlyMembers', (req, res) => {
     return res.status(200).json({ monthlyMembers: result.length + 1, message: 'Query Successful' });
   });
 });
+//Checks if the requested userID is already in the members table.
+app.post('/users/checkIDExists', (req, res) => {
+  const { user_id } = req.body;
+
+  const idExistsQuery = "SELECT * FROM members WHERE user_id = ?";
+  db.query(idExistsQuery, [user_id], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    if(result.length > 0){
+      return res.status(200).json({ exists: true, message: 'Query Successful. ID already Exists' });
+    } else {
+      return res.status(200).json({ exists: false, message: 'Query Successful. ID Unique' });
+    }
+  });
+});
 
 app.post('/users/login', (req, res) => {
   const { website_login, password } = req.body;
 
   // SQL query with placeholders for Email and Password
-  const query = 'SELECT * FROM member_logins WHERE website_login = ? AND password = ?';
+  const loginQuery = 'SELECT * FROM member_logins WHERE website_login = ? AND password = ?';
 
-  db.query(query, [Email, Password], (err, result) => {
+  db.query(loginQuery, [website_login, password], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ message: 'Database Error' });

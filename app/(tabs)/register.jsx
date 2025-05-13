@@ -26,11 +26,11 @@ export default function MembershipForm() {
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
 
-    let website_login;
-    let password;
+    let website_login = "";
+    let password = "";
 
     try {
-      let memberResponse = await axios.post('http://localhost:8081/users/checkMonthlyMembers');
+      const memberResponse = await axios.post('http://localhost:8081/users/checkMonthlyMembers');
       console.log('Server Response:', memberResponse.data.message);
       Alert.alert('Success', 'Membership successful');
       website_login = yyyy + mm + memberResponse.data.monthlyMembers;
@@ -39,24 +39,44 @@ export default function MembershipForm() {
       console.error('Error checking members:', error.response ? error.response.data : error.message);
       Alert.alert('Error', error.response?.data?.message || 'Member Check Failed');
     }
-    
-    const user_id = generateShortId(6); // generate new ID each time
+
+    let uniqueID = false;
+    let user_id = 0;
+    while (uniqueID == false){
+      user_id = generateShortId(6); // generate new ID each time
+
+      try {
+      const checkIDResponse = await axios.post('http://localhost:8081/users/checkIDExists', {user_id});
+      console.log('Server Response:', checkIDResponse.data.message);
+
+      if(checkIDResponse.data.exists == false){
+        uniqueID = true;
+      }
+      } catch (error) {
+        console.error('Error checking members:', error.response ? error.response.data : error.message);
+        Alert.alert('Error', error.response?.data?.message || 'Member Check Failed');
+      }
+    }
+
+    //Use the generated registration information to insert into the database
     const payload = {
       ...data,
       user_id,
       website_login,
       password,
     };
+
     try {
-      let createMemberResponse = await axios.post('http://localhost:8081/users/newMember', payload);
+      const createMemberResponse = await axios.post('http://localhost:8081/users/newMember', payload);
       console.log('Server Response:', createMemberResponse.data);
       Alert.alert('Success', 'Membership successful');
     } catch (error) {
       console.error('Error submitting form:', error.response ? error.response.data : error.message);
       Alert.alert('Error', error.response?.data?.message || 'Membership failed');
     }
+
     try {
-      let registerResponse = await axios.post('http://localhost:8081/users/register', payload);
+      const registerResponse = await axios.post('http://localhost:8081/users/register', payload);
       console.log('Server Response:', registerResponse.data);
       Alert.alert('Success', 'Registration successful');
       reset(); // clear the form after successful registration
@@ -68,10 +88,10 @@ export default function MembershipForm() {
 
   return (
     <View style={styles.container}>
-      {[ 
-        { name: 'first_name', placeholder: 'First Name', lines: 1, autocomplete: 'given-name'},
-        { name: 'last_name', placeholder: 'Last Name', lines: 1, autocomplete: 'family-name'},
-        { name: 'email', placeholder: 'Email Address', lines: 1, autocomplete: 'email'},
+      {[
+        { name: 'first_name', placeholder: 'First Name', autocomplete: 'given-name' },
+        { name: 'last_name', placeholder: 'Last Name', autocomplete: 'family-name' },
+        { name: 'email', placeholder: 'Email Address', autocomplete: 'email' },
       ].map(({ name, placeholder, lines, autocomplete }) => (
         <Controller
           key={name}
@@ -81,7 +101,6 @@ export default function MembershipForm() {
             <TextInput
               style={styles.input}
               autoComplete={autocomplete}
-              numberOfLines={lines}
               placeholder={placeholder}
               onChangeText={onChange}
               value={value}

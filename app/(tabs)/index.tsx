@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'orange',
-    width: 200,            // fixed width
-    height: 50,            // fixed height
+    width: 200,           
+    height: 50,           
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,

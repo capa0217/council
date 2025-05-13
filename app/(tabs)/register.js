@@ -7,7 +7,7 @@ import axios from 'axios';
 function generateShortId(length = 6) {
   let id = '';
   for (let i = 0; i < length; i++) {
-    id += Math.floor(Math.random() * 10); // 0–9
+    id += Math.floor(Math.random() * 10); 
   }
   return Number(id);
 }
@@ -28,7 +28,7 @@ export default function RegisterForm() {
     };
 
     try {
-      const response = await axios.post('http://localhost:8081/users/register', payload);
+      const response = await axios.post('http://192.168.1.107:8081/users/register', payload);
       console.log('Server response:', response.data);
       Alert.alert('Success', 'Registration successful');
       reset(); // clear the form after successful registration

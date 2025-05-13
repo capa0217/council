@@ -41,16 +41,61 @@ app.post('/users/login', (req, res) => {
   const query = 'SELECT * FROM new_table WHERE Email = ? AND Password = ?';
 
   db.query(query, [Email, Password], (err, result) => {
+    const user = result[0];
+
     if (err) {
       return res.status(500).json({ message: 'Database error' });
     }
     if (result.length > 0) {
-      return res.status(200).json({ message: 'Login successful' });
-    } else {
+      res.json({
+        user_id: user.User_id,
+        Email: user.Email,
+        Password: user.Password,
+        message: 'Login successful',
+      });   } else {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+   
   });
 });
+app.get('/user/:id', (req, res) => {
+  const userId = req.params.id;
+const query = "SELECT Club_id FROM `member's club` WHERE User_id = ?";
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const user = results;
+    res.json({ Club_id: user}); // or user.email depending on your column name
+  });
+});
+
+app.get('/club/:id', (req, res) => {
+  const clubId = req.params.id;
+const query = "SELECT Club_name FROM club WHERE Club_id = ?";
+
+  db.query(query, [clubId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const user = results;
+    res.json({ Club_name: user}); // or user.email depending on your column name
+  });
+});
+
 app.listen(8081, '0.0.0.0', () => {
   console.log(`Server running on port 3000`);
 });

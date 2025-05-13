@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Text, Image, TextInput, View,  Alert, StyleSheet, TouchableOpacity} from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useRouter } from 'expo-router';
 
 
@@ -12,10 +14,20 @@ const PizzaTranslator = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8081/users/login', {
+      const response = await axios.post('http://10.128.201.19:8081/users/login', {
         Email: Email.trim(),
         Password: Password.trim(),
       });
+  
+      // Store user data in AsyncStorage
+      await AsyncStorage.setItem('userId', response.data.user_id.toString());
+      await AsyncStorage.setItem('email', response.data.Email.toString());
+      // Navigate to the profile screen and pass user_id as parameter
+      router.push({
+        pathname: '/profile',
+        query: { userId: response.data.user_id , Email: response.data.Email},
+      });
+  
       console.log('Server response:', response.data);
       Alert.alert('Login Response', response.data.message);
     } catch (error) {

@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const ProfileScreen = () => {
   const [userId, setUserId] = useState(null);
   const [clubs, setClubs] = useState([]);
-  const [clubNames, setClubName] = useState([]);
+ const [clubMeetings, setClubwithMeetings]= useState([]);
   // Load userId from AsyncStorage
   useEffect(() => {
     (async () => {
@@ -35,16 +35,22 @@ const ProfileScreen = () => {
         setClubs(clubList);
 
         // Step 2: Fetch names for all clubs
-        const clubDetails = await Promise.all(
+        const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
             const res = await axios.get(`http://192.168.1.107:8081/club/${item.Club_id}`);
+            const clubNames= res.data.Club_name[0].Club_name
+            const resMeet = await axios.get(`http://192.168.1.107:8081/meeting/${item.Club_id}`);
+            const MeetNames= resMeet.data;
             return {
-              Club_name: res.data.Club_name[0].Club_name
+              clubNames,
+              MeetNames,
             };
           })
         );
+          console.log(clubMeetingDetails);
 
-        setClubName(clubDetails);
+        setClubwithMeetings(clubMeetingDetails); 
+
       } catch (error) {
         console.error('Error fetching user or club data:', error);
         Alert.alert('Error', 'Failed to fetch user or club data');
@@ -63,8 +69,22 @@ const ProfileScreen = () => {
         style={styles.logo}
         resizeMode="contain"
       />
-      {clubNames.map((club ,index)=>(
-      <TouchableOpacity key={index} style={styles.button}>Club {club.Club_name}</TouchableOpacity>))}
+   {clubMeetings.map((club, index) => (
+  <View key={index}>
+    <Text style={{ fontWeight: 'bold' }}>Club: {club.clubNames}</Text>
+    
+    {club.MeetNames.map((meeting, idx) => {
+      const date = new Date(meeting.meeting_date).toISOString().split('T')[0];
+      return (
+        <TouchableOpacity key={idx} style={styles.button}>
+          <Text>{meeting.meetingname} - {date}</Text>
+        </TouchableOpacity>
+      );
+    })}
+  </View>
+))}
+
+
        </View>
   );
 };

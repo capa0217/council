@@ -151,6 +151,26 @@ const query = "SELECT Club_name FROM club WHERE Club_id = ?";
   });
 });
 
+
+
+app.get('/meeting/:id', (req, res) => {
+   const clubId = req.params.id;
+   const query ="SELECT * FROM meeting WHERE club_id = ?";
+
+   db.query(query, [clubId], (err, results)=>{
+     if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+   else if(results.length>0){
+    res.json(results 
+    );} 
+   });
+});
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ` + PORT);
 });

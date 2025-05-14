@@ -7,16 +7,13 @@ const ProfileScreen = () => {
   const [userId, setUserId] = useState(null);
   const [clubs, setClubs] = useState([]);
   const [clubNames, setClubName] = useState([]);
-  const [emails, setEmail]= useState(null);
   // Load userId from AsyncStorage
   useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem('userId');
-        const Email= await AsyncStorage.getItem('email');
-        if (storedUserId && Email) {
+        if (storedUserId ) {
           setUserId(storedUserId);
-          setEmail(Email);
         }
       } catch (error) {
         console.error('Error fetching userId from storage:', error);
@@ -32,7 +29,7 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://10.128.201.19:8081/user/${userId}`);
+        const { data } = await axios.get(`http://192.168.1.107:8081/user/${userId}`);
         const clubList = data.Club_id || [];
       
         setClubs(clubList);
@@ -40,7 +37,7 @@ const ProfileScreen = () => {
         // Step 2: Fetch names for all clubs
         const clubDetails = await Promise.all(
           clubList.map(async (item) => {
-            const res = await axios.get(`http://10.128.201.19:8081/club/${item.Club_id}`);
+            const res = await axios.get(`http://192.168.1.107:8081/club/${item.Club_id}`);
             return {
               Club_name: res.data.Club_name[0].Club_name
             };
@@ -66,7 +63,6 @@ const ProfileScreen = () => {
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.welcome}>Welcome to Dashboard, {emails}</Text>
       {clubNames.map((club ,index)=>(
       <TouchableOpacity key={index} style={styles.button}>Club {club.Club_name}</TouchableOpacity>))}
        </View>

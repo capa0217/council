@@ -1,33 +1,31 @@
 import React, { useState } from 'react';
-import { Text, Image, TextInput, View,  Alert, StyleSheet, TouchableOpacity} from 'react-native';
+import { Text, Image, TextInput, View, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { useRouter } from 'expo-router';
 
 
 const PizzaTranslator = () => {
   const router = useRouter();
 
-  const [Email, setEmail] = useState('');
-  const [Password, setPassword] = useState('');
+  const [website_login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://10.128.201.19:8081/users/login', {
-        Email: Email.trim(),
-        Password: Password.trim(),
+      const response = await axios.post('http://192.168.1.107:8081/users/login', {
+        website_login: website_login.trim(),
+        password: password.trim(),
       });
-  
-      // Store user data in AsyncStorage
+
+       // Store user data in AsyncStorage
       await AsyncStorage.setItem('userId', response.data.user_id.toString());
-      await AsyncStorage.setItem('email', response.data.Email.toString());
       // Navigate to the profile screen and pass user_id as parameter
       router.push({
-        pathname: '/profile',
-        query: { userId: response.data.user_id , Email: response.data.Email},
+        pathname: '/club_meeting',
+        query: { userId: response.data.user_id},
       });
-  
       console.log('Server response:', response.data);
       Alert.alert('Login Response', response.data.message);
     } catch (error) {
@@ -40,8 +38,8 @@ const PizzaTranslator = () => {
       }
     }
   };
-  
-  
+
+
 
   return (
     <View >
@@ -53,35 +51,31 @@ const PizzaTranslator = () => {
         resizeMode="contain"
       />
       <View style={styles.container}>
-      <View style={styles.inputs}><Text>Email:</Text>
-      <TextInput
-        style={styles.EmailText}
-        placeholder="Please enter your email"
-        onChangeText={setEmail}
-        value={Email}
-      />
-      <Text>Password:</Text>
-      <TextInput
-        style={styles.PasswordText}
-        placeholder="Please enter your password"
-        secureTextEntry
-        onChangeText={setPassword}
-        value={Password}
-      /></View>
-      
-<View         style={styles.function}
-><TouchableOpacity style={styles.button} onPress={() => router.push('./register')}>
-  <Text >Register</Text>
-</TouchableOpacity>
+        <View style={styles.inputs}><Text>Login:</Text>
+          <TextInput
+            style={styles.LoginText}
+            placeholder="Please enter your login"
+            onChangeText={setLogin}
+            value={website_login}
+          />
+          <Text>Password:</Text>
+          <TextInput
+            style={styles.PasswordText}
+            placeholder="Please enter your password"
+            secureTextEntry
+            onChangeText={setPassword}
+            value={password}
+          /></View>
 
-  <TouchableOpacity style={styles.button} onPress={handleLogin}>
-  <Text >Login</Text>
-</TouchableOpacity></View>
+        <View style={styles.function}
+        ><TouchableOpacity style={styles.button} onPress={() => router.push('./register')}>
+            <Text >Register</Text>
+          </TouchableOpacity>
 
-
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text >Login</Text>
+          </TouchableOpacity></View>
       </View>
-      
-      
     </View>
   );
 };
@@ -99,31 +93,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 6,
     marginVertical: 10,  // Adds top and bottom spacing
-    marginRight:30,
+    marginRight: 30,
   },
-  EmailText:{
+  LoginText: {
     width: 300,            // fixed width
-    height: 50, 
+    height: 50,
   },
-  PasswordText:{
+  PasswordText: {
     width: 300,            // fixed width
-    height: 50, 
+    height: 50,
   },
-  inputs:{
+  inputs: {
     alignItems: 'center',
   },
-  container:{
-    marginTop:220,
-    width:400,
+  container: {
+    marginTop: 220,
+    width: 400,
     height: 300,
-    justifyContent:'center',
+    justifyContent: 'center',
     marginLeft: 430,
   },
-  function:{
+  function: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft:55,
-    marginTop:10
+    marginLeft: 55,
+    marginTop: 10
   }
 });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Alert, StyleSheet, Image, Button, TouchableOpacity} from 'react-native';
+import { Text, View, Alert, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-web';
@@ -7,22 +7,24 @@ import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 
+const PORT = 8081;
+
 const ProfileScreen = () => {
-    const router = useRouter();
-  
+  const router = useRouter();
+
   const [userId, setUserId] = useState(null);
   const [clubs, setClubs] = useState([]);
- const [clubMeetings, setClubwithMeetings]= useState([]);
- const navigation = useNavigation();
- 
-   const [selectedMonth, setSelectedMonth] = useState('May');
-   const [selectedYear, setSelectedYear] = useState('2025');
-   const [selectedClub, setSelectedClub] = useState('All Clubs');
+  const [clubMeetings, setClubwithMeetings] = useState([]);
+  const navigation = useNavigation();
+
+  const [selectedMonth, setSelectedMonth] = useState('May');
+  const [selectedYear, setSelectedYear] = useState('2025');
+  const [selectedClub, setSelectedClub] = useState('All Clubs');
   useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem('userId');
-        if (storedUserId ) {
+        if (storedUserId) {
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -39,40 +41,40 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://192.168.1.107:8081/user/${userId}`);
+        const { data } = await axios.get(`http://${process.env.IP}:${PORT}/user/${userId}`);
         const clubList = data.Club_id || [];
-      
+
         setClubs(clubList);
 
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
-            const res = await axios.get(`http://192.168.1.107:8081/club/${item.Club_id}`);
-            const clubNames= res.data.Club_name[0].Club_name
-            const resMeet = await axios.get(`http://192.168.1.107:8081/meeting/${item.Club_id}`);
-            const MeetNames= resMeet.data;
+            const res = await axios.get(`http://${process.env.IP}:${PORT}/club/${item.Club_id}`);
+            const clubNames = res.data.Club_name[0].Club_name
+            const resMeet = await axios.get(`http://${process.env.IP}:${PORT}/meeting/${item.Club_id}`);
+            const MeetNames = resMeet.data;
             return {
               clubNames,
               MeetNames,
             };
           })
         );
-const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
-  club.MeetNames.map((meeting) => ({
-    club: club.clubNames,
-    name: meeting.meetingname,
-    date: meeting.meeting_date,
-  }))
-);
-        setClubwithMeetings(flattenedMeetings); 
+        const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
+          club.MeetNames.map((meeting) => ({
+            club: club.clubNames,
+            name: meeting.meetingname,
+            date: meeting.meeting_date,
+          }))
+        );
+        setClubwithMeetings(flattenedMeetings);
 
       } catch (error) {
         console.error('Error fetching user or club data:', error);
         Alert.alert('Error', 'Failed to fetch user or club data');
-      } 
+      }
     })();
   }, [userId]);
-const filteredMeetings = clubMeetings.filter((meeting) => {
+  const filteredMeetings = clubMeetings.filter((meeting) => {
     const meetingDate = new Date(meeting.date);
     const meetingMonth = meetingDate.toLocaleString('default', { month: 'long' });
     const meetingYear = meetingDate.getFullYear().toString();
@@ -80,30 +82,29 @@ const filteredMeetings = clubMeetings.filter((meeting) => {
     const monthMatches = selectedMonth === meetingMonth;
     const yearMatches = selectedYear === meetingYear;
     const clubMatches = selectedClub === 'All Clubs' || meeting.club === selectedClub;
-      if (selectedClub=='All Clubs'){
-    return clubMeetings;
-   }
-   else{
-    return monthMatches && yearMatches && clubMatches;}
+    if (selectedClub == 'All Clubs') {
+      return clubMeetings;
+    }
+    else {
+      return monthMatches && yearMatches && clubMatches;
+    }
   });
 
-  const years= clubMeetings.map((meeting)=> new Date(meeting.date).getFullYear().toString())
-  const uniquesyears= new Set([]);
- years.forEach((year)=>{uniquesyears.add(year)});
- const uniqueYears= Array.from(uniquesyears);
+  const years = clubMeetings.map((meeting) => new Date(meeting.date).getFullYear().toString())
+  const uniquesyears = new Set([]);
+  years.forEach((year) => { uniquesyears.add(year) });
+  const uniqueYears = Array.from(uniquesyears);
 
- const clubss=clubMeetings.map((club)=>club.club);
- const uniqueClubs= Array.from(new Set(clubss));
- const dropdownClubs = ['All Clubs', ...uniqueClubs];
+  const clubss = clubMeetings.map((club) => club.club);
+  const uniqueClubs = Array.from(new Set(clubss));
+  const dropdownClubs = ['All Clubs', ...uniqueClubs];
 
- const months= clubMeetings.map((meeting)=>new Date(meeting.date).toLocaleString('default', { month: 'long' }))
- const uniqueMonths = Array.from(new Set(months));
- 
- console.log(uniqueClubs);
+  const months = clubMeetings.map((meeting) => new Date(meeting.date).toLocaleString('default', { month: 'long' }))
+  const uniqueMonths = Array.from(new Set(months));
+
+  console.log(uniqueClubs);
   return (
-    
-  
-  <View style={styles.container}>
+    <View style={styles.container}>
       {/* Top Bar */}
       <View style={styles.topBar}>
         <Image
@@ -111,8 +112,8 @@ const filteredMeetings = clubMeetings.filter((meeting) => {
           style={styles.logo}
         />
         <TouchableOpacity onPress={() => router.push({
-        pathname: '/profile',
-        query: { user_Id: userId},
+          pathname: '/profile',
+          query: { user_Id: userId },
         })}>
           <Text style={styles.profileText}>Profile</Text>
         </TouchableOpacity>
@@ -131,7 +132,7 @@ const filteredMeetings = clubMeetings.filter((meeting) => {
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedMonth(itemValue)}
           >
-                        {uniqueMonths.map(month =>(<Picker.Item key={month} label={month} value={month} />))}
+            {uniqueMonths.map(month => (<Picker.Item key={month} label={month} value={month} />))}
 
           </Picker>
 
@@ -140,8 +141,8 @@ const filteredMeetings = clubMeetings.filter((meeting) => {
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedYear(itemValue)}
           >
-            {uniqueYears.map(year =>(<Picker.Item key={year} label={year} value={year} />))}
-            
+            {uniqueYears.map(year => (<Picker.Item key={year} label={year} value={year} />))}
+
           </Picker>
 
           <Picker
@@ -154,15 +155,15 @@ const filteredMeetings = clubMeetings.filter((meeting) => {
         </View>
 
         {/* Meeting Buttons */}
-      {filteredMeetings.map((meeting, index) => {
-        const date = new Date(meeting.date).toISOString().split('T')[0];
-        return(
-               <TouchableOpacity key={index} style={styles.meetingBlock}>
-                 <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
-                 <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
-                 <Text style={styles.meetingDate}>Meeting_date: {date}</Text>
-               </TouchableOpacity>)
-})}
+        {filteredMeetings.map((meeting, index) => {
+          const date = new Date(meeting.date).toISOString().split('T')[0];
+          return (
+            <TouchableOpacity key={index} style={styles.meetingBlock}>
+              <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
+              <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
+              <Text style={styles.meetingDate}>Meeting_date: {date}</Text>
+            </TouchableOpacity>)
+        })}
       </ScrollView>
 
       {/* Bottom Navigation */}
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 300, 
+    width: 300,
     height: 50,
     resizeMode: 'contain',
   },

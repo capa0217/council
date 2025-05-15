@@ -88,7 +88,21 @@ app.post('/users/checkIDExists', (req, res) => {
     }
   });
 });
+app.get('/profile/:id', (req, res) => {
+  const userId = req.params.id;
+  const Query = "SELECT * FROM members WHERE user_id = ?";
+  db.query(Query, [userId], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    if(result.length > 0){
+        const user= result[0];
 
+     res.json(user);
+    }
+  });
+});
 app.post('/users/login', (req, res) => {
   const { website_login, password } = req.body;
 

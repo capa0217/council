@@ -5,8 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-web';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
+import { useRouter } from 'expo-router';
 
 const ProfileScreen = () => {
+    const router = useRouter();
+  
   const [userId, setUserId] = useState(null);
   const [clubs, setClubs] = useState([]);
  const [clubMeetings, setClubwithMeetings]= useState([]);
@@ -61,8 +64,6 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
     date: meeting.meeting_date,
   }))
 );
-
-
         setClubwithMeetings(flattenedMeetings); 
 
       } catch (error) {
@@ -109,7 +110,10 @@ const filteredMeetings = clubMeetings.filter((meeting) => {
           source={{ uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png' }}
           style={styles.logo}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity onPress={() => router.push({
+        pathname: '/profile',
+        query: { user_Id: userId},
+        })}>
           <Text style={styles.profileText}>Profile</Text>
         </TouchableOpacity>
       </View>

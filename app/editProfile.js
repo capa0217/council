@@ -6,8 +6,6 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useForm, Controller } from 'react-hook-form';
 
-const PORT = 8081;
-
 export default function EditProfile() {
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -48,7 +46,7 @@ export default function EditProfile() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`http://${process.env.IP}:${PORT}/profile/${userId}`);
+        const res = await axios.get(`http://localhost:8081/profile/${userId}`);
         setProfiles(res.data);
         console.log(res.data);
       } catch (error) {
@@ -75,7 +73,7 @@ export default function EditProfile() {
         address: profiles.address || '',
         postcode: profiles.postcode || '',
         interests: profiles.interests || '',
-        dob: profiles.dob || '',
+        dob: new Date(profiles.dob).toLocaleDateString() || '',
         pronouns: profiles.pronouns || '',
         private: !!profiles.private,
         want_marketing: !!profiles.want_marketing,
@@ -92,7 +90,7 @@ export default function EditProfile() {
     };
     console.log(payload);
     try {
-      const editProfileResponse = await axios.post(`http://${process.env.IP}:${PORT}/profile/edit`, payload);
+      const editProfileResponse = await axios.post(`http://localhost:8081/profile/edit`, payload);
       console.log('Server Response:', editProfileResponse.data);
       Alert.alert('Success', 'Update successful');
     } catch (error) {

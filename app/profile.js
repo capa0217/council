@@ -28,7 +28,7 @@ export default function Profile() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`http://${process.env.IP}:${PORT}/profile/${userId}`);
+        const res = await axios.get(`http://localhost:8081/profile/${userId}`);
         setProfiles(res.data);
         console.log(res.data);
       } catch (error) {
@@ -55,7 +55,7 @@ export default function Profile() {
         <Text style={styles.infoText}>Join_Date: {new Date(profiles.join_date).toLocaleDateString()}</Text>
         <Text style={styles.infoText}>Address: {profiles.address}</Text>
         <Text style={styles.infoText}>Interests: {profiles.interests}</Text>
-        <Text style={styles.infoText}>Date of Birth: {profiles.dob}</Text>
+        <Text style={styles.infoText}>Date of Birth: {new Date(profiles.dob).toLocaleDateString()}</Text>
         <Text style={styles.infoText}>Pronouns: {profiles.pronouns}</Text>
         <Text style={styles.infoText}>Postcode: {profiles.postcode}</Text>
         <Text style={styles.infoText}>Privacy: {profiles.private ? 'Personal Info Private' : 'Personal Info Public'}</Text>

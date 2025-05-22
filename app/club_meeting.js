@@ -41,7 +41,7 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://${process.env.IP}:${PORT}/user/${userId}`);
+        const { data } = await axios.get(`http://localhost:8081/user/${userId}`);
         const clubList = data.Club_id || [];
 
         setClubs(clubList);
@@ -49,9 +49,9 @@ const ProfileScreen = () => {
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
-            const res = await axios.get(`http://${process.env.IP}:${PORT}/club/${item.Club_id}`);
+            const res = await axios.get(`http://localhost:8081/club/${item.Club_id}`);
             const clubNames = res.data.Club_name[0].Club_name
-            const resMeet = await axios.get(`http://${process.env.IP}:${PORT}/meeting/${item.Club_id}`);
+            const resMeet = await axios.get(`http://localhost:8081/meeting/${item.Club_id}`);
             const MeetNames = resMeet.data;
             return {
               clubNames,
@@ -101,7 +101,7 @@ const ProfileScreen = () => {
 
   const months = clubMeetings.map((meeting) => new Date(meeting.date).toLocaleString('default', { month: 'long' }))
   const uniqueMonths = Array.from(new Set(months));
-
+  
   console.log(uniqueClubs);
   return (
     <View style={styles.container}>

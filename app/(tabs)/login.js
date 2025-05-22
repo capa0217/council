@@ -4,8 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PORT = 8081;
-
+=======
 const PizzaTranslator = () => {
   const router = useRouter();
 
@@ -14,7 +13,7 @@ const PizzaTranslator = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`http://${process.env.IP}:${PORT}/users/login`, {
+      const response = await axios.post(`http://localhost:8081/users/login`, {
         website_login: website_login.trim(),
         password: password.trim(),
       });

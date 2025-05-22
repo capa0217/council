@@ -32,7 +32,7 @@ export default function MembershipForm() {
     let password = "";
 
     try {
-      const memberResponse = await axios.post(`http://${process.env.IP}:${PORT}/users/checkMonthlyMembers`);
+      const memberResponse = await axios.post(`http://localhost:8081/users/checkMonthlyMembers`);
       console.log('Server Response:', memberResponse.data.message);
       Alert.alert('Success', 'Membership successful');
       website_login = yyyy + mm + memberResponse.data.monthlyMembers;
@@ -48,7 +48,7 @@ export default function MembershipForm() {
       user_id = generateShortId(6); // generate new ID each time
 
       try {
-      const checkIDResponse = await axios.post(`http://${process.env.IP}:${PORT}/users/checkIDExists`, {user_id});
+      const checkIDResponse = await axios.post(`http://localhost:8081/users/checkIDExists`, {user_id});
       console.log('Server Response:', checkIDResponse.data.message);
 
       if(checkIDResponse.data.exists == false){
@@ -69,7 +69,7 @@ export default function MembershipForm() {
     };
 
     try {
-      const createMemberResponse = await axios.post(`http://${process.env.IP}:${PORT}/users/newMember`, payload);
+      const createMemberResponse = await axios.post(`http://localhost:8081/users/newMember`, payload);
       console.log('Server Response:', createMemberResponse.data);
       Alert.alert('Success', 'Membership successful');
     } catch (error) {
@@ -78,7 +78,7 @@ export default function MembershipForm() {
     }
 
     try {
-      const registerResponse = await axios.post(`http://${process.env.IP}:${PORT}/users/register`, payload);
+      const registerResponse = await axios.post(`http://localhost:8081/users/register`, payload);
       console.log('Server Response:', registerResponse.data);
       Alert.alert('Success', 'Registration successful');
       reset(); // clear the form after successful registration

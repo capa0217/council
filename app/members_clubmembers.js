@@ -1,32 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, }
-  from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert, } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
-const MembersMeetingPage = () => {
+const ClubMembersPage = () => {
   const navigation = useNavigation();
 
-  const [selectedMonth, setSelectedMonth] = useState('May');
-  const [selectedYear, setSelectedYear] = useState('2025');
+  const [sortByName, setSortByName] = useState('A-Z');
   const [selectedClub, setSelectedClub] = useState('All Clubs');
 
-  const meetings = [
-    {
-      club: 'Sunshine Club',
-      name: 'Monthly Speaking Workshop',
-      date: '2025-05-20',
-    },
-    {
-      club: 'Riverside Club',
-      name: 'Annual Planning Meeting',
-      date: '2025-06-10',
-    },
-    {
-      club: 'Brisbane Club',
-      name: 'Club Leadership Training',
-      date: '2025-07-05',
-    },
+  const members = [
+    { name: 'Susan connor', club: 'Sunshine Club' },
+    { name: 'Rick Novak', club: 'Riverside Club' },
+    { name: 'Jeff Johnson', club: 'Brisbane Club' },
   ];
 
   return (
@@ -34,7 +20,9 @@ const MembersMeetingPage = () => {
       {/* Top Bar */}
       <View style={styles.topBar}>
         <Image
-          source={{ uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png' }}
+          source={{
+            uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png',
+          }}
           style={styles.logo}
         />
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -43,29 +31,20 @@ const MembersMeetingPage = () => {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* Meeting Header Block */}
+        {/* Header Block */}
         <View style={styles.meetingHeaderBlock}>
-          <Text style={styles.meetingHeaderText}>Meeting</Text>
+          <Text style={styles.meetingHeaderText}>Club Members</Text>
         </View>
 
         {/* Sorting Dropdowns */}
         <View style={styles.sortingRow}>
           <Picker
-            selectedValue={selectedMonth}
+            selectedValue={sortByName}
             style={styles.picker}
-            onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+            onValueChange={(itemValue) => setSortByName(itemValue)}
           >
-            <Picker.Item label="May" value="May" />
-            <Picker.Item label="June" value="June" />
-          </Picker>
-
-          <Picker
-            selectedValue={selectedYear}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedYear(itemValue)}
-          >
-            <Picker.Item label="2025" value="2025" />
-            <Picker.Item label="2024" value="2024" />
+            <Picker.Item label="A-Z" value="A-Z" />
+            <Picker.Item label="Z-A" value="Z-A" />
           </Picker>
 
           <Picker
@@ -80,24 +59,24 @@ const MembersMeetingPage = () => {
           </Picker>
         </View>
 
-        {/* Meeting Buttons */}
-        {meetings.map((meeting, index) => (
-          <TouchableOpacity key={index} style={styles.meetingBlock}>
-            <Text style={styles.meetingClub}>{meeting.club}</Text>
-            <Text style={styles.meetingName}>{meeting.name}</Text>
-            <Text style={styles.meetingDate}>{meeting.date}</Text>
+        {/* Member List */}
+        {members.map((member, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.meetingBlock}
+            onPress={() => Alert.alert('Member Selected', member.name)}
+          >
+            <Text style={styles.meetingName}>{member.name}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate('ClubMembersPage')}>
-          <Text style={styles.navButton}>Club Members</Text>
+        <Text style={[styles.navButton, styles.activeButton]}>Club Members</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('MembersMeetingPage')}>
+          <Text style={styles.navButton}>Meeting</Text>
         </TouchableOpacity>
-
-        <Text style={[styles.navButton, styles.activeButton]}>Meeting</Text>
-
         <TouchableOpacity onPress={() => navigation.navigate('ProjectLevelsPage')}>
           <Text style={styles.navButton}>Project</Text>
         </TouchableOpacity>
@@ -106,7 +85,7 @@ const MembersMeetingPage = () => {
   );
 };
 
-export default MembersMeetingPage;
+export default ClubMembersPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -163,19 +142,10 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
   },
-  meetingClub: {
-    fontWeight: '600',
-    color: '#ffffff',
-  },
   meetingName: {
     fontSize: 16,
-    marginTop: 4,
+    fontWeight: '600',
     color: '#ffffff',
-  },
-  meetingDate: {
-    fontSize: 14,
-    color: '#E0E0E0',
-    marginTop: 2,
   },
   bottomNav: {
     flexDirection: 'row',

@@ -4,8 +4,6 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-
 const PizzaTranslator = () => {
   const router = useRouter();
 
@@ -14,7 +12,7 @@ const PizzaTranslator = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.1.107:8081/users/login', {
+      const response = await axios.post(`http://localhost:8081/users/login`, {
         website_login: website_login.trim(),
         password: password.trim(),
       });
@@ -38,8 +36,6 @@ const PizzaTranslator = () => {
       }
     }
   };
-
-
 
   return (
     <View >
@@ -111,7 +107,7 @@ const styles = StyleSheet.create({
     width: 400,
     height: 300,
     justifyContent: 'center',
-    marginLeft: 430,
+    marginLeft: 430,  
   },
   function: {
     flexDirection: 'row',

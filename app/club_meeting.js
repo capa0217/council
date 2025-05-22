@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 
+const PORT = 8081;
+
 const ProfileScreen = () => {
   const router = useRouter();
 
@@ -99,7 +101,7 @@ const ProfileScreen = () => {
 
   const months = clubMeetings.map((meeting) => new Date(meeting.date).toLocaleString('default', { month: 'long' }))
   const uniqueMonths = Array.from(new Set(months));
-
+  
   console.log(uniqueClubs);
   return (
     <View style={styles.container}>

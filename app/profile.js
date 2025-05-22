@@ -5,6 +5,8 @@ import { Text, View, Alert, StyleSheet, Image, Button, TouchableOpacity } from '
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const PORT = 8081;
+
 export default function Profile() {
   const router = useRouter();
   const [userId, setUserId] = useState(null);

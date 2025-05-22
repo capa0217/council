@@ -103,6 +103,17 @@ app.get('/profile/:id', (req, res) => {
     }
   });
 });
+app.post('/profile/edit/', (req, res) => {
+  const { user_id,  first_name, last_name, email, phone_number, address, postcode, interests, pronouns, dob, private, want_marketing } = req.body;
+  const editProfileQuery = 'UPDATE members SET first_name = ?, last_name = ?, email = ?, phone_number = ?, address = ?, postcode = ?, interests = ?, pronouns = ?, dob = ?, private = ?, want_marketing = ? WHERE user_id = 86170';
+  db.query(editProfileQuery, [first_name, last_name, email, phone_number, address, postcode, interests, pronouns, dob, private, want_marketing, user_id], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    return res.status(200).json({ message: 'Profile Updated Successfully' });
+  });
+});
 app.post('/users/login', (req, res) => {
   const { website_login, password } = req.body;
 
@@ -145,7 +156,6 @@ const query = "SELECT Club_id FROM `member's club` WHERE User_id = ?";
     res.json({ Club_id: user}); 
   });
 });
-
 app.get('/club/:id', (req, res) => {
   const clubId = req.params.id;
 const query = "SELECT Club_name FROM club WHERE Club_id = ?";
@@ -164,9 +174,6 @@ const query = "SELECT Club_name FROM club WHERE Club_id = ?";
     res.json({ Club_name: user}); 
   });
 });
-
-
-
 app.get('/meeting/:id', (req, res) => {
    const clubId = req.params.id;
    const query ="SELECT * FROM meeting WHERE club_id = ?";

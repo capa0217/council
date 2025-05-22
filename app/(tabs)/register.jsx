@@ -3,6 +3,8 @@ import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 
+const PORT = 8081;
+
 // Function to generate a random numeric user ID
 function generateShortId(length) {
   let id = '';

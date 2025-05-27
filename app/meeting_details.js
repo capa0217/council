@@ -29,6 +29,7 @@ const MeetingDetails = () => {
       axios.get(`http://192.168.1.107:8081/meeting_details/${userId}`)
         .then(res => {
           setMeeting(res.data);
+          console.log(res.data);
           setLoading(false);
         })
         .catch(err => {
@@ -45,7 +46,7 @@ const MeetingDetails = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Meeting Details</Text>
-      <Text style={styles.label}>Club: <Text style={styles.value}>{meeting.club}</Text></Text>
+      <Text style={styles.label}>Club: <Text style={styles.value}>{meeting[0].club_id}</Text></Text>
       <Text style={styles.label}>Name: <Text style={styles.value}>{meeting.name}</Text></Text>
       <Text style={styles.label}>Date: <Text style={styles.value}>{meeting.meeting_date}</Text></Text>
       <Text style={styles.label}>Location: <Text style={styles.value}>{meeting.location}</Text></Text>

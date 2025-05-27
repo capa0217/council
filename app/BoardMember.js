@@ -10,6 +10,45 @@ import { useRouter } from 'expo-router';
 const PORT = 8081;
 
 const BoardMemberpage= ()=>{
+    useEffect(() => {
+    if (!userId) return;
+
+    (async () => {
+      try {
+        // Step 1: Get club list from user info
+        const { data } = await axios.get(`http://192.168.1.107:8081/user/${userId}`);
+        const clubList = data.Club_id || [];
+
+        setClubs(clubList);
+
+        // Step 2: Fetch names for all clubs
+        const clubMeetingDetails = await Promise.all(
+          clubList.map(async (item) => {
+            const res = await axios.get(`http://192.168.1.107:8081/club/${item.Club_id}`);
+            const clubNames= res.data.Club_name[0].Club_name
+            const resMeet = await axios.get(`http://192.168.1.107:8081/meeting/${item.Club_id}`);
+            const MeetNames= resMeet.data;
+            return {
+              clubNames,
+              MeetNames,
+            };
+          })
+        );
+const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
+  club.MeetNames.map((meeting) => ({
+    club: club.clubNames,
+    name: meeting.meetingname,
+    date: meeting.meeting_date,
+  }))
+);
+        setClubwithMeetings(flattenedMeetings); 
+
+      } catch (error) {
+        console.error('Error fetching user or club data:', error);
+        Alert.alert('Error', 'Failed to fetch user or club data');
+      }
+    })();
+  }, [userId]);
     return(
 <View style={styles.container}>
       {/* Top Bar */}
@@ -31,6 +70,8 @@ const BoardMemberpage= ()=>{
         <View style={styles.meetingHeaderBlock}>
           <Text style={styles.meetingHeaderText}>Members</Text>
         </View>
+        <TouchableOpacity></TouchableOpacity>
+
         </ScrollView>
     </View>)
 }

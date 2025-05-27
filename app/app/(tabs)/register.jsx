@@ -32,7 +32,7 @@ export default function MembershipForm() {
     let password = "";
 
     try {
-      const memberResponse = await axios.post(`http://10.128.201.19:8081/users/checkMonthlyMembers`);
+      const memberResponse = await axios.post(`http://localhost:8081/users/checkMonthlyMembers`);
       console.log('Server Response:', memberResponse.data.message);
       Alert.alert('Success', 'Membership successful');
       website_login = yyyy + mm + memberResponse.data.monthlyMembers;
@@ -48,7 +48,7 @@ export default function MembershipForm() {
       user_id = generateShortId(6); // generate new ID each time
 
       try {
-      const checkIDResponse = await axios.post(`http://10.128.201.19:8081/users/checkIDExists`, {user_id});
+      const checkIDResponse = await axios.post(`http://localhost:8081/users/checkIDExists`, {user_id});
       console.log('Server Response:', checkIDResponse.data.message);
 
       if(checkIDResponse.data.exists == false){

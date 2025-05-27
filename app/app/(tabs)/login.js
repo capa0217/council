@@ -12,7 +12,7 @@ const PizzaTranslator = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`http://10.128.201.19:8081/users/login`, {
+      const response = await axios.post(`http://localhost:8081/users/login`, {
         website_login: website_login.trim(),
         password: password.trim(),
       });

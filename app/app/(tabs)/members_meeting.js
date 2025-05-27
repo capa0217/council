@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, }
-  from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
@@ -27,14 +33,36 @@ const MembersMeetingPage = () => {
       name: 'Club Leadership Training',
       date: '2025-07-05',
     },
+    {
+      club: 'Brisbane Club',
+      name: 'Club Leadership Training 2',
+      date: '2025-07-05',
+    },
   ];
+
+  // Filter meetings based on selected month, year, and club
+  const filteredMeetings = meetings.filter((meeting) => {
+    const meetingDate = new Date(meeting.date);
+    const meetingMonth = meetingDate.toLocaleString('default', { month: 'long' });
+    const meetingYear = meetingDate.getFullYear().toString();
+
+    const monthMatches = selectedMonth === meetingMonth;
+    const yearMatches = selectedYear === meetingYear;
+    const clubMatches = selectedClub === 'All Clubs' || meeting.club === selectedClub;
+   if (clubMatches=='All Clubs'){
+    return 
+   }
+    return monthMatches && yearMatches && !clubMatches;
+  });
 
   return (
     <View style={styles.container}>
       {/* Top Bar */}
       <View style={styles.topBar}>
         <Image
-          source={{ uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png' }}
+          source={{
+            uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png',
+          }}
           style={styles.logo}
         />
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -57,6 +85,7 @@ const MembersMeetingPage = () => {
           >
             <Picker.Item label="May" value="May" />
             <Picker.Item label="June" value="June" />
+            <Picker.Item label="July" value="July" />
           </Picker>
 
           <Picker
@@ -81,13 +110,20 @@ const MembersMeetingPage = () => {
         </View>
 
         {/* Meeting Buttons */}
-        {meetings.map((meeting, index) => (
+        {filteredMeetings.map((meeting, index) => (
           <TouchableOpacity key={index} style={styles.meetingBlock}>
             <Text style={styles.meetingClub}>{meeting.club}</Text>
             <Text style={styles.meetingName}>{meeting.name}</Text>
             <Text style={styles.meetingDate}>{meeting.date}</Text>
           </TouchableOpacity>
         ))}
+
+        {/* No Results Message */}
+        {filteredMeetings.length === 0 && (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>
+            No meetings found for the selected criteria.
+          </Text>
+        )}
       </ScrollView>
 
       {/* Bottom Navigation */}

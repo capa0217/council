@@ -26,11 +26,9 @@ export default function Profile() {
   }, []);
 
   useEffect(() => {
-        if (!userId) return;
-
     (async () => {
       try {
-        const res = await axios.get(`http://10.128.201.19:8081/profile/${userId}`);
+        const res = await axios.get(`http://localhost:8081/profile/${userId}`);
         setProfiles(res.data);
         console.log(res.data);
       } catch (error) {

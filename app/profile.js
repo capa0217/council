@@ -25,15 +25,13 @@ export default function Profile() {
     })();
   }, []);
 
-  useEffect(() => {
-        if (!userId) return;
-
+  useEffect(()=>{
     (async () => {
-      try {
-        const res = await axios.get(`http://10.128.201.19:8081/profile/${userId}`);
-        setProfiles(res.data);
-        console.log(res.data);
-      } catch (error) {
+        try{
+             const res = await axios.get(`http://192.168.1.107:8081/profile/${userId}`);
+              setProfiles(res.data);
+              console.log(res.data);
+        }catch (error) {
         console.error('Error fetching userId from storage:', error);
         Alert.alert('Error', 'Failed to load user ID');
       }

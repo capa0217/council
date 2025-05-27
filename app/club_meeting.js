@@ -41,7 +41,7 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://10.128.201.19:8081/user/${userId}`);
+        const { data } = await axios.get(`http://192.168.1.107:8081/user/${userId}`);
         const clubList = data.Club_id || [];
 
         setClubs(clubList);
@@ -49,25 +49,24 @@ const ProfileScreen = () => {
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
-            const res = await axios.get(`http://10.128.201.19:8081/club/${item.Club_id}`);
-            const clubNames = res.data.Club_name[0].Club_name
-            const resMeet = await axios.get(`http://10.128.201.19:8081/meeting/${item.Club_id}`);
-            const MeetNames = resMeet.data;
+            const res = await axios.get(`http://192.168.1.107:8081/club/${item.Club_id}`);
+            const clubNames= res.data.Club_name[0].Club_name
+            const resMeet = await axios.get(`http://192.168.1.107:8081/meeting/${item.Club_id}`);
+            const MeetNames= resMeet.data;
             return {
               clubNames,
               MeetNames,
             };
           })
         );
-        const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
-          club.MeetNames.map((meeting) => ({
-            club: club.clubNames,
-            name: meeting.meetingname,
-            date: meeting.meeting_date,
-            id: meeting.meeting_id,
-          }))
-        );
-        setClubwithMeetings(flattenedMeetings);
+const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
+  club.MeetNames.map((meeting) => ({
+    club: club.clubNames,
+    name: meeting.meetingname,
+    date: meeting.meeting_date,
+  }))
+);
+        setClubwithMeetings(flattenedMeetings); 
 
       } catch (error) {
         console.error('Error fetching user or club data:', error);
@@ -83,12 +82,11 @@ const ProfileScreen = () => {
     const monthMatches = selectedMonth === meetingMonth;
     const yearMatches = selectedYear === meetingYear;
     const clubMatches = selectedClub === 'All Clubs' || meeting.club === selectedClub;
-    if (selectedClub == 'All Clubs') {
-      return clubMeetings;
-    }
-    else {
-      return monthMatches && yearMatches && clubMatches && meetingId;
-    }
+      if (selectedClub=='All Clubs'){
+    return clubMeetings;
+   }
+   else{
+    return monthMatches && yearMatches && clubMatches;}
   });
 
   const years = clubMeetings.map((meeting) => new Date(meeting.date).getFullYear().toString())
@@ -100,17 +98,10 @@ const ProfileScreen = () => {
   const uniqueClubs = Array.from(new Set(clubss));
   const dropdownClubs = ['All Clubs', ...uniqueClubs];
 
-  const months = clubMeetings.map((meeting) => new Date(meeting.date).toLocaleString('default', { month: 'long' }))
-  const uniqueMonths = Array.from(new Set(months));
-  
-  const handlePress = async (meetingId) => {
-    try {
-      await AsyncStorage.setItem('meetingId', meetingId);
-      router.push('/meeting_details');
-    } catch (error) {
-      console.error('Error saving meeting_id:', error);
-    }
-  };
+ const months= clubMeetings.map((meeting)=>new Date(meeting.date).toLocaleString('default', { month: 'long' }))
+ const uniqueMonths = Array.from(new Set(months));
+ 
+ console.log(uniqueClubs);
   return (
     <View style={styles.container}>
       {/* Top Bar */}
@@ -163,15 +154,15 @@ const ProfileScreen = () => {
         </View>
 
         {/* Meeting Buttons */}
-        {filteredMeetings.map((meeting, index) => {
-          const date = new Date(meeting.date).toISOString().split('T')[0];
-          return (
-            <TouchableOpacity key={index} style={styles.meetingBlock}  onPress={() => handlePress(meeting.id)}>
-              <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
-              <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
-              <Text style={styles.meetingDate}>Meeting_date: {date}</Text>
-            </TouchableOpacity>)
-        })}
+      {filteredMeetings.map((meeting, index) => {
+        const date = new Date(meeting.date).toISOString().split('T')[0];
+        return(
+               <TouchableOpacity key={index} style={styles.meetingBlock}>
+                 <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
+                 <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
+                 <Text style={styles.meetingDate}>Meeting_date: {date}</Text>
+               </TouchableOpacity>)
+})}
       </ScrollView>
 
       {/* Bottom Navigation */}

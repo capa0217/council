@@ -64,6 +64,7 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
     club: club.clubNames,
     name: meeting.meetingname,
     date: meeting.meeting_date,
+    id:meeting.meeting_id,
   }))
 );
         setClubwithMeetings(flattenedMeetings); 
@@ -78,7 +79,6 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
     const meetingDate = new Date(meeting.date);
     const meetingMonth = meetingDate.toLocaleString('default', { month: 'long' });
     const meetingYear = meetingDate.getFullYear().toString();
-    const meetingId= meeting.id;
     const monthMatches = selectedMonth === meetingMonth;
     const yearMatches = selectedYear === meetingYear;
     const clubMatches = selectedClub === 'All Clubs' || meeting.club === selectedClub;
@@ -102,6 +102,14 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
  const uniqueMonths = Array.from(new Set(months));
  
  console.log(uniqueClubs);
+  const handlePress = async (meetingId) => {
+    try {
+      await AsyncStorage.setItem('meeting_id', meetingId);
+      router.push('/meeting_details');
+    } catch (error) {
+      console.error('Error saving meeting_id:', error);
+    }
+  };
   return (
     <View style={styles.container}>
       {/* Top Bar */}
@@ -157,7 +165,9 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
       {filteredMeetings.map((meeting, index) => {
         const date = new Date(meeting.date).toISOString().split('T')[0];
         return(
-               <TouchableOpacity key={index} style={styles.meetingBlock}>
+               <TouchableOpacity key={index}
+        style={styles.meetingBlock}
+        onPress={() => handlePress(meeting.id)}>
                  <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
                  <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
                  <Text style={styles.meetingDate}>Meeting_date: {date}</Text>

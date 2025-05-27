@@ -104,7 +104,7 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
  console.log(uniqueClubs);
   const handlePress = async (meetingId) => {
     try {
-      await AsyncStorage.setItem('meeting_id', meetingId);
+      await AsyncStorage.setItem('meetingId', meetingId);
       router.push('/meeting_details');
     } catch (error) {
       console.error('Error saving meeting_id:', error);

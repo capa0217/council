@@ -209,7 +209,53 @@ app.get('/meeting_details/:id', (req, res) => {
     res.json(results); // Send only the first (and only) result
   });
 });
+app.get('/clubBoard/:id', (req, res) => {
+  const clubId = req.params.id;
+const query = "SELECT User_id FROM `member's club` WHERE Club_id = ?";
 
+  db.query(query, [clubId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const user = results;
+    res.json({ User_id: user}); 
+  });
+});
+
+app.get('/clubBoardMembers/:id', (req, res) => {
+  const UserId = req.params.id;
+const query = "SELECT * FROM members WHERE user_id = ?";
+
+  db.query(query, [UserId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(results); 
+  });
+});
+app.post('/BoardMember', (req, res) =>{
+  const{User_id, Club_id}= req.body;
+  const query= "INSERT INTO `member's club` (User_id, Club_id) VALUES (?, ?)"
+  db.query(query,[User_id, Club_id], (err,result)=>{
+      if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    return res.status(200).json({ message: 'New Member Added Successfully' });
+  })
+})
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ` + PORT);
 });

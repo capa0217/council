@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Alert, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
+import { Text, View, Alert, StyleSheet, Image, Button, TouchableOpacity, Modal, TextInput} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-web';
@@ -10,45 +10,59 @@ import { useRouter } from 'expo-router';
 const PORT = 8081;
 
 const BoardMemberpage= ()=>{
+  const router= useRouter();
+  const [names, setnames]= useState([]);
+  const [results, setresults]= useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [memberid, setid]= useState('');
+   const [clubid, setids]= useState('');
     useEffect(() => {
-    if (!userId) return;
 
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://192.168.1.107:8081/user/${userId}`);
-        const clubList = data.Club_id || [];
+        const { data } = await axios.get(`http://10.88.49.195:8081/clubBoard/1`);
+        const UseridList = data.User_id || [];
 
-        setClubs(clubList);
-
-        // Step 2: Fetch names for all clubs
-        const clubMeetingDetails = await Promise.all(
-          clubList.map(async (item) => {
-            const res = await axios.get(`http://192.168.1.107:8081/club/${item.Club_id}`);
-            const clubNames= res.data.Club_name[0].Club_name
-            const resMeet = await axios.get(`http://192.168.1.107:8081/meeting/${item.Club_id}`);
-            const MeetNames= resMeet.data;
+        const MemberDetails = await Promise.all(
+          UseridList.map(async (item) => {
+            const res = await axios.get(`http://10.88.49.195:8081/clubBoardMembers/${item.User_id}`);
+            const MemberNames= res.data[0].first_name+' '+res.data[0].last_name;
+            const PaidAmount= res.data[0].paid;   
             return {
-              clubNames,
-              MeetNames,
+              MemberNames,
+              PaidAmount
             };
           })
         );
-const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
-  club.MeetNames.map((meeting) => ({
-    club: club.clubNames,
-    name: meeting.meetingname,
-    date: meeting.meeting_date,
-  }))
-);
-        setClubwithMeetings(flattenedMeetings); 
-
+          setnames(MemberDetails);
+    
       } catch (error) {
         console.error('Error fetching user or club data:', error);
         Alert.alert('Error', 'Failed to fetch user or club data');
       }
     })();
-  }, [userId]);
+  }, []);
+  const Search = async ()=>{try{
+    const res= await axios.get(`http://10.88.49.195:8081/clubBoardMembers/${id}`)
+    setresults(res.data);
+    console.log(res.data);
+  }
+  catch (error) {
+              console.error('Search failed:', error);
+
+  }}
+
+  const AddMember = async ()=>{ try{
+    const response = await axios.post('http://10.88.49.195:8081/BoardMember', {
+      
+        User_id: memberid.trim(),
+        Club_id: clubid.trim(),
+      });  }
+      catch(error){
+        Alert.alert('Error', 'Failed to add member data');
+      }
+      }
     return(
 <View style={styles.container}>
       {/* Top Bar */}
@@ -70,9 +84,55 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
         <View style={styles.meetingHeaderBlock}>
           <Text style={styles.meetingHeaderText}>Members</Text>
         </View>
-        <TouchableOpacity></TouchableOpacity>
+       <View>
+ <TouchableOpacity style={styles.Add} onPress={() => setModalVisible(true)}>
+          <Text style={{ color: 'blue', fontSize: 16 }}>+ Add member</Text>
+        </TouchableOpacity>       </View>
+               {/* Member List */}
+             {names.map((member, index) => (
+                 <TouchableOpacity
+                   key={index}
+                   style={styles.meetingBlock}
+                   onPress={() => Alert.alert('Member Selected', member.name)}
+                 >
+                   <Text style={styles.meetingName}>{member.MemberNames} <Text >Paid: {member.PaidAmount}</Text> </Text>
+                 </TouchableOpacity>
+               ))}
 
         </ScrollView>
+        <View style={styles.bottomNav}>
+                <Text style={[styles.navButton, styles.activeButton]}>Club Members</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('MembersMeetingPage')}>
+                  <Text style={styles.navButton}>Guest</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('ProjectLevelsPage')}>
+                  <Text style={styles.navButton}>Meeting</Text>
+                </TouchableOpacity>
+              </View>
+            <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide" // or 'fade' or 'none'
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalBox}>
+            <TextInput placeholder="Insert Id"
+            value={memberid}
+        onChangeText={setid}></TextInput>
+        <TextInput placeholder="Insert Club Id" value={clubid} onChangeText={setids}></TextInput>
+<TouchableOpacity onPress={AddMember}>
+                  <Text>Add member</Text>
+                </TouchableOpacity>   
+{results.map((member, index) => (
+  <Text key={index}>
+    {member.first_name} {member.last_name} Paid: {member.paid}
+  </Text>
+))}
+                 <Button title="Close" onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>)
 }
 
@@ -80,6 +140,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+ Add:{
+    marginTop: 20,
+   marginBottom:10,
+   marginLeft:1080,
+ },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalBox: {
+    margin: 30,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
   },
   topBar: {
     flexDirection: 'row',

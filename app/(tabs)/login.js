@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     height: 50,
     marginTop: '1%',
     marginBottom: '5%',
+    paddingLeft: 10,
   },
   inputs: {
     marginHorizontal: 20,

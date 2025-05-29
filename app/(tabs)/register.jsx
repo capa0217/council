@@ -103,9 +103,9 @@ const RegisterForm = () => {
       <View style={styles.registerContainer}>
         <View style={styles.inputs}>
           {[
-            { name: 'first_name', placeholder: ' First Name', label:'Full Name', autocomplete: 'given-name' },
-            { name: 'last_name', placeholder: ' Last Name', autocomplete: 'family-name' },
-            { name: 'email', placeholder: ' Email', label:'Email Address', autocomplete: 'email' },
+            { name: 'first_name', placeholder: 'First Name', label:'Full Name', autocomplete: 'given-name' },
+            { name: 'last_name', placeholder: 'Last Name', autocomplete: 'family-name' },
+            { name: 'email', placeholder: 'Email', label:'Email Address', autocomplete: 'email' },
           ].map(({ name, placeholder, label, autocomplete }) => (
             
           <View key={name} style={styles.inputGroup}>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     marginTop: '1%',
-    marginBottom: '5%',
+    paddingLeft: 10,
   },
   inputs: {
     marginHorizontal: 20,
@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: 'bold',
     fontSize: 16,
+    marginTop: '5%',
   },
   registerContainer: {
     backgroundColor: '#F1F6F5',

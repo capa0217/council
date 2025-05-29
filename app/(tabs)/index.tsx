@@ -1,8 +1,8 @@
-import React from 'react';
-import { Image, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import React = require('react');
 
-export default function Home() {
+const Home = () => {
   const router = useRouter();
 
   return (
@@ -22,6 +22,8 @@ export default function Home() {
   );
 }
 
+export default Home;
+
 const styles = StyleSheet.create({
   container: {
     padding: 20,
@@ -33,14 +35,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: 'orange',
+    backgroundColor: '#FFD347',
     width: 200,           
     height: 50,           
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,
     marginVertical: 20,
-    marginLeft: 500,
   },
   buttonText: {
     color: 'white',
@@ -49,7 +50,6 @@ const styles = StyleSheet.create({
   },
   titleText:{
      fontSize:25,
-     marginLeft: 425,
      fontWeight:'bold',
      marginBottom:10,
   }

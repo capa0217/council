@@ -245,6 +245,32 @@ const query = "SELECT * FROM members WHERE user_id = ?";
     res.json(results); 
   });
 });
+app.get('/members', (req, res)=>{
+  const query="SELECT * FROM members";
+  db.query(query,(err, results)=>{
+     const user = results;
+    res.json({user}); 
+  })
+}
+)
+
+app.get('/club/:clubName', (req,res)=>{
+  const clubName= req.params.clubName;
+  const query = "SELECT * FROM club WHERE Club_name = ?";
+
+  db.query(query, [clubName], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(results); 
+  });
+})
 app.post('/BoardMember', (req, res) =>{
   const{User_id, Club_id}= req.body;
   const query= "INSERT INTO `member's club` (User_id, Club_id) VALUES (?, ?)"

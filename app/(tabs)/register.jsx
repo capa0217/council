@@ -16,7 +16,7 @@ const PORT = 8081;
 // Function to generate a random numeric user ID
 function generateShortId(length) {
   let id = "";
-  for (let i = 0; i < length + 1; i++) {
+  for (let i = 0; i < length+1; i++) {
     id += Math.floor(Math.random() * 10); // 0–9
   }
   return Number(id);

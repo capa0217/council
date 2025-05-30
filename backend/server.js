@@ -223,8 +223,7 @@ const query = "SELECT User_id FROM `member's club` WHERE Club_id = ?";
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const user = results;
-    res.json({ User_id: user}); 
+    res.json(results); 
   });
 });
 
@@ -282,6 +281,14 @@ app.post('/BoardMember', (req, res) =>{
     return res.status(200).json({ message: 'New Member Added Successfully' });
   })
 })
+app.get('/clubs', (req, res) => {
+  const query = "SELECT Club_id, Club_name FROM club";
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ message: 'Internal server error' });
+    res.json(results); 
+  });
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ` + PORT);
 });

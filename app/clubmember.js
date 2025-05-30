@@ -10,7 +10,10 @@ const ClubMembersPage = () => {
   const [memberdetails, setDetails]= useState([]);
   const [sortByName, setSortByName] = useState('A-Z');
   const [selectedClub, setSelectedClub] = useState('All Clubs');
-  const [clubid, setclubidList]=useState([]);
+const [clubs, setClubs] = useState([]);
+const [ids, setids]= useState([]);
+const [selectedClubId, setSelectedClubId] = useState(null);
+const [clubBoardData, setClubBoardData] = useState([]);
   const members = [
     { name: 'Susan connor', club: 'Sunshine Club' },
     { name: 'Rick Novak', club: 'Riverside Club' },
@@ -21,7 +24,7 @@ const ClubMembersPage = () => {
 
     (async () => {
       try {
-            const res= await axios.get('http://10.88.49.195:8081/members');
+            const res= await axios.get('http://192.168.1.107:8081/members');
         
 setDetails(res.data.user);      
       } catch (error) {
@@ -31,27 +34,22 @@ setDetails(res.data.user);
     })();
   }, []);
    useEffect(() => {
-
-    (async () => {
-      try {
-        const ClubIds= await Promise.all( memberdetails.map(async (item) =>{ const res= await axios.get( `http://10.88.49.195:8081/user/${item.user_id}`)
-      const clubid= res.data;
-        return {
-              clubid
-            };
-        }));
-
-     
-    console.log(ClubIds);
-
-        
-
-      } catch (error) {
-        console.error('Error fetching user or club data:', error);
-        Alert.alert('Error', 'Failed to fetch user or club data');
-      }
-    })();
-  }, []);
+  axios.get('http://192.168.1.107:8081/clubs')
+    .then(res => setClubs(res.data))
+    .catch(err => {
+      console.error('Error fetching clubs:', err);
+      Alert.alert('Error', 'Failed to fetch clubs');
+    });
+}, []);
+  useEffect(() => { if(!selectedClubId) return;
+  axios.get(`http://192.168.1.107:8081/clubBoard/${selectedClubId}`)
+    .then(res => setids(res.data))
+    .catch(err => {
+      console.error('Error fetching clubs:', err)
+      Alert.alert('Error', 'Failed to fetch clubs');
+    });
+}, [selectedClubId]);
+ 
 const sortedMembers = memberdetails.sort((a, b) => {if(sortByName=="A-Z"){
   const firstCompare = a.first_name.localeCompare(b.first_name);
   if (firstCompare !== 0) {return firstCompare}else{
@@ -64,7 +62,6 @@ const sortedMembers = memberdetails.sort((a, b) => {if(sortByName=="A-Z"){
   return b.last_name.localeCompare(a.last_name)}}
   }  )
 
-  console.log(sortedMembers);
   return (
     <View style={styles.container}>
       {/* Top Bar */}
@@ -97,28 +94,39 @@ const sortedMembers = memberdetails.sort((a, b) => {if(sortByName=="A-Z"){
             <Picker.Item label="Z-A" value="Z-A" />
           </Picker>
 
-          <Picker
-            selectedValue={selectedClub}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedClub(itemValue)}
-          >
-            <Picker.Item label="All Clubs" value="All Clubs" />
-            <Picker.Item label="Sunshine Club" value="Sunshine Club" />
-            <Picker.Item label="Riverside Club" value="Riverside Club" />
-            <Picker.Item label="Brisbane Club" value="Brisbane Club" />
-          </Picker>
+      <Picker
+  selectedValue={selectedClub}
+  style={styles.picker}
+  onValueChange={(itemValue, itemIndex) => {
+    setSelectedClub(itemValue);
+
+    const clubObj = clubs.find(club => club.Club_name === itemValue);
+    if (clubObj) {
+      setSelectedClubId(clubObj.Club_id);
+    }
+  }}
+>
+  <Picker.Item label="All Clubs" value="All Clubs" />
+  {clubs.map((club) => (
+    <Picker.Item key={club.Club_id} label={club.Club_name} value={club.Club_name} />
+  ))}
+</Picker>
+
         </View>
 
-        {/* Member List */}
-        {memberdetails.map((member, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.meetingBlock}
-            onPress={() => Alert.alert('Member Selected', member.name)}
-          >
-            <Text style={styles.meetingName}>{member.first_name +' '+member.last_name}</Text>
-          </TouchableOpacity>
-        ))}
+     {(selectedClub === 'All Clubs' ? memberdetails : memberdetails.filter(member =>
+  ids.some(idObj => idObj.User_id === member.user_id)
+)).map((member) => (
+  <TouchableOpacity
+    key={member.user_id}
+    style={styles.meetingBlock}
+    onPress={() => Alert.alert('Member Selected', `${member.first_name} ${member.last_name}`)}
+  >
+    <Text style={styles.meetingName}>
+      {member.first_name} {member.last_name}
+    </Text>
+  </TouchableOpacity>
+))}
       </ScrollView>
 
       {/* Bottom Navigation */}

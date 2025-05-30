@@ -21,12 +21,12 @@ const BoardMemberpage= ()=>{
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://10.88.49.195:8081/clubBoard/1`);
+        const { data } = await axios.get(`http://192.168.1.107:8081/clubBoard/1`);
         const UseridList = data.User_id || [];
 
         const MemberDetails = await Promise.all(
-          UseridList.map(async (item) => {
-            const res = await axios.get(`http://10.88.49.195:8081/clubBoardMembers/${item.User_id}`);
+          data.map(async (item) => {
+            const res = await axios.get(`http://192.168.1.107:8081/clubBoardMembers/${item.User_id}`);
             const MemberNames= res.data[0].first_name+' '+res.data[0].last_name;
             const PaidAmount= res.data[0].paid;   
             return {
@@ -44,7 +44,7 @@ const BoardMemberpage= ()=>{
     })();
   }, []);
   const Search = async ()=>{try{
-    const res= await axios.get(`http://10.88.49.195:8081/clubBoardMembers/${id}`)
+    const res= await axios.get(`http://192.168.1.107:8081/clubBoardMembers/${id}`)
     setresults(res.data);
     console.log(res.data);
   }
@@ -54,7 +54,7 @@ const BoardMemberpage= ()=>{
   }}
 
   const AddMember = async ()=>{ try{
-    const response = await axios.post('http://10.88.49.195:8081/BoardMember', {
+    const response = await axios.post('http://192.168.1.107:8081/BoardMember', {
       
         User_id: memberid.trim(),
         Club_id: clubid.trim(),
@@ -123,16 +123,18 @@ const BoardMemberpage= ()=>{
         <TextInput placeholder="Insert Club Id" value={clubid} onChangeText={setids}></TextInput>
 <TouchableOpacity onPress={AddMember}>
                   <Text>Add member</Text>
-                </TouchableOpacity>   
-{results.map((member, index) => (
-  <Text key={index}>
-    {member.first_name} {member.last_name} Paid: {member.paid}
-  </Text>
-))}
+                </TouchableOpacity>
+
+
                  <Button title="Close" onPress={() => setModalVisible(false)} />
           </View>
         </View>
       </Modal>
+      {results.map((member, index) => (
+  <Text key={index}>
+    {member.first_name} {member.last_name} Paid: {member.paid}
+  </Text>
+))}
     </View>)
 }
 

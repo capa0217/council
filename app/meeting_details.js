@@ -46,12 +46,12 @@ const MeetingDetails = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Meeting Details</Text>
-      <Text style={styles.label}>Club: <Text style={styles.value}>{meeting[0].club_id}</Text></Text>
-      <Text style={styles.label}>Name: <Text style={styles.value}>{meeting.name}</Text></Text>
-      <Text style={styles.label}>Date: <Text style={styles.value}>{meeting.meeting_date}</Text></Text>
-      <Text style={styles.label}>Location: <Text style={styles.value}>{meeting.location}</Text></Text>
-      <Text style={styles.label}>Description:</Text>
-      <Text style={styles.description}>{meeting.description}</Text>
+      <Text style={styles.label}>Club id: <Text style={styles.value}>{meeting[0].club_id}</Text></Text>
+      <Text style={styles.label}>Name: <Text style={styles.value}>{meeting[0].meetingname}</Text></Text>
+      <Text style={styles.label}>Date: <Text style={styles.value}>{meeting[0].meeting_date}</Text></Text>
+      <Text style={styles.label}>Location: <Text style={styles.value}>{meeting[0].meeting_place}</Text></Text>
+      <Text style={styles.label}>Start Time:</Text>
+      <Text style={styles.description}>{meeting[0].StartTime}</Text>
     </View>
   );
 };

@@ -92,13 +92,13 @@ const MembersMeetingPage = () => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate('ClubMembersPage')}>
+        <TouchableOpacity onPress={() => navigation.navigate('members_clubmembers')}>
           <Text style={styles.navButton}>Club Members</Text>
         </TouchableOpacity>
 
         <Text style={[styles.navButton, styles.activeButton]}>Meeting</Text>
 
-        <TouchableOpacity onPress={() => navigation.navigate('ProjectLevelsPage')}>
+        <TouchableOpacity onPress={() => navigation.navigate('members_projectLevels')}>
           <Text style={styles.navButton}>Project</Text>
         </TouchableOpacity>
       </View>

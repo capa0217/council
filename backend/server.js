@@ -105,7 +105,7 @@ app.get('/profile/:id', (req, res) => {
 });
 app.post('/profile/edit/', (req, res) => {
   const { user_id,  first_name, last_name, email, phone_number, address, postcode, interests, pronouns, dob, private, want_marketing } = req.body;
-  const editProfileQuery = 'UPDATE members SET first_name = ?, last_name = ?, email = ?, phone_number = ?, address = ?, postcode = ?, interests = ?, pronouns = ?, dob = ?, private = ?, want_marketing = ? WHERE user_id = 86170';
+  const editProfileQuery = 'UPDATE members SET first_name = ?, last_name = ?, email = ?, phone_number = ?, address = ?, postcode = ?, interests = ?, pronouns = ?, dob = ?, private = ?, want_marketing = ? WHERE user_id = ?';
   db.query(editProfileQuery, [first_name, last_name, email, phone_number, address, postcode, interests, pronouns, dob, private, want_marketing, user_id], (err, result) => {
     if (err) {
       console.error('Database error:', err);

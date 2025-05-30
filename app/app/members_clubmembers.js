@@ -74,10 +74,10 @@ const ClubMembersPage = () => {
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <Text style={[styles.navButton, styles.activeButton]}>Club Members</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('MembersMeetingPage')}>
+        <TouchableOpacity onPress={() => navigation.navigate('members_meeting')}>
           <Text style={styles.navButton}>Meeting</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('ProjectLevelsPage')}>
+        <TouchableOpacity onPress={() => navigation.navigate('members_projectLevels')}>
           <Text style={styles.navButton}>Project</Text>
         </TouchableOpacity>
       </View>

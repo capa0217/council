@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Image, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
+import { useRouter } from 'expo-router';
 import axios from 'axios';
 
 const PORT = 8081;
@@ -8,13 +8,14 @@ const PORT = 8081;
 // Function to generate a random numeric user ID
 function generateShortId(length) {
   let id = '';
-  for (let i = 0; i <= length; i++) {
+  for (let i = 0; i < length+1; i++) {
     id += Math.floor(Math.random() * 10); // 0–9
   }
   return Number(id);
 }
 
-export default function MembershipForm() {
+const RegisterForm = () => {
+  const router = useRouter();
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       first_name: '',
@@ -44,16 +45,16 @@ export default function MembershipForm() {
 
     let uniqueID = false;
     let user_id = 0;
-    while (uniqueID == false){
+    while (uniqueID == false) {
       user_id = generateShortId(6); // generate new ID each time
 
       try {
-      const checkIDResponse = await axios.post('http://192.168.1.107:8081/users/checkIDExists', {user_id});
-      console.log('Server Response:', checkIDResponse.data.message);
+        const checkIDResponse = await axios.post('http://192.168.1.107:8081/users/checkIDExists', { user_id });
+        console.log('Server Response:', checkIDResponse.data.message);
 
-      if(checkIDResponse.data.exists == false){
-        uniqueID = true;
-      }
+        if (checkIDResponse.data.exists == false) {
+          uniqueID = true;
+        }
       } catch (error) {
         console.error('Error checking members:', error.response ? error.response.data : error.message);
         Alert.alert('Error', error.response?.data?.message || 'Member Check Failed');
@@ -89,44 +90,116 @@ export default function MembershipForm() {
   };
 
   return (
-    <View style={styles.container}>
-      {[
-        { name: 'first_name', placeholder: 'First Name', autocomplete: 'given-name' },
-        { name: 'last_name', placeholder: 'Last Name', autocomplete: 'family-name' },
-        { name: 'email', placeholder: 'Email Address', autocomplete: 'email' },
-      ].map(({ name, placeholder, lines, autocomplete }) => (
-        <Controller
-          key={name}
-          control={control}
-          name={name}
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.input}
-              autoComplete={autocomplete}
-              placeholder={placeholder}
-              onChangeText={onChange}
-              value={value}
-              autoCapitalize="none"
-            />
-          )}
+    <View style={styles.background}>
+      <View style={styles.logoContainer}>
+        <Image
+          source={{
+            uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png',
+          }}
+          style={styles.logo}
+          resizeMode="contain"
         />
-      ))}
-      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+      </View>
+      <View style={styles.registerContainer}>
+        <View style={styles.inputs}>
+          {[
+            { name: 'first_name', placeholder: 'First Name', label:'Full Name', autocomplete: 'given-name' },
+            { name: 'last_name', placeholder: 'Last Name', autocomplete: 'family-name' },
+            { name: 'email', placeholder: 'Email', label:'Email Address', autocomplete: 'email' },
+          ].map(({ name, placeholder, label, autocomplete }) => (
+            
+          <View key={name} style={styles.inputGroup}>
+          {label && <Text style={styles.label}>{label}</Text>}
+            <Controller
+              key={name}
+              control={control}
+              name={name}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  autoComplete={autocomplete}
+                  placeholder={placeholder}
+                  onChangeText={onChange}
+                  value={value}
+                  autoCapitalize="none"
+                />
+              )}
+            />
+            </View>
+          ))}
+          <View style={styles.function}>
+            <TouchableOpacity style={styles.button} onPress={() => router.push('./login')}>
+              <Text style={styles.whiteText}>Go Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+              <Text style={styles.whiteText}>Register</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
     </View>
   );
-}
+};
+
+export default RegisterForm;
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flex: 1,
+  background: {
+    backgroundColor: '#AFABA3',
+    height: '100%',
+  },
+  logo: {
+    width: 150,
+    height: 60,
+    marginVertical: 10,
+    marginLeft: 10,
+  },
+  button: {
+    backgroundColor: '#065395',
+    width: 130,
+    height: 50,
     justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    marginVertical: 10,  // Adds top and bottom spacing
+    marginHorizontal: 15,
   },
   input: {
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 5,
-    borderColor: '#ccc',
+    borderWidth: 2,
+    borderColor: '#433D33',
+    width: '100%',
+    height: 50,
+    marginTop: '1%',
+    paddingLeft: 10,
+  },
+  inputs: {
+    marginHorizontal: 20,
+  },
+  label: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginTop: '5%',
+  },
+  registerContainer: {
+    backgroundColor: '#F1F6F5',
+    borderWidth: 2,
+    borderColor: '#433D33',
+    marginTop: '20%',
+    paddingVertical: '5%',
+    marginHorizontal: '5%',
+    justifyContent: 'center',
+  },
+  logoContainer: {
+    backgroundColor: '#F1F6F5',
+  },
+  function: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10
+  },
+  whiteText: {
+    color: '#F1F6F5',
   },
 });
+

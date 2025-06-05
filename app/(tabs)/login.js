@@ -32,7 +32,7 @@ const PizzaTranslator = () => {
       await AsyncStorage.setItem("userId", response.data.user_id.toString());
       // Navigate to the profile screen and pass user_id as parameter
       router.push({
-        pathname: "/profile",
+        pathname: "/club_meeting",
         query: { userId: response.data.user_id },
       });
       console.log("Server response:", response.data);

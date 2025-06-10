@@ -46,9 +46,15 @@ const RegisterForm = () => {
     let password = "";
 
     try {
-      const memberResponse = await axios.post('http://192.168.1.107:8081/users/checkMonthlyMembers');
-      console.log('Server Response:', memberResponse.data.message);
-      Alert.alert('Success', 'Membership successful');
+      const memberResponse = await axios.post(
+<<<<<<< HEAD
+        "http://192.168.1.110:8081/users/checkMonthlyMembers"
+=======
+        "http://10.88.55.251:8081/users/checkMonthlyMembers"
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+      );
+      console.log("Server Response:", memberResponse.data.message);
+      Alert.alert("Success", "Membership successful");
       website_login = yyyy + mm + memberResponse.data.monthlyMembers;
       password =
         data.first_name.charAt(0).toUpperCase() +
@@ -73,8 +79,15 @@ const RegisterForm = () => {
       user_id = generateShortId(6); // generate new ID each time
 
       try {
-        const checkIDResponse = await axios.post('http://192.168.1.107:8081/users/checkIDExists', { user_id });
-        console.log('Server Response:', checkIDResponse.data.message);
+        const checkIDResponse = await axios.post(
+<<<<<<< HEAD
+          "http://192.168.1.110:8081/users/checkIDExists",
+=======
+          "http://10.88.55.251:8081/users/checkIDExists",
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+          { user_id }
+        );
+        console.log("Server Response:", checkIDResponse.data.message);
 
         if (checkIDResponse.data.exists == false) {
           uniqueID = true;
@@ -100,9 +113,16 @@ const RegisterForm = () => {
     };
 
     try {
-      const createMemberResponse = await axios.post(`http://192.168.1.107:8081/users/newMember`, payload);
-      console.log('Server Response:', createMemberResponse.data);
-      Alert.alert('Success', 'Membership successful');
+      const createMemberResponse = await axios.post(
+<<<<<<< HEAD
+        `http://192.168.1.110:8081/users/newMember`,
+=======
+        `http://10.88.55.251:8081/users/newMember`,
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+        payload
+      );
+      console.log("Server Response:", createMemberResponse.data);
+      Alert.alert("Success", "Membership successful");
     } catch (error) {
       console.error(
         "Error submitting form:",
@@ -115,9 +135,16 @@ const RegisterForm = () => {
     }
 
     try {
-      const registerResponse = await axios.post(`http://192.168.1.107:8081/users/register`, payload);
-      console.log('Server Response:', registerResponse.data);
-      Alert.alert('Success', 'Registration successful');
+      const registerResponse = await axios.post(
+<<<<<<< HEAD
+        `http://192.168.1.110:8081/users/register`,
+=======
+        `http://10.88.55.251:8081/users/register`,
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+        payload
+      );
+      console.log("Server Response:", registerResponse.data);
+      Alert.alert("Success", "Registration successful");
       reset(); // clear the form after successful registration
     } catch (error) {
       console.error(
@@ -260,11 +287,15 @@ const styles = StyleSheet.create({
   registerContainer: {
     backgroundColor: "#F1F6F5",
     borderWidth: 2,
-    borderColor: '#433D33',
-    marginTop: '20%',
-    paddingVertical: '5%',
-    marginHorizontal: '5%',
-    justifyContent: 'center',
+    borderColor: "#433D33",
+<<<<<<< HEAD
+    marginTop: "8%",
+=======
+    marginTop: "20%",
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+    paddingVertical: "5%",
+    marginHorizontal: "5%",
+    justifyContent: "center",
   },
   logoContainer: {
     backgroundColor: "#F1F6F5",
@@ -278,5 +309,8 @@ const styles = StyleSheet.create({
   whiteText: {
     color: "#F1F6F5",
   },
+<<<<<<< HEAD
 });
-
+=======
+});
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717

@@ -20,20 +20,69 @@ const PizzaTranslator = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8081/users/login', {
+<<<<<<< HEAD
+      const response = await axios.post('http://192.168.1.110:8081/users/login', {
         website_login: website_login.trim(),
         password: password.trim(),
       });
-
+      
+        const access = await axios.get(`http://192.168.1.110:8081/clubAccess/${response.data.user_id}`)
       // Store user data in AsyncStorage
       await AsyncStorage.setItem('userId', response.data.user_id.toString());
+const today = new Date().toISOString().split('T')[0];
+    const accesses = access.data;
+
+  if(accesses &&  access.data.level_of_access === 'club'){
+router.push({
+        pathname: '/BoardMember',
+        query: { userId: response.data.user_id }}
+)}
+
+  
+          const res = await axios.get(`http://192.168.1.110:8081/clubBoardMembers/${response.data.user_id}`);
+
+        if((res.data[0].paid =='0' && res.data[0].guest=='1')||(res.data[0].paid =='1' && res.data[0].guest=='1') ){
+          router.push({
+        pathname: '/GuestPage',
+=======
+      const response = await axios.post(
+        "http://10.88.55.251:8081/users/login",
+        {
+          website_login: website_login.trim(),
+          password: password.trim(),
+        }
+      );
+
+      // Store user data in AsyncStorage
+      await AsyncStorage.setItem("userId", response.data.user_id.toString());
       // Navigate to the profile screen and pass user_id as parameter
       router.push({
-        pathname: '/club_meeting',
+        pathname: "/club_meeting",
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
         query: { userId: response.data.user_id },
+      })}
+         if(res.data[0].paid =='1' && res.data[0].guest=='0' && res.data[0].end_date > today){
+          router.push({
+        pathname: '/club_meeting',
+        query: { userId: response.data.user_id }
+          })};     
+          if(res.data[0].end_date < today){
+              
+             const responses = await axios.post('http://192.168.1.110:8081/user/guest', {
+        user_id: response.data.user_id
       });
+<<<<<<< HEAD
+      console.log(responses);
+                console.log('Your membership was expired');
+
+          }
+        
       console.log('Server response:', response.data);
       Alert.alert('Login Response', response.data.message);
+=======
+      console.log("Server response:", response.data);
+      Alert.alert("Login Response", response.data.message);
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
     } catch (error) {
       if (error.response) {
         console.error("Server error response:", error.response.data);
@@ -134,11 +183,19 @@ const styles = StyleSheet.create({
   loginContainer: {
     backgroundColor: "#F1F6F5",
     borderWidth: 2,
+<<<<<<< HEAD
     borderColor: '#433D33',
-    marginTop: '45%',
+    marginTop: '5%',
     paddingVertical: '5%',
     marginHorizontal: '5%',
     justifyContent: 'center',
+=======
+    borderColor: "#433D33",
+    marginTop: "45%",
+    paddingVertical: "5%",
+    marginHorizontal: "5%",
+    justifyContent: "center",
+>>>>>>> e39f4e6267567956622bad5b925df98e1d589717
   },
   logoContainer: {
     backgroundColor: "#F1F6F5",

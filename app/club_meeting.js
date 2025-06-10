@@ -41,7 +41,7 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://192.168.1.107:8081/user/${userId}`);
+        const { data } = await axios.get(`http://10.88.56.115:8081/user/${userId}`);
         const clubList = data.Club_id || [];
 
         setClubs(clubList);
@@ -49,9 +49,9 @@ const ProfileScreen = () => {
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
-            const res = await axios.get(`http://192.168.1.107:8081/club/${item.Club_id}`);
+            const res = await axios.get(`http://10.88.56.115:8081/club/${item.Club_id}`);
             const clubNames= res.data.Club_name[0].Club_name
-            const resMeet = await axios.get(`http://192.168.1.107:8081/meeting/${item.Club_id}`);
+            const resMeet = await axios.get(`http://10.88.56.115:8081/meeting/${item.Club_id}`);
             const MeetNames= resMeet.data;
             return {
               clubNames,

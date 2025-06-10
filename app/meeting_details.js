@@ -26,7 +26,7 @@ const MeetingDetails = () => {
   useEffect(() => {
     if (!userId) return;
     if (userId) {
-      axios.get(`http://192.168.1.107:8081/meeting_details/${userId}`)
+      axios.get(`http://10.88.56.115:8081/meeting_details/${userId}`)
         .then(res => {
           setMeeting(res.data);
           console.log(res.data);

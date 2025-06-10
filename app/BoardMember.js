@@ -16,17 +16,32 @@ const BoardMemberpage= ()=>{
     const [modalVisible, setModalVisible] = useState(false);
     const [memberid, setid]= useState('');
    const [clubid, setids]= useState('');
+const [userid, setUserId]=useState(null);
+   useEffect(() => {
+       (async () => {
+         try {
+           const storedUserId = await AsyncStorage.getItem('userId');
+           if (storedUserId) {
+             setUserId(storedUserId);
+           }
+         } catch (error) {
+           console.error('Error fetching userId from storage:', error);
+           Alert.alert('Error', 'Failed to load user ID');
+         }
+       })();
+     }, []);
+     console.log(userid);
     useEffect(() => {
 
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://192.168.1.107:8081/clubBoard/1`);
+        const { data } = await axios.get(`http://192.168.1.110:8081/clubBoard/1`);
         const UseridList = data.User_id || [];
 
         const MemberDetails = await Promise.all(
           data.map(async (item) => {
-            const res = await axios.get(`http://192.168.1.107:8081/clubBoardMembers/${item.User_id}`);
+            const res = await axios.get(`http://192.168.1.110:8081/clubBoardMembers/${item.User_id}`);
             const MemberNames= res.data[0].first_name+' '+res.data[0].last_name;
             const PaidAmount= res.data[0].paid;   
             return {
@@ -44,7 +59,7 @@ const BoardMemberpage= ()=>{
     })();
   }, []);
   const Search = async ()=>{try{
-    const res= await axios.get(`http://192.168.1.107:8081/clubBoardMembers/${id}`)
+    const res= await axios.get(`http://192.168.1.110:8081/clubBoardMembers/${id}`)
     setresults(res.data);
     console.log(res.data);
   }
@@ -52,13 +67,18 @@ const BoardMemberpage= ()=>{
               console.error('Search failed:', error);
 
   }}
-
   const AddMember = async ()=>{ try{
-    const response = await axios.post('http://192.168.1.107:8081/BoardMember', {
+            const access = await axios.get(`http://192.168.1.110:8081/clubAccess/${userid}`)
+                const accesses = access.data;
+
+   if(accesses){
+    const response = await axios.post('http://192.168.1.110:8081/BoardMember', {
       
         User_id: memberid.trim(),
         Club_id: clubid.trim(),
-      });  }
+      });  }else{
+        console.log('You can not add member');
+      }}
       catch(error){
         Alert.alert('Error', 'Failed to add member data');
       }

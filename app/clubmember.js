@@ -24,7 +24,7 @@ const [clubBoardData, setClubBoardData] = useState([]);
 
     (async () => {
       try {
-            const res= await axios.get('http://192.168.1.107:8081/members');
+            const res= await axios.get('http://10.88.56.115:8081/members');
         
 setDetails(res.data.user);      
       } catch (error) {
@@ -34,7 +34,7 @@ setDetails(res.data.user);
     })();
   }, []);
    useEffect(() => {
-  axios.get('http://192.168.1.107:8081/clubs')
+  axios.get('http://10.88.56.115:8081/clubs')
     .then(res => setClubs(res.data))
     .catch(err => {
       console.error('Error fetching clubs:', err);
@@ -42,7 +42,7 @@ setDetails(res.data.user);
     });
 }, []);
   useEffect(() => { if(!selectedClubId) return;
-  axios.get(`http://192.168.1.107:8081/clubBoard/${selectedClubId}`)
+  axios.get(`http://10.88.56.115:8081/clubBoard/${selectedClubId}`)
     .then(res => setids(res.data))
     .catch(err => {
       console.error('Error fetching clubs:', err)

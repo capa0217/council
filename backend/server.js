@@ -46,7 +46,7 @@ app.post('/users/newMember', (req, res) => {
   const { user_id, first_name, last_name, email} = req.body;
   var join_date = yyyy + '-' + mm + '-' + dd;
 
-  const memberQuery = 'INSERT INTO members (user_id, first_name, last_name, email, join_date) VALUES (?, ?, ?, ?, ?)';
+  const memberQuery = 'INSERT INTO members (user_id, first_name, last_name, email, join_date, guest, paid) VALUES (?, ?, ?, ?, ?, TRUE, FALSE)';
   db.query(memberQuery, [user_id, first_name, last_name, email, join_date], (err, result) => {
     if (err) {
       console.error('Database error:', err);
@@ -105,13 +105,37 @@ app.get('/profile/:id', (req, res) => {
 });
 app.post('/profile/edit/', (req, res) => {
   const { user_id,  first_name, last_name, email, phone_number, address, postcode, interests, pronouns, dob, private, want_marketing } = req.body;
-  const editProfileQuery = 'UPDATE members SET first_name = ?, last_name = ?, email = ?, phone_number = ?, address = ?, postcode = ?, interests = ?, pronouns = ?, dob = ?, private = ?, want_marketing = ? WHERE user_id = 86170';
+  const editProfileQuery = 'UPDATE members SET first_name = ?, last_name = ?, email = ?, phone_number = ?, address = ?, postcode = ?, interests = ?, pronouns = ?, dob = ?, private = ?, want_marketing = ? WHERE user_id = ?';
   db.query(editProfileQuery, [first_name, last_name, email, phone_number, address, postcode, interests, pronouns, dob, private, want_marketing, user_id], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ message: 'Database Error' });
     }
     return res.status(200).json({ message: 'Profile Updated Successfully' });
+  });
+});
+app.post('/user/guest', (req, res) => {
+  const { user_id }= req.body
+  const ConstraintQuery = 'UPDATE members SET guest=TRUE, paid=FALSE WHERE user_id = ?';
+  db.query(ConstraintQuery , [user_id], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    return res.status(200).json({ message: 'guest Updated Successfully' });
+  });
+});
+app.post('/user/member', (req, res) => {
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { user_id }= req.body
+  const ConstraintQuery = `UPDATE members SET join_date=?, end_date=?, guest=FALSE, paid=TRUE WHERE user_id = ?`;
+  db.query(ConstraintQuery , [today, '2025-06-30', user_id], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+    return res.status(200).json({ message: 'guest Updated Successfully' });
   });
 });
 app.post('/users/login', (req, res) => {
@@ -209,6 +233,38 @@ app.get('/meeting_details/:id', (req, res) => {
     res.json(results); // Send only the first (and only) result
   });
 });
+app.get('/club_details/:id', (req, res) => {
+  const clubId = req.params.id;
+  const query = "SELECT * FROM club WHERE Club_id = ?";
+
+  db.query(query, [clubId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'CLub not found' });
+    }
+
+    res.json(results); // Send only the first (and only) result
+  });
+});
+app.get('/clubAccess/:id', (req, res) => {
+  const memberId = req.params.id;
+  const query = "SELECT * FROM boardmember WHERE member_id = ?";
+
+  db.query(query, [memberId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+   
+
+    res.json(results[0]); // Send only the first (and only) result
+  });
+});
 app.get('/clubBoard/:id', (req, res) => {
   const clubId = req.params.id;
 const query = "SELECT User_id FROM `member's club` WHERE Club_id = ?";
@@ -288,7 +344,34 @@ app.get('/clubs', (req, res) => {
     res.json(results); 
   });
 });
+app.post('/send-message', async (req, res) => {
+  const { senderId } = req.body;
+  const query = "SELECT * FROM members WHERE user_id = ?";
+  db.query(query, [senderId], (err, result) => {
 
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+  
+    res.json(result);
+  });
+
+});
+app.post('/send-messages', async (req, res) => {
+  const { senderId } = req.body;
+  const query = "SELECT * FROM boardmember WHERE member_id = ?";
+  db.query(query, [senderId], (err, result) => {
+
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Database Error' });
+    }
+  
+    res.json(result);
+  });
+
+});
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ` + PORT);
 });

@@ -63,7 +63,7 @@ const EditProfile = () => {
     (async () => {
       try {
         const res = await axios.get(
-          `http://10.88.55.251:8081/profile/${userId}`
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${userId}`
         );
         setProfiles(res.data);
         console.log(res.data);
@@ -108,7 +108,7 @@ const EditProfile = () => {
     console.log(payload);
     try {
       const editProfileResponse = await axios.post(
-        `http://10.88.55.251:8081/profile/edit`,
+        `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/edit`,
         payload
       );
       console.log("Server Response:", editProfileResponse.data);

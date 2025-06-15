@@ -1,14 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, Alert, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
-import PTHeader from './components/PTHeader';
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  Alert,
+  StyleSheet,
+  Image,
+  Button,
+  TouchableOpacity,
+} from "react-native";
+import PTHeader from "./components/PTHeader";
 
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ScrollView } from 'react-native-web';
-import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
-import { useRouter } from 'expo-router';
-import BottomNav from './components/BottomNav';
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ScrollView } from "react-native-web";
+import { useNavigation } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
+import { useRouter } from "expo-router";
+import BottomNav from "./components/BottomNav";
 
 const PORT = 8081;
 
@@ -20,20 +28,20 @@ const ProfileScreen = () => {
   const [clubMeetings, setClubwithMeetings] = useState([]);
   const navigation = useNavigation();
 
-  const [selectedMonth, setSelectedMonth] = useState('May');
-  const [selectedYear, setSelectedYear] = useState('2025');
-  const [selectedClub, setSelectedClub] = useState('All Clubs');
+  const [selectedMonth, setSelectedMonth] = useState("May");
+  const [selectedYear, setSelectedYear] = useState("2025");
+  const [selectedClub, setSelectedClub] = useState("All Clubs");
   useEffect(() => {
     (async () => {
       try {
-        const storedUserId = await AsyncStorage.getItem('userId');
+        const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
           console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
-        console.error('Error fetching userId from storage:', error);
-        Alert.alert('Error', 'Failed to load user ID');
+        console.error("Error fetching userId from storage:", error);
+        Alert.alert("Error", "Failed to load user ID");
       }
     })();
   }, []);
@@ -45,7 +53,9 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://localhost:8081/user/${userId}`);
+        const { data } = await axios.get(
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/user/${userId}`
+        );
         const clubList = data.Club_id || [];
 
         setClubs(clubList);
@@ -53,76 +63,88 @@ const ProfileScreen = () => {
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
-            const res = await axios.get(`http://localhost:8081/club/${item.Club_id}`);
-            const clubNames= res.data.Club_name[0].Club_name
-            const resMeet = await axios.get(`http://localhost:8081/meeting/${item.Club_id}`);
-            const MeetNames= resMeet.data;
+            const res = await axios.get(
+              `http://${process.env.EXPO_PUBLIC_IP}:8081/club/${item.Club_id}`
+            );
+            const clubNames = res.data.Club_name[0].Club_name;
+            const resMeet = await axios.get(
+              `http://${process.env.EXPO_PUBLIC_IP}:8081/meeting/${item.Club_id}`
+            );
+            const MeetNames = resMeet.data;
             return {
               clubNames,
               MeetNames,
             };
           })
         );
-const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
-  club.MeetNames.map((meeting) => ({
-    club: club.clubNames,
-    name: meeting.meetingname,
-    date: meeting.meeting_date,
-    id:meeting.meeting_id,
-  }))
-);
-        setClubwithMeetings(flattenedMeetings); 
-
+        const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
+          club.MeetNames.map((meeting) => ({
+            club: club.clubNames,
+            name: meeting.meetingname,
+            date: meeting.meeting_date,
+            id: meeting.meeting_id,
+          }))
+        );
+        setClubwithMeetings(flattenedMeetings);
       } catch (error) {
-        console.error('Error fetching user or club data:', error);
-        Alert.alert('Error', 'Failed to fetch user or club data');
+        console.error("Error fetching user or club data:", error);
+        Alert.alert("Error", "Failed to fetch user or club data");
       }
     })();
   }, [userId]);
   const filteredMeetings = clubMeetings.filter((meeting) => {
     const meetingDate = new Date(meeting.date);
-    const meetingMonth = meetingDate.toLocaleString('default', { month: 'long' });
+    const meetingMonth = meetingDate.toLocaleString("default", {
+      month: "long",
+    });
     const meetingYear = meetingDate.getFullYear().toString();
     const monthMatches = selectedMonth === meetingMonth;
     const yearMatches = selectedYear === meetingYear;
-    const clubMatches = selectedClub === 'All Clubs' || meeting.club === selectedClub;
-      if (selectedClub=='All Clubs'){
-    return clubMeetings;
-   }
-   else{
-    return monthMatches && yearMatches && clubMatches;}
+    const clubMatches =
+      selectedClub === "All Clubs" || meeting.club === selectedClub;
+    if (selectedClub == "All Clubs") {
+      return clubMeetings;
+    } else {
+      return monthMatches && yearMatches && clubMatches;
+    }
   });
 
-  const years = clubMeetings.map((meeting) => new Date(meeting.date).getFullYear().toString())
+  const years = clubMeetings.map((meeting) =>
+    new Date(meeting.date).getFullYear().toString()
+  );
   const uniquesyears = new Set([]);
-  years.forEach((year) => { uniquesyears.add(year) });
+  years.forEach((year) => {
+    uniquesyears.add(year);
+  });
   const uniqueYears = Array.from(uniquesyears);
 
   const clubss = clubMeetings.map((club) => club.club);
   const uniqueClubs = Array.from(new Set(clubss));
-  const dropdownClubs = ['All Clubs', ...uniqueClubs];
+  const dropdownClubs = ["All Clubs", ...uniqueClubs];
 
- const months= clubMeetings.map((meeting)=>new Date(meeting.date).toLocaleString('default', { month: 'long' }))
- const uniqueMonths = Array.from(new Set(months));
- 
- console.log(uniqueClubs);
+  const months = clubMeetings.map((meeting) =>
+    new Date(meeting.date).toLocaleString("default", { month: "long" })
+  );
+  const uniqueMonths = Array.from(new Set(months));
+
+  console.log(uniqueClubs);
   const handlePress = async (meetingId) => {
     try {
-      await AsyncStorage.setItem('meetingId', meetingId);
-      router.push('/meeting_details');
+      await AsyncStorage.setItem("meetingId", meetingId);
+      router.push("/meeting_details");
     } catch (error) {
-      console.error('Error saving meeting_id:', error);
+      console.error("Error saving meeting_id:", error);
     }
   };
   return (
     <View style={styles.container}>
       {/* Top Bar */}
-      <PTHeader button={true} text={'Profile'} link={'profile'}/>
+      <PTHeader button={true} text={"Profile"} link={"profile"} />
 
       <ScrollView style={styles.content}>
         {/* Meeting Header Block */}
         <View style={styles.meetingHeaderBlock}>
-          <Text style={styles.meetingHeaderText}>Meeting</Text>
+          <Text style={styles.meetingHeaderText}>Club Meetings</Text>
         </View>
 
         {/* Sorting Dropdowns */}
@@ -132,8 +154,9 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedMonth(itemValue)}
           >
-            {uniqueMonths.map(month => (<Picker.Item key={month} label={month} value={month} />))}
-
+            {uniqueMonths.map((month) => (
+              <Picker.Item key={month} label={month} value={month} />
+            ))}
           </Picker>
 
           <Picker
@@ -141,8 +164,9 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedYear(itemValue)}
           >
-            {uniqueYears.map(year => (<Picker.Item key={year} label={year} value={year} />))}
-
+            {uniqueYears.map((year) => (
+              <Picker.Item key={year} label={year} value={year} />
+            ))}
           </Picker>
 
           <Picker
@@ -150,53 +174,57 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedClub(itemValue)}
           >
-            {dropdownClubs.map(club => (<Picker.Item key={club} label={club} value={club}></Picker.Item>))}
+            {dropdownClubs.map((club) => (
+              <Picker.Item key={club} label={club} value={club}></Picker.Item>
+            ))}
           </Picker>
         </View>
 
         {/* Meeting Buttons */}
-      {filteredMeetings.map((meeting, index) => {
-        const date = new Date(meeting.date).toISOString().split('T')[0];
-        return(
-               <TouchableOpacity key={index}
-        style={styles.meetingBlock}
-        onPress={() => handlePress(meeting.id)}>
-                 <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
-                 <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
-                 <Text style={styles.meetingDate}>Meeting date : {date}</Text>
-               </TouchableOpacity>)
-})}
+        {filteredMeetings.map((meeting, index) => {
+          const date = new Date(meeting.date).toISOString().split("T")[0];
+          return (
+            <TouchableOpacity
+              key={index}
+              style={styles.meetingBlock}
+              onPress={() => handlePress(meeting.id)}
+            >
+              <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
+              <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
+              <Text style={styles.meetingDate}>Meeting date : {date}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
       {/* Bottom Navigation */}
-      <BottomNav active={2}/>
+      <BottomNav active={2} />
     </View>
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 40,
     paddingBottom: 10,
-    backgroundColor: '#AFABA3',
-    alignItems: 'center',
+    backgroundColor: "#AFABA3",
+    alignItems: "center",
   },
   logo: {
     width: 300,
     height: 50,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   profileText: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: 'bold',
+    color: "#333",
+    fontWeight: "bold",
   },
   content: {
     paddingHorizontal: 20,
@@ -204,19 +232,19 @@ const styles = StyleSheet.create({
   },
   meetingHeaderBlock: {
     marginTop: 20,
-    backgroundColor: '#065395',
+    backgroundColor: "#065395",
     padding: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   meetingHeaderText: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    fontWeight: "bold",
+    color: "#ffffff",
   },
   sortingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
   },
   picker: {
@@ -225,22 +253,22 @@ const styles = StyleSheet.create({
   },
   meetingBlock: {
     marginTop: 15,
-    backgroundColor: '#8A7D6A',
+    backgroundColor: "#8A7D6A",
     padding: 15,
     borderRadius: 10,
   },
   meetingClub: {
-    fontWeight: '600',
-    color: '#ffffff',
+    fontWeight: "600",
+    color: "#ffffff",
   },
   meetingName: {
     fontSize: 16,
     marginTop: 4,
-    color: '#ffffff',
+    color: "#ffffff",
   },
   meetingDate: {
     fontSize: 14,
-    color: '#E0E0E0',
+    color: "#E0E0E0",
     marginTop: 2,
   },
 });

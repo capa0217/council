@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Button, Modal, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, Button, Modal, StyleSheet } from "react-native";
 
 export default function App() {
   const [visible, setVisible] = useState(false);
@@ -27,15 +27,26 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, justifyContent: 'center', alignItems: 'center'
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   overlay: {
-    flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)', justifyContent: 'center', alignItems: 'center'
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   popup: {
-    backgroundColor: 'white', padding: 20, borderRadius: 10, width: 250, alignItems: 'center'
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: 250,
+    alignItems: "center",
   },
   title: {
-    marginBottom: 10, fontSize: 18, fontWeight: 'bold'
-  }
+    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 });

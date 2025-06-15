@@ -10,6 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import PTHeader from "./components/PTHeader";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -37,7 +38,7 @@ const Profile = () => {
     (async () => {
       try {
         const res = await axios.get(
-          `http://10.88.55.251:8081/profile/${userId}`
+          `http://localhost:8081/profile/${userId}`
         );
         setProfiles(res.data);
         console.log(res.data);
@@ -49,15 +50,7 @@ const Profile = () => {
   }, [userId]);
   return (
     <View style={styles.background}>
-      <View style={styles.logoContainer}>
-        <Image
-          source={{
-            uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-          }}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
+      <PTHeader button={false}/>
       <ScrollView>
         <View style={styles.title}>
           <Text style={styles.titleText}>
@@ -89,6 +82,19 @@ const Profile = () => {
           <Text style={styles.infoText}>
             Marketing: {profiles.want_marketing ? "Opted In" : "Opted Out"}
           </Text>
+          
+          <View style={styles.function}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() =>
+              router.push({
+                pathname: "/club_meeting",
+                query: { user_Id: userId },
+              })
+            }
+          >
+            <Text>Go Back</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() =>
@@ -100,6 +106,7 @@ const Profile = () => {
           >
             <Text>Edit Profile</Text>
           </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -129,17 +136,8 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "flex-start",
   },
-  logo: {
-    width: 150,
-    height: 60,
-    marginVertical: 10,
-    marginLeft: 10,
-  },
-  logoContainer: {
-    backgroundColor: "#F1F6F5",
-  },
   button: {
-    backgroundColor: "orange",
+    backgroundColor: "#FFD347",
     width: 130,
     height: 50,
     justifyContent: "center",
@@ -147,6 +145,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginVertical: 10, // Adds top and bottom spacing
     marginRight: 30,
+  },
+  function: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
   },
   titleText: {
     color: "white",

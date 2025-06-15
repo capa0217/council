@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, Alert, StyleSheet, Image, Button, TouchableOpacity } from 'react-native';
+import PTHeader from './components/PTHeader';
+
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-web';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
+import BottomNav from './components/BottomNav';
 
 const PORT = 8081;
 
@@ -25,6 +28,7 @@ const ProfileScreen = () => {
       try {
         const storedUserId = await AsyncStorage.getItem('userId');
         if (storedUserId) {
+          console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -41,7 +45,7 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const { data } = await axios.get(`http://10.88.56.115:8081/user/${userId}`);
+        const { data } = await axios.get(`http://localhost:8081/user/${userId}`);
         const clubList = data.Club_id || [];
 
         setClubs(clubList);
@@ -49,9 +53,9 @@ const ProfileScreen = () => {
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
-            const res = await axios.get(`http://10.88.56.115:8081/club/${item.Club_id}`);
+            const res = await axios.get(`http://localhost:8081/club/${item.Club_id}`);
             const clubNames= res.data.Club_name[0].Club_name
-            const resMeet = await axios.get(`http://10.88.56.115:8081/meeting/${item.Club_id}`);
+            const resMeet = await axios.get(`http://localhost:8081/meeting/${item.Club_id}`);
             const MeetNames= resMeet.data;
             return {
               clubNames,
@@ -113,18 +117,7 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
   return (
     <View style={styles.container}>
       {/* Top Bar */}
-      <View style={styles.topBar}>
-        <Image
-          source={{ uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png' }}
-          style={styles.logo}
-        />
-        <TouchableOpacity onPress={() => router.push({
-          pathname: '/profile',
-          query: { user_Id: userId },
-        })}>
-          <Text style={styles.profileText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
+      <PTHeader button={true} text={'Profile'} link={'profile'}/>
 
       <ScrollView style={styles.content}>
         {/* Meeting Header Block */}
@@ -170,23 +163,12 @@ const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
         onPress={() => handlePress(meeting.id)}>
                  <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
                  <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
-                 <Text style={styles.meetingDate}>Meeting_date: {date}</Text>
+                 <Text style={styles.meetingDate}>Meeting date : {date}</Text>
                </TouchableOpacity>)
 })}
       </ScrollView>
-
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate('ClubMembersPage')}>
-          <Text style={styles.navButton}>Club Members</Text>
-        </TouchableOpacity>
-
-        <Text style={[styles.navButton, styles.activeButton]}>Meeting</Text>
-
-        <TouchableOpacity onPress={() => navigation.navigate('ProjectLevelsPage')}>
-          <Text style={styles.navButton}>Project</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav active={2}/>
     </View>
   );
 };
@@ -260,20 +242,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#E0E0E0',
     marginTop: 2,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#F1F6F5',
-    paddingVertical: 15,
-  },
-  navButton: {
-    fontSize: 16,
-    color: '#333',
-  },
-  activeButton: {
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
 });
 

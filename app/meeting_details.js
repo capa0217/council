@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import PTHeader from './components/PTHeader';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -8,13 +9,14 @@ import axios from 'axios';
 const MeetingDetails = () => {
   const [meeting, setMeeting] = useState(null);
   const [loading, setLoading] = useState(true);
+    const [meetingId, setMeetingId] = useState(null);
     const [userId, setUserId] = useState(null);
-  
- useEffect(() => {
+  useEffect(() => {
     (async () => {
       try {
-        const storedUserId = await AsyncStorage.getItem('meetingId');
+        const storedUserId = await AsyncStorage.getItem('userId');
         if (storedUserId) {
+          console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -23,10 +25,24 @@ const MeetingDetails = () => {
       }
     })();
   }, []);
+ useEffect(() => {
+    (async () => {
+      try {
+        const storedMeetingId = await AsyncStorage.getItem('meetingId');
+        if (storedMeetingId) {
+          console.log(storedMeetingId);
+          setMeetingId(storedMeetingId);
+        }
+      } catch (error) {
+        console.error('Error fetching meetingId from storage:', error);
+        Alert.alert('Error', 'Failed to load meeting ID');
+      }
+    })();
+  }, []);
   useEffect(() => {
     if (!userId) return;
     if (userId) {
-      axios.get(`http://10.88.56.115:8081/meeting_details/${userId}`)
+      axios.get(`http://localhost:8081/meeting_details/${meetingId}`)
         .then(res => {
           setMeeting(res.data);
           console.log(res.data);
@@ -44,23 +60,28 @@ const MeetingDetails = () => {
   if (!meeting) return <Text style={styles.errorText}>Meeting not found.</Text>;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.background}>
+      <PTHeader button={true} text={'Profile'} link={'profile'}/>
+      <View style={styles.container}>
       <Text style={styles.header}>Meeting Details</Text>
       <Text style={styles.label}>Club id: <Text style={styles.value}>{meeting[0].club_id}</Text></Text>
       <Text style={styles.label}>Name: <Text style={styles.value}>{meeting[0].meetingname}</Text></Text>
       <Text style={styles.label}>Date: <Text style={styles.value}>{meeting[0].meeting_date}</Text></Text>
       <Text style={styles.label}>Location: <Text style={styles.value}>{meeting[0].meeting_place}</Text></Text>
-      <Text style={styles.label}>Start Time:</Text>
-      <Text style={styles.description}>{meeting[0].StartTime}</Text>
+      <Text style={styles.label}>Start Time: <Text style={styles.value}>{meeting[0].meeting_time}</Text></Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    backgroundColor: '#fff',
+    height: '100%',
+  },
   container: {
     padding: 20,
-    backgroundColor: '#fff',
-    flex: 1,
+    alignItems: "flex-start",
   },
   header: {
     fontSize: 22,

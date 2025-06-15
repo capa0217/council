@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert } fr
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import BottomNav from './components/BottomNav';
+import PTHeader from './components/PTHeader';
 
 
 const ClubMembersPage = () => {
@@ -65,17 +67,7 @@ const sortedMembers = memberdetails.sort((a, b) => {if(sortByName=="A-Z"){
   return (
     <View style={styles.container}>
       {/* Top Bar */}
-      <View style={styles.topBar}>
-        <Image
-          source={{
-            uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png',
-          }}
-          style={styles.logo}
-        />
-        <TouchableOpacity >
-          <Text style={styles.profileText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
+      <PTHeader button={true} text={"Profile"} link={'profile'}/>
 
       <ScrollView style={styles.content}>
         {/* Header Block */}
@@ -130,15 +122,7 @@ const sortedMembers = memberdetails.sort((a, b) => {if(sortByName=="A-Z"){
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <Text style={[styles.navButton, styles.activeButton]}>Club Members</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('MembersMeetingPage')}>
-          <Text style={styles.navButton}>Meeting</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('ProjectLevelsPage')}>
-          <Text style={styles.navButton}>Project</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav active={1}/>
     </View>
   );
 };
@@ -204,19 +188,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#F1F6F5',
-    paddingVertical: 15,
-  },
-  navButton: {
-    fontSize: 16,
-    color: '#333',
-  },
-  activeButton: {
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
 });

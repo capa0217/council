@@ -7,6 +7,8 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
+import PTHeader from "./components/PTHeader";
+
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
 import axios from "axios";
@@ -16,7 +18,7 @@ const PORT = 8081;
 // Function to generate a random numeric user ID
 function generateShortId(length) {
   let id = "";
-  for (let i = 0; i < length+1; i++) {
+  for (let i = 0; i < length + 1; i++) {
     id += Math.floor(Math.random() * 10); // 0–9
   }
   return Number(id);
@@ -47,11 +49,7 @@ const RegisterForm = () => {
 
     try {
       const memberResponse = await axios.post(
-<<<<<<< HEAD
-        "http://192.168.1.110:8081/users/checkMonthlyMembers"
-=======
-        "http://10.88.55.251:8081/users/checkMonthlyMembers"
->>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+        "http://localhost:8081/users/checkMonthlyMembers"
       );
       console.log("Server Response:", memberResponse.data.message);
       Alert.alert("Success", "Membership successful");
@@ -80,11 +78,7 @@ const RegisterForm = () => {
 
       try {
         const checkIDResponse = await axios.post(
-<<<<<<< HEAD
-          "http://192.168.1.110:8081/users/checkIDExists",
-=======
-          "http://10.88.55.251:8081/users/checkIDExists",
->>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+          "http://localhost:8081/users/checkIDExists",
           { user_id }
         );
         console.log("Server Response:", checkIDResponse.data.message);
@@ -114,11 +108,7 @@ const RegisterForm = () => {
 
     try {
       const createMemberResponse = await axios.post(
-<<<<<<< HEAD
-        `http://192.168.1.110:8081/users/newMember`,
-=======
-        `http://10.88.55.251:8081/users/newMember`,
->>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+        `http://localhost:8081/users/newMember`,
         payload
       );
       console.log("Server Response:", createMemberResponse.data);
@@ -136,11 +126,7 @@ const RegisterForm = () => {
 
     try {
       const registerResponse = await axios.post(
-<<<<<<< HEAD
-        `http://192.168.1.110:8081/users/register`,
-=======
-        `http://10.88.55.251:8081/users/register`,
->>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+        `http://localhost:8081/users/register`,
         payload
       );
       console.log("Server Response:", registerResponse.data);
@@ -160,15 +146,7 @@ const RegisterForm = () => {
 
   return (
     <View style={styles.background}>
-      <View style={styles.logoContainer}>
-        <Image
-          source={{
-            uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-          }}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
+      <PTHeader></PTHeader>
       <View style={styles.registerContainer}>
         <View style={styles.inputs}>
           {[
@@ -226,13 +204,13 @@ const RegisterForm = () => {
               style={styles.button}
               onPress={() => router.push("./login")}
             >
-              <Text style={styles.whiteText}>Go Back</Text>
+              <Text>Go Back</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
               onPress={handleSubmit(onSubmit)}
             >
-              <Text style={styles.whiteText}>Register</Text>
+              <Text>Register</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -244,22 +222,12 @@ const RegisterForm = () => {
 export default RegisterForm;
 
 const styles = StyleSheet.create({
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-  },
   background: {
     backgroundColor: "#AFABA3",
     height: "100%",
   },
-  logo: {
-    width: 150,
-    height: 60,
-    marginVertical: 10,
-    marginLeft: 10,
-  },
   button: {
-    backgroundColor: "#065395",
+    backgroundColor: "#FFD347",
     width: 130,
     height: 50,
     justifyContent: "center",
@@ -282,23 +250,16 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: "bold",
     fontSize: 16,
-    marginTop: "5%",
+    marginTop: 10,
   },
   registerContainer: {
     backgroundColor: "#F1F6F5",
     borderWidth: 2,
     borderColor: "#433D33",
-<<<<<<< HEAD
-    marginTop: "8%",
-=======
-    marginTop: "20%",
->>>>>>> e39f4e6267567956622bad5b925df98e1d589717
+    marginTop: "10%",
     paddingVertical: "5%",
     marginHorizontal: "5%",
     justifyContent: "center",
-  },
-  logoContainer: {
-    backgroundColor: "#F1F6F5",
   },
   function: {
     flexDirection: "row",
@@ -306,11 +267,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  whiteText: {
-    color: "#F1F6F5",
+  errorText: {
+    color: "red",
   },
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> e39f4e6267567956622bad5b925df98e1d589717

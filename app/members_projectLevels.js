@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import BottomNav from './components/BottomNav';
+import PTHeader from './components/PTHeader';
 
 const MembersProjectPage1 = () => {
   const navigation = useNavigation();
@@ -13,15 +15,7 @@ const MembersProjectPage1 = () => {
   return (
     <View style={styles.container}>
       {/* Top Bar */}
-      <View style={styles.topBar}>
-        <Image
-          source={{ uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png' }}
-          style={styles.logo}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Text style={styles.profileText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
+      <PTHeader button={true} text={'Profile'} link={'profile'}/>
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
@@ -45,17 +39,7 @@ const MembersProjectPage1 = () => {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate('members_clubmembers')}>
-          <Text style={styles.navButton}>Club Members</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('members_meeting')}>
-          <Text style={styles.navButton}>Meeting</Text>
-        </TouchableOpacity>
-
-        <Text style={[styles.navButton, styles.activeButton]}>Project</Text>
-      </View>
+      <BottomNav active={3}/>
     </View>
   );
 };

@@ -7,12 +7,12 @@ import {
   Image,
   Button,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import PTHeader from "./components/PTHeader";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScrollView } from "react-native-web";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
@@ -129,8 +129,9 @@ const ProfileScreen = () => {
 
   console.log(uniqueClubs);
   const handlePress = async (meetingId) => {
+    console.log(typeof(meetingId));
     try {
-      await AsyncStorage.setItem("meetingId", meetingId);
+      await AsyncStorage.setItem("meetingId", meetingId.toString());
       router.push("/meeting_details");
     } catch (error) {
       console.error("Error saving meeting_id:", error);

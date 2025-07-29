@@ -60,19 +60,19 @@ const Profile = () => {
         <View style={styles.information}>
           <Text style={styles.infoText}>Member_id: {profiles.user_id}</Text>
           <Text style={styles.infoText}>Email: {profiles.email}</Text>
-          <Text style={styles.infoText}>
+          {profiles.phone_number && <Text style={styles.infoText}>
             Phone Number: {profiles.phone_number}
-          </Text>
+          </Text>}
           <Text style={styles.infoText}>
             Join_Date: {new Date(profiles.join_date).toLocaleDateString()}
           </Text>
-          <Text style={styles.infoText}>Address: {profiles.address}</Text>
-          <Text style={styles.infoText}>Interests: {profiles.interests}</Text>
-          <Text style={styles.infoText}>
+          {profiles.address && <Text style={styles.infoText}>Address: {profiles.address}</Text>}
+          {profiles.postcode && <Text style={styles.infoText}>Postcode: {profiles.postcode}</Text>}
+          {profiles.interests && <Text style={styles.infoText}>Interests: {profiles.interests}</Text>}
+          {profiles.dob && <Text style={styles.infoText}>
             Date of Birth: {new Date(profiles.dob).toLocaleDateString()}
-          </Text>
-          <Text style={styles.infoText}>Pronouns: {profiles.pronouns}</Text>
-          <Text style={styles.infoText}>Postcode: {profiles.postcode}</Text>
+          </Text>}
+          {profiles.pronouns && <Text style={styles.infoText}>Pronouns: {profiles.pronouns}</Text>}
           <Text style={styles.infoText}>
             Privacy:{" "}
             {profiles.private

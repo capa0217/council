@@ -82,6 +82,10 @@ const EditProfile = () => {
   }, [profiles]);*/
 
   useEffect(() => {
+    var date = "";
+    if (profiles.dob){
+      date = new Date(profiles.dob).toLocaleDateString();
+    }
     if (profiles) {
       reset({
         first_name: profiles.first_name || "",
@@ -91,7 +95,7 @@ const EditProfile = () => {
         address: profiles.address || "",
         postcode: profiles.postcode || "",
         interests: profiles.interests || "",
-        dob: new Date(profiles.dob).toLocaleDateString() || "",
+        dob: date,
         pronouns: profiles.pronouns || "",
         private: !!profiles.private,
         want_marketing: !!profiles.want_marketing,
@@ -164,6 +168,13 @@ const EditProfile = () => {
               autocomplete: "email",
               lines: 1,
               multiline: false,
+              rule: {
+                required: "You must enter your email",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Enter a valid email address",
+                },
+              },
             },
             {
               name: "phone_number",
@@ -171,6 +182,7 @@ const EditProfile = () => {
               autocomplete: "tel",
               lines: 1,
               multiline: false,
+              rule: { required: "You must enter your phone number" },
             },
             {
               name: "address",
@@ -186,6 +198,13 @@ const EditProfile = () => {
               autocomplete: "postal-code",
               lines: 1,
               multiline: false,
+              rule: {
+                maxLength: {value: 4, message: "Enter a valid postcode"},
+                pattern: {
+                  value: /\d{4}$/,
+                  message: "Enter a valid postcode",
+                },
+              },
             },
             {
               name: "interests",
@@ -202,6 +221,13 @@ const EditProfile = () => {
               autocomplete: "off",
               lines: 1,
               multiline: false,
+              rule: {
+                maxLength: {value: 10, message: "Enter a valid date"},
+                pattern: {
+                  value: /\d{4}-\d{2}-\d{2}/,
+                  message: "Enter a valid date (YYYY-MM-DD)",
+                },
+              },
             },
             {
               name: "pronouns",

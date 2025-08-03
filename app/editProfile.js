@@ -41,10 +41,10 @@ const EditProfile = () => {
   const router = useRouter();
   const [userId, setUserId] = useState(null);
   const [profiles, setProfiles] = useState([]);
-  /*
+
   const [privacy, setPrivacy] = useState(false);
   const [marketing, setMarketing] = useState(false);
-  */
+
   useEffect(() => {
     (async () => {
       try {
@@ -74,17 +74,24 @@ const EditProfile = () => {
     })();
   }, [userId]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (profiles) {
       setPrivacy(profiles.private ? true : false);
       setMarketing(profiles.want_marketing ? true : false);
     }
-  }, [profiles]);*/
+  }, [profiles]);
 
   useEffect(() => {
     var date = "";
-    if (profiles.dob){
-      date = new Date(profiles.dob).toLocaleDateString();
+
+    if (profiles.dob) {
+      let currDate = new Date(profiles.dob).toLocaleDateString();
+
+      date += currDate.slice(6, 10);
+      date += "-";
+      date += currDate.slice(3, 5);
+      date += "-";
+      date += currDate.slice(0, 2);
     }
     if (profiles) {
       reset({
@@ -108,6 +115,8 @@ const EditProfile = () => {
     const payload = {
       ...data,
       userId,
+      privacy,
+      marketing,
     };
     console.log(payload);
     try {
@@ -117,6 +126,10 @@ const EditProfile = () => {
       );
       console.log("Server Response:", editProfileResponse.data);
       Alert.alert("Success", "Update successful");
+      router.push({
+        pathname: "/profile",
+        query: { userId: userId },
+      });
     } catch (error) {
       console.error(
         "Error submitting form:",
@@ -199,7 +212,7 @@ const EditProfile = () => {
               lines: 1,
               multiline: false,
               rule: {
-                maxLength: {value: 4, message: "Enter a valid postcode"},
+                maxLength: { value: 4, message: "Enter a valid postcode" },
                 pattern: {
                   value: /\d{4}$/,
                   message: "Enter a valid postcode",
@@ -222,7 +235,7 @@ const EditProfile = () => {
               lines: 1,
               multiline: false,
               rule: {
-                maxLength: {value: 10, message: "Enter a valid date"},
+                maxLength: { value: 10, message: "Enter a valid date" },
                 pattern: {
                   value: /\d{4}-\d{2}-\d{2}/,
                   message: "Enter a valid date (YYYY-MM-DD)",

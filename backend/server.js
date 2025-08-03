@@ -129,7 +129,7 @@ app.get("/profile/:id", (req, res) => {
 });
 app.post("/profile/edit/", (req, res) => {
   const {
-    user_id,
+    userId,
     first_name,
     last_name,
     email,
@@ -139,12 +139,12 @@ app.post("/profile/edit/", (req, res) => {
     interests,
     pronouns,
     dob,
-    private,
-    want_marketing,
+    privacy,
+    marketing,
   } = req.body;
   const editProfileQuery =
     "UPDATE members SET first_name = ?, last_name = ?, email = ?, phone_number = ?, address = ?, postcode = ?, interests = ?, pronouns = ?, dob = ?, private = ?, want_marketing = ? WHERE user_id = ?";
-  db.query(
+    db.query(
     editProfileQuery,
     [
       first_name,
@@ -156,9 +156,9 @@ app.post("/profile/edit/", (req, res) => {
       interests,
       pronouns,
       dob,
-      private,
-      want_marketing,
-      user_id,
+      privacy,
+      marketing,
+      userId,
     ],
     (err, result) => {
       if (err) {

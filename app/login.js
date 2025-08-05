@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import {
   Text,
-  Image,
-  TextInput,
   View,
   Alert,
   StyleSheet,
-  TouchableOpacity,
 } from "react-native";
 import PTHeader from "./components/PTHeader";
+import FormContainer from "./components/FormContainer";
+import FormLabel from "./components/FormLabel.js";
+import FormInput from "./components/FormInput.js";
+import Button from "./components/Button.js";
+
+import { useForm, Controller } from "react-hook-form";
+import { useRouter } from "expo-router";
 
 import axios from "axios";
-import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useForm, Controller } from "react-hook-form";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -41,11 +43,11 @@ const LoginForm = () => {
       console.log(response.status);
       if (response.status == 401) {
         Alert.alert("Login Failed", response.data.message);
-      } else /*if (
+      } /*if (
         response.data[0].paid == "1" &&
         response.data[0].guest == "0" &&
         response.data[0].end_date > today
-      ) */{
+      ) */ else {
         // Store user data in AsyncStorage
         await AsyncStorage.setItem("userId", response.data.user_id.toString());
         router.push({
@@ -58,9 +60,9 @@ const LoginForm = () => {
         const responses = await axios.post("http://localhost:8081/user/guest", {
           user_id: response.data.user_id,
         });*/
-        console.log("Server response:", response.data);
-        Alert.alert("Login Response", response.data.message);
-      } catch (error) {
+      console.log("Server response:", response.data);
+      Alert.alert("Login Response", response.data.message);
+    } catch (error) {
       if (error.response) {
         console.error("Server error response:", error.response.data);
         Alert.alert(
@@ -76,8 +78,8 @@ const LoginForm = () => {
 
   return (
     <View style={styles.background}>
-      <PTHeader></PTHeader>
-      <View style={styles.loginContainer}>
+      <PTHeader/>
+      <FormContainer>
         <View style={styles.inputs}>
           {[
             {
@@ -86,7 +88,7 @@ const LoginForm = () => {
               label: "Login",
               autocomplete: "username",
               rule: { required: "You must enter your login" },
-              secure:false,
+              secure: false,
             },
             {
               name: "password",
@@ -94,17 +96,16 @@ const LoginForm = () => {
               label: "Password",
               autocomplete: "current-password",
               rule: { required: "You must enter your password" },
-              secure:true,
+              secure: true,
             },
           ].map(({ name, placeholder, label, autocomplete, rule, secure }) => (
             <View key={name} style={styles.inputGroup}>
-              {label && <Text style={styles.label}>{label}</Text>}
+              {label && <FormLabel>{label}</FormLabel>}
               <Controller
                 control={control}
                 name={name}
                 render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    style={styles.input}
+                  <FormInput
                     autoComplete={autocomplete}
                     placeholder={placeholder}
                     onChangeText={onChange}
@@ -123,21 +124,11 @@ const LoginForm = () => {
         </View>
 
         <View style={styles.function}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("./register")}
-          >
-            <Text>Register</Text>
-          </TouchableOpacity>
+          <Button onPress={() => router.push("./register")}>Register</Button>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleSubmit(handleLogin)}
-          >
-            <Text>Login</Text>
-          </TouchableOpacity>
+          <Button onPress={handleSubmit(handleLogin)}>Login</Button>
         </View>
-      </View>
+      </FormContainer>
     </View>
   );
 };
@@ -149,49 +140,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#AFABA3",
     height: "100%",
   },
-  logo: {
-    width: 150,
-    height: 60,
-    marginVertical: 10,
-    marginLeft: 10,
-  },
-  button: {
-    backgroundColor: "#FFD347",
-    width: 130,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 6,
-    marginVertical: 10, // Adds top and bottom spacing
-    marginHorizontal: 15,
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: "#433D33",
-    width: "100%",
-    height: 50,
-    marginTop: "1%",
-    paddingLeft: 10,
-  },
   inputs: {
     marginHorizontal: 20,
-  },
-  label: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginTop: 10,
-  },
-  loginContainer: {
-    backgroundColor: "#F1F6F5",
-    borderWidth: 2,
-    borderColor: "#433D33",
-    marginTop: "20%",
-    paddingVertical: "5%",
-    marginHorizontal: "5%",
-    justifyContent: "center",
-  },
-  logoContainer: {
-    backgroundColor: "#F1F6F5",
   },
   function: {
     flexDirection: "row",

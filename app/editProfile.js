@@ -91,9 +91,9 @@ const EditProfile = () => {
     var date = "";
     var post = "";
     var phone = "";
-    
+
     if (profiles) {
-    if (profiles.dob) {
+      if (profiles.dob) {
         let currDate = new Intl.DateTimeFormat(undefined, {
           year: "numeric",
           month: "2-digit",
@@ -102,15 +102,15 @@ const EditProfile = () => {
 
         let [day, month, year] = currDate.split("/");
         date += year;
-      date += "-";
+        date += "-";
         date += month;
-      date += "-";
+        date += "-";
         date += day;
       }
-      if (profiles.phone_number){
+      if (profiles.phone_number) {
         phone += profiles.phone_number;
-    }
-      if (profiles.postcode){
+      }
+      if (profiles.postcode) {
         post += profiles.postcode;
       }
       reset({
@@ -131,12 +131,12 @@ const EditProfile = () => {
 
   const onSubmit = async (data) => {
     //Use the generated registration information to insert into the database
-    for (var key in data){
-      if(data[key] == ""){
+    for (var key in data) {
+      if (data[key] == "") {
         data[key] = null;
       }
     }
-    
+
     const payload = {
       ...data,
       userId,
@@ -206,63 +206,66 @@ const EditProfile = () => {
                   },
                 },
               },
-            },
-            {
-              name: "phone_number",
-              placeholder: "Phone Number",
-              autocomplete: "tel",
-              lines: 1,
-              multiline: false,
-              rule: {
-                maxLength: { value: 10, message: "Enter a valid Phone Number" },
-                pattern: {
-                  value: /\d{10}$/,
-                  message: "Enter a valid phone number",
+              {
+                name: "phone_number",
+                placeholder: "Phone Number",
+                autocomplete: "tel",
+                lines: 1,
+                multiline: false,
+                rule: {
+                  maxLength: {
+                    value: 10,
+                    message: "Enter a valid Phone Number",
+                  },
+                  pattern: {
+                    value: /\d{10}$/,
+                    message: "Enter a valid phone number",
+                  },
                 },
               },
-            },
-            {
-              name: "address",
-              placeholder: "Address",
-              label: "Address",
-              autocomplete: "address-line1",
-              lines: 1,
-              multiline: false,
-            },
-            {
-              name: "postcode",
-              placeholder: "Postcode",
-              autocomplete: "postal-code",
-              lines: 1,
-              multiline: false,
-              rule: {
-                maxLength: { value: 4, message: "Enter a valid postcode" },
-                pattern: {
-                  value: /\d{4}$/,
-                  message: "Enter a valid postcode",
+              {
+                name: "address",
+                placeholder: "Address",
+                label: "Address",
+                autocomplete: "address-line1",
+                lines: 1,
+                multiline: false,
+              },
+              {
+                name: "postcode",
+                placeholder: "Postcode",
+                autocomplete: "postal-code",
+                lines: 1,
+                multiline: false,
+                rule: {
+                  maxLength: { value: 4, message: "Enter a valid postcode" },
+                  pattern: {
+                    value: /\d{4}$/,
+                    message: "Enter a valid postcode",
+                  },
                 },
               },
-            },
-            {
-              name: "interests",
-              placeholder: "What Interests You?",
-              label: "Interests",
-              autocomplete: "off",
-              lines: 4,
-              multiline: true,
-            },
-            {
-              name: "dob",
-              placeholder: "YYYY-MM-DD",
-              label: "Date of Birth",
-              autocomplete: "off",
-              lines: 1,
-              multiline: false,
-              rule: {
-                maxLength: { value: 10, message: "Enter a valid date" },
-                pattern: {
-                  value: /\d{4}-\d{2}-\d{2}/,
-                  message: "Enter a valid date (YYYY-MM-DD)",
+              {
+                name: "interests",
+                placeholder: "What Interests You?",
+                label: "Interests",
+                autocomplete: "off",
+                lines: 4,
+                multiline: true,
+              },
+              {
+                name: "dob",
+                placeholder: "YYYY-MM-DD",
+                label: "Date of Birth",
+                autocomplete: "off",
+                lines: 1,
+                multiline: false,
+                rule: {
+                  maxLength: { value: 10, message: "Enter a valid date" },
+                  pattern: {
+                    value: /\d{4}-\d{2}-\d{2}/,
+                    message: "Enter a valid date (YYYY-MM-DD)",
+                  },
                 },
               },
               {

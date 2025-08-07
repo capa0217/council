@@ -11,6 +11,13 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+
+import PTHeader from "./components/PTHeader";
+import FormContainer from "./components/FormContainer";
+import FormLabel from "./components/FormLabel.js";
+import FormInput from "./components/FormInput.js";
+import Button from "./components/Button.js";
+
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useForm, Controller } from "react-hook-form";
@@ -84,6 +91,7 @@ const EditProfile = () => {
     var date = "";
     var post = "";
     var phone = "";
+    
     if (profiles) {
     if (profiles.dob) {
         let currDate = new Intl.DateTimeFormat(undefined, {
@@ -156,52 +164,46 @@ const EditProfile = () => {
   };
   return (
     <View style={styles.background}>
-      <View style={styles.logoContainer}>
-        <Image
-          source={{
-            uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-          }}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+      <PTHeader />
+      <View style={styles.title}>
+        <Text style={styles.titleText}>
+          Editing the Profile of: {profiles.first_name} {profiles.last_name}
+        </Text>
       </View>
       <ScrollView>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>
-            Editing the Profile of: {profiles.first_name} {profiles.last_name}
-          </Text>
-        </View>
-        <View style={styles.editContainer}>
-          {[
-            {
-              name: "first_name",
-              placeholder: "First Name",
-              label: "Full Name",
-              autocomplete: "given-name",
-              lines: 1,
-              multiline: false,
-              rule: { required: "You must enter your first name" },
-            },
-            {
-              name: "last_name",
-              placeholder: "Last Name",
-              autocomplete: "family-name",
-              lines: 1,
-              multiline: false,
-              rule: { required: "You must enter your last name" },
-            },
-            {
-              name: "email",
-              placeholder: "Email Address",
-              label: "Contact Info",
-              autocomplete: "email",
-              lines: 1,
-              multiline: false,
-              rule: {
-                required: "You must enter your email",
-                pattern: {
-                  value: /^\S+@\S+$/i,
-                  message: "Enter a valid email address",
+        <FormContainer>
+          <View style={styles.inputs}>
+            {[
+              {
+                name: "first_name",
+                placeholder: "First Name",
+                label: "Full Name",
+                autocomplete: "given-name",
+                lines: 1,
+                multiline: false,
+                rule: { required: "You must enter your first name" },
+              },
+              {
+                name: "last_name",
+                placeholder: "Last Name",
+                autocomplete: "family-name",
+                lines: 1,
+                multiline: false,
+                rule: { required: "You must enter your last name" },
+              },
+              {
+                name: "email",
+                placeholder: "Email Address",
+                label: "Contact Info",
+                autocomplete: "email",
+                lines: 1,
+                multiline: false,
+                rule: {
+                  required: "You must enter your email",
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: "Enter a valid email address",
+                  },
                 },
               },
             },
@@ -263,70 +265,63 @@ const EditProfile = () => {
                   message: "Enter a valid date (YYYY-MM-DD)",
                 },
               },
-            },
-            {
-              name: "pronouns",
-              placeholder: "Pronouns",
-              label: "Pronouns",
-              autocomplete: "off",
-              lines: 1,
-              multiline: false,
-              rule: {
-                pattern: {
-                  value: /[^/s]+\/[^/s]+/,
-                  message: "Invalid Pronouns '*/*'",
+              {
+                name: "pronouns",
+                placeholder: "Pronouns",
+                label: "Pronouns",
+                autocomplete: "off",
+                lines: 1,
+                multiline: false,
+                rule: {
+                  pattern: {
+                    value: /[^/s]+\/[^/s]+/,
+                    message: "Invalid Pronouns '*/*'",
+                  },
                 },
               },
-            },
-          ].map(
-            ({
-              name,
-              placeholder,
-              label,
-              lines,
-              multiline,
-              autocomplete,
-              defaultValue,
-              rule,
-            }) => (
-              <View key={name} style={styles.inputGroup}>
-                {label && <Text style={styles.label}>{label}</Text>}
-                <Controller
-                  key={name}
-                  control={control}
-                  name={name}
-                  render={({ field: { onChange, value } }) => (
-                    <TextInput
-                      style={styles.input}
-                      autoComplete={autocomplete}
-                      placeholder={placeholder}
-                      onChangeText={onChange}
-                      value={value}
-                      autoCapitalize="none"
-                      multiline={multiline}
-                      lines={lines}
-                      defaultValue={defaultValue}
-                    />
+            ].map(
+              ({
+                name,
+                placeholder,
+                label,
+                lines,
+                multiline,
+                autocomplete,
+                defaultValue,
+                rule,
+              }) => (
+                <View key={name} style={styles.inputGroup}>
+                  {label && <FormLabel>{label}</FormLabel>}
+                  <Controller
+                    key={name}
+                    control={control}
+                    name={name}
+                    render={({ field: { onChange, value } }) => (
+                      <FormInput
+                        autoComplete={autocomplete}
+                        placeholder={placeholder}
+                        onChangeText={onChange}
+                        value={value}
+                        autoCapitalize="none"
+                        multiline={multiline}
+                        lines={lines}
+                        defaultValue={defaultValue}
+                      />
+                    )}
+                    rules={rule}
+                  />
+                  {errors[name] && isSubmitted && (
+                    <Text style={styles.errorText}>{errors[name].message}</Text>
                   )}
-                  rules={rule}
-                />
-                {errors[name] && isSubmitted && (
-                  <Text style={styles.errorText}>{errors[name].message}</Text>
-                )}
-              </View>
-            )
-          )}
+                </View>
+              )
+            )}
+          </View>
 
           <View style={styles.function}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleSubmit(onSubmit)}
-            >
-              <Text>Submit Changes</Text>
-            </TouchableOpacity>
+            <Button onPress={handleSubmit(onSubmit)}>Submit Changes</Button>
 
-            <TouchableOpacity
-              style={styles.button}
+            <Button
               onPress={() =>
                 router.push({
                   pathname: "/profile",
@@ -334,10 +329,10 @@ const EditProfile = () => {
                 })
               }
             >
-              <Text>Cancel Changes</Text>
-            </TouchableOpacity>
+              Cancel Changes
+            </Button>
           </View>
-        </View>
+        </FormContainer>
       </ScrollView>
     </View>
   );
@@ -346,66 +341,12 @@ const EditProfile = () => {
 export default EditProfile;
 
 const styles = StyleSheet.create({
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-  },
   background: {
     backgroundColor: "#AFABA3",
     height: "100%",
   },
-  title: {
-    padding: 10,
-    alignItems: "center",
-    backgroundColor: "#8A7D6A",
-  },
-  information: {
-    padding: 10,
-    backgroundColor: "#f9f9f9", // optional
-  },
-  infoText: {
-    fontSize: 20,
-    marginBottom: 5,
-  },
-  container: {
-    padding: 20,
-    alignItems: "flex-start",
-  },
-  logo: {
-    width: 150,
-    height: 60,
-    marginVertical: 10,
-    marginLeft: 10,
-  },
-  button: {
-    backgroundColor: "#FFD347",
-    width: 130,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 6,
-    marginVertical: 10,
-  },
-  editContainer: {
-    backgroundColor: "#F1F6F5",
-    borderWidth: 2,
-    borderColor: "#433D33",
-    marginHorizontal: "5%",
-    paddingHorizontal: "5%",
-    justifyContent: "center",
-  },
-  logoContainer: {
-    backgroundColor: "#F1F6F5",
-  },
-  checkbox: {
-    marginTop: 15,
-    marginHorizontal: 5,
-    alignSelf: "center",
-  },
-  label: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginTop: "5%",
+  inputs: {
+    marginHorizontal: 20,
   },
   function: {
     flexDirection: "row",
@@ -413,21 +354,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  input: {
-    width: "100%",
-    height: 40,
-    marginTop: 5,
-    paddingLeft: 10,
-    borderWidth: 2,
-    borderRadius: 5,
-    borderColor: "#433D33",
+  container: {
+    padding: 20,
+    alignItems: "flex-start",
   },
-  whiteText: {
-    color: "white",
+  title: {
+    padding: 10,
+    alignItems: "center",
+    backgroundColor: "#8A7D6A",
+  },
+  checkbox: {
+    marginTop: 15,
+    marginHorizontal: 5,
+    alignSelf: "center",
   },
   titleText: {
     color: "white",
     fontSize: 25,
     fontWeight: "bold",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
 });

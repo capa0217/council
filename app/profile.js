@@ -6,11 +6,11 @@ import {
   View,
   Alert,
   StyleSheet,
-  Image,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import PTHeader from "./components/PTHeader";
+import Button from "./components/Button";
+
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -84,8 +84,7 @@ const Profile = () => {
           </Text>
           
           <View style={styles.function}>
-          <TouchableOpacity
-            style={styles.button}
+          <Button
             onPress={() =>
               router.push({
                 pathname: "/club_meeting",
@@ -93,10 +92,9 @@ const Profile = () => {
               })
             }
           >
-            <Text>Go Back</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
+            Go Back
+          </Button>
+          <Button
             onPress={() =>
               router.push({
                 pathname: "/editProfile",
@@ -104,8 +102,8 @@ const Profile = () => {
               })
             }
           >
-            <Text>Edit Profile</Text>
-          </TouchableOpacity>
+            Edit Profile
+          </Button>
           </View>
         </View>
       </ScrollView>
@@ -135,16 +133,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     alignItems: "flex-start",
-  },
-  button: {
-    backgroundColor: "#FFD347",
-    width: 130,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 6,
-    marginVertical: 10, // Adds top and bottom spacing
-    marginRight: 30,
   },
   function: {
     flexDirection: "row",

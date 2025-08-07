@@ -66,7 +66,6 @@ const EditProfile = () => {
           `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${userId}`
         );
         setProfiles(res.data);
-        console.log(res.data);
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
         Alert.alert("Error", "Failed to load user ID");
@@ -83,24 +82,36 @@ const EditProfile = () => {
 
   useEffect(() => {
     var date = "";
-
-    if (profiles.dob) {
-      let currDate = new Date(profiles.dob).toLocaleDateString();
-
-      date += currDate.slice(6, 10);
-      date += "-";
-      date += currDate.slice(3, 5);
-      date += "-";
-      date += currDate.slice(0, 2);
-    }
+    var post = "";
+    var phone = "";
     if (profiles) {
+    if (profiles.dob) {
+        let currDate = new Intl.DateTimeFormat(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(new Date(profiles.dob));
+
+        let [day, month, year] = currDate.split("/");
+        date += year;
+      date += "-";
+        date += month;
+      date += "-";
+        date += day;
+      }
+      if (profiles.phone_number){
+        phone += profiles.phone_number;
+    }
+      if (profiles.postcode){
+        post += profiles.postcode;
+      }
       reset({
         first_name: profiles.first_name || "",
         last_name: profiles.last_name || "",
         email: profiles.email || "",
-        phone_number: profiles.phone_number || "",
+        phone_number: phone,
         address: profiles.address || "",
-        postcode: profiles.postcode || "",
+        postcode: post,
         interests: profiles.interests || "",
         dob: date,
         pronouns: profiles.pronouns || "",
@@ -112,13 +123,18 @@ const EditProfile = () => {
 
   const onSubmit = async (data) => {
     //Use the generated registration information to insert into the database
+    for (var key in data){
+      if(data[key] == ""){
+        data[key] = null;
+      }
+    }
+    
     const payload = {
       ...data,
       userId,
       privacy,
       marketing,
     };
-    console.log(payload);
     try {
       const editProfileResponse = await axios.post(
         `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/edit`,
@@ -195,7 +211,13 @@ const EditProfile = () => {
               autocomplete: "tel",
               lines: 1,
               multiline: false,
-              rule: { required: "You must enter your phone number" },
+              rule: {
+                maxLength: { value: 10, message: "Enter a valid Phone Number" },
+                pattern: {
+                  value: /\d{10}$/,
+                  message: "Enter a valid phone number",
+                },
+              },
             },
             {
               name: "address",

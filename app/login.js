@@ -51,8 +51,7 @@ const LoginForm = () => {
         // Store user data in AsyncStorage
         await AsyncStorage.setItem("userId", response.data.user_id.toString());
         router.push({
-          pathname: "/club_meeting",
-          query: { userId: response.data.user_id },
+          pathname: "/club_meeting"
         });
       }
       /*
@@ -126,7 +125,8 @@ const LoginForm = () => {
         <View style={styles.function}>
           <Button onPress={() => router.push("./register")}>Register</Button>
 
-          <Button onPress={handleSubmit(handleLogin)}>Login</Button>
+          <Button onPress={
+            handleSubmit(handleLogin)}>Login</Button>
         </View>
       </FormContainer>
     </View>

@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import BottomNav from "./components/BottomNav";
 import PTHeader from "./components/PTHeader";
+import { router } from "expo-router";
 
 const ClubMembersPage = () => {
   const navigation = useNavigation();
@@ -43,6 +44,7 @@ const ClubMembersPage = () => {
       }
     })();
   }, []);
+
   useEffect(() => {
     axios
       .get(`http://${process.env.EXPO_PUBLIC_IP}:8081/clubs`)
@@ -143,7 +145,16 @@ const ClubMembersPage = () => {
             onPress={() =>
               Alert.alert(
                 "Member Selected",
-                `${member.first_name} ${member.last_name}`
+                `${member.first_name} ${member.last_name}`,
+                [
+                  {
+                    text: "Close",
+                  },
+                  {
+                    text: "View Profile",
+                    onPress: () => router.push("/profile"),
+                  },
+                ]
               )
             }
           >

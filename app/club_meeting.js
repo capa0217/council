@@ -17,12 +17,10 @@ import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import BottomNav from "./components/BottomNav";
-import * as NavigationBar from 'expo-navigation-bar';
 
 const PORT = 8081;
 
 const ProfileScreen = () => {
-  NavigationBar.setVisibilityAsync("hidden");
   const router = useRouter();
 
   const [userId, setUserId] = useState(null);

@@ -79,6 +79,7 @@ const LoginForm = () => {
   return (
     <View style={styles.background}>
       <PTHeader/>
+      <View style={styles.gap}/>
       <FormContainer>
         <View style={styles.inputs}>
           {[
@@ -152,4 +153,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
   },
+  gap: {
+    paddingTop: '30%',
+  }
 });

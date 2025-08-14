@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
   Alert,
   StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import FormContainer from "./components/FormContainer";
 import FormLabel from "./components/FormLabel.js";
@@ -15,6 +17,7 @@ import { useRouter } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useKeyboard } from "@react-native-community/hooks";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -28,6 +31,16 @@ const LoginForm = () => {
       website_login: "",
       password: "",
     },
+  });
+
+  const keyboard = useKeyboard();
+  const [height, setHeight] = useState(50);
+  useEffect(() => {
+    if (keyboard.keyboardShown) {
+      setHeight(10);
+    } else {
+      setHeight(50);
+    }
   });
 
   const handleLogin = async (data) => {
@@ -50,7 +63,7 @@ const LoginForm = () => {
         // Store user data in AsyncStorage
         await AsyncStorage.setItem("userId", response.data.user_id.toString());
         router.push({
-          pathname: "/club_meeting"
+          pathname: "/club_meeting",
         });
       }
       /*
@@ -76,7 +89,7 @@ const LoginForm = () => {
 
   return (
     <View style={styles.background}>
-      <View style={styles.gap}/>
+      <View style={{ marginTop: `${height}%` }} />
       <FormContainer>
         <View style={styles.inputs}>
           {[
@@ -124,8 +137,7 @@ const LoginForm = () => {
         <View style={styles.function}>
           <Button onPress={() => router.push("./register")}>Register</Button>
 
-          <Button onPress={
-            handleSubmit(handleLogin)}>Login</Button>
+          <Button onPress={handleSubmit(handleLogin)}>Login</Button>
         </View>
       </FormContainer>
     </View>
@@ -151,7 +163,4 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
   },
-  gap: {
-    paddingTop: '30%',
-  }
 });

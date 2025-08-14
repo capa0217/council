@@ -13,9 +13,9 @@ import {
 } from "react-native";
 
 import FormContainer from "@/PTComponents/FormContainer";
-import FormLabel from "@/PTComponents/FormLabel.js";
-import FormInput from "@/PTComponents/FormInput.js";
-import Button from "@/PTComponents/Button.js";
+import FormLabel from "@/PTComponents/FormLabel";
+import FormInput from "@/PTComponents/FormInput";
+import Button from "@/PTComponents/Button";
 
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";

@@ -21,10 +21,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFD347",
     width: 80,
     height: 60,
+    borderRadius: 6,
+    marginVertical:15,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
-    borderRadius: 6,
-    marginVertical: 10,
   },
 });

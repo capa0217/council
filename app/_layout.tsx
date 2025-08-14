@@ -4,9 +4,12 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import * as NavigationBar from "expo-navigation-bar";
-import * as StatusBar from "expo-status-bar";
+import * as useStatusBar from "expo-status-bar";
+import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import PTHeader from "@/PTComponents/Header";
+import { Platform } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -15,8 +18,11 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  NavigationBar.setVisibilityAsync("hidden");
-  StatusBar.setStatusBarHidden(true);
+  if (Platform.OS == "android") {
+    NavigationBar.setVisibilityAsync("hidden");
+  }
+  useStatusBar.setStatusBarHidden(false);
+  useStatusBar.setStatusBarStyle("dark");
 
   useEffect(() => {
     if (loaded) {

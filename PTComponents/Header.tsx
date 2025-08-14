@@ -1,5 +1,14 @@
 import React from "react";
-import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  ScrollView,
+  KeyboardAvoidingView,
+} from "react-native";
 import { useRouter } from "expo-router";
 
 import HeaderButton from "./HeaderButton";
@@ -14,43 +23,45 @@ const Header: React.FC<IProps> = (props: IProps) => {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.buttonContainer}>
-        {canGoBack() && (
-          <HeaderButton onPress={() => router.back()}>Back</HeaderButton>
-        )}
-      </View>
-      <View style={styles.logoContainer}>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: `/club_meeting`,
-            })
-          }
-        >
-          <Image
-            source={{
-              uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-            }}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView edges={["top"]}>
+        <View style={styles.container}>
+          <View style={styles.buttonContainer}>
+            {canGoBack() && (
+              <HeaderButton onPress={() => router.back()}>Back</HeaderButton>
+            )}
+          </View>
+          <View style={styles.logoContainer}>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: `/club_meeting`,
+                })
+              }
+            >
+              <Image
+                source={{
+                  uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
+                }}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.buttonContainer}>
-        {props.enabled && (
-          <HeaderButton
-            onPress={() =>
-              router.push({
-                pathname: `/profile`,
-              })
-            }
-          >
-            Profile
-          </HeaderButton>
-        )}
-      </View>
+          <View style={styles.buttonContainer}>
+            {props.enabled && (
+              <HeaderButton
+                onPress={() =>
+                  router.push({
+                    pathname: `/profile`,
+                  })
+                }
+              >
+                Profile
+              </HeaderButton>
+            )}
+          </View>
+        </View>
     </SafeAreaView>
   );
 };
@@ -72,6 +83,6 @@ const styles = StyleSheet.create({
   },
   logo: {
     height: 50,
-    marginVertical: 15,
+    marginVertical: 20,
   },
 });

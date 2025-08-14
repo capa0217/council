@@ -49,7 +49,7 @@ const Profile = () => {
       <ScrollView>
         <View style={styles.title}>
           <Text style={styles.titleText}>
-            {profiles.first_name} {profiles.last_name} {userId}
+            {profiles.first_name} {profiles.last_name}
           </Text>
         </View>
         <View style={styles.information}>

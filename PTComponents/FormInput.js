@@ -1,8 +1,12 @@
 import React from "react";
-import { TextInput, StyleSheet } from "react-native";
+import { TextInput, StyleSheet, KeyboardAvoidingView } from "react-native";
 
 const FormInput = (props) => {
-  return <TextInput style={styles.formInput} {...props}/>;
+  return (
+    <KeyboardAvoidingView>
+      <TextInput style={styles.formInput} {...props} />
+    </KeyboardAvoidingView>
+  );
 };
 
 export default FormInput;

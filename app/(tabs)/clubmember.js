@@ -148,7 +148,11 @@ const ClubMembersPage = () => {
                   },
                   {
                     text: "View Profile",
-                    onPress: () => router.push("/profile"),
+                    onPress: () =>
+                      router.navigate({
+                        pathname: "/profile/[profileID]",
+                        params: { profileID: member.user_id },
+                      }),
                   },
                 ]
               )

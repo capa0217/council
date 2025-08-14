@@ -1,31 +1,41 @@
 import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-function Nav({ name, link, active }) {
+
+interface INavProps {
+  name: string,
+  active: boolean,
+  link:string,
+}
+interface IProps {
+  active: number,
+}
+
+function Nav (props: INavProps) {
   const router = useRouter();
-  if (active){
+  if (props.active){
     return <TouchableOpacity
         style={styles.navButton}
         onPress={() =>
-          router.push({
-            pathname: `/${link}`,
+          router.navigate({
+            pathname: `/${props.link}`,
           })
         }
       >
-        <Text style={styles.navText}>{name}</Text>
+        <Text style={styles.navText}>{props.name}</Text>
       </TouchableOpacity>;
   }
-  return <View style={styles.active}><Text style={styles.activeText}>{name}</Text></View>
+  return <View style={styles.active}><Text style={styles.activeText}>{props.name}</Text></View>
   
   ;
 }
-const BottomNav = ({ active }) => {
 
+const BottomNav: React.FC<IProps> = (props: IProps) => {
   return (
     <View style={styles.bottomNav}>
-      <Nav name={'Club Members'} link={'clubmember'} active={active!=1}/>
-      <Nav name={'Meetings'} link={'club_meeting'} active={active!=2}/>
-      <Nav name={'Projects'} link={'members_projectLevels'} active={active!=3}/>
+      <Nav name={'Club Members'} link={'clubmember'} active={props.active!=1}/>
+      <Nav name={'Meetings'} link={'club_meeting'} active={props.active!=2}/>
+      <Nav name={'Projects'} link={'members_projectLevels'} active={props.active!=3}/>
     </View>
   );
 };

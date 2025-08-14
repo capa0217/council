@@ -11,7 +11,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import BottomNav from "./components/BottomNav";
+import BottomNav from "@/PTComponents/BottomNav";
 import { router } from "expo-router";
 
 const ClubMembersPage = () => {

@@ -3,6 +3,8 @@ import React from "react";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import * as NavigationBar from "expo-navigation-bar";
+import * as StatusBar from "expo-status-bar";
 import { useEffect } from "react";
 import PTHeader from "@/PTComponents/Header";
 
@@ -12,6 +14,9 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  NavigationBar.setVisibilityAsync("hidden");
+  StatusBar.setStatusBarHidden(true);
 
   useEffect(() => {
     if (loaded) {
@@ -63,13 +68,14 @@ export default function RootLayout() {
             return <PTHeader enabled={false} />;
           },
         }}
-      ></Stack.Screen><Stack.Screen
+      ></Stack.Screen>
+      <Stack.Screen
         name="editProfile"
         options={{
           header() {
             return <PTHeader enabled={false} />;
           },
-          presentation:"modal",
+          presentation: "modal",
         }}
       ></Stack.Screen>
     </Stack>

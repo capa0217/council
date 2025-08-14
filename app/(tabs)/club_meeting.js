@@ -4,17 +4,14 @@ import {
   View,
   Alert,
   StyleSheet,
-  Image,
-  Button,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import BottomNav from "./components/BottomNav";
+import BottomNav from "@/PTComponents/BottomNav";
 import { Picker } from "@react-native-picker/picker";
 
 import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import * as NavigationBar from 'expo-navigation-bar';
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -141,8 +138,6 @@ const ProfileScreen = () => {
   };
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-
       <ScrollView style={styles.content}>
         {/* Meeting Header Block */}
         <View style={styles.meetingHeaderBlock}>

@@ -19,13 +19,12 @@ export default HeaderButton;
 const styles = StyleSheet.create({
   Button: {
     backgroundColor: "#FFD347",
-    width: 100,
+    width: 80,
     height: 60,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
     borderRadius: 6,
-    marginVertical: 10, // Adds top and bottom spacing
-    marginHorizontal: 15,
+    marginVertical: 10,
   },
 });

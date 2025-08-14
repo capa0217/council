@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import BottomNav from "./components/BottomNav";
+import BottomNav from "@/PTComponents/BottomNav";
 
 const MembersProjectPage1 = () => {
   const navigation = useNavigation();

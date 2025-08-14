@@ -3,37 +3,38 @@ import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 import HeaderButton from "./HeaderButton";
+import { canGoBack } from "expo-router/build/global-state/routing";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface IProps {
-    enabled: boolean,
+  enabled: boolean;
 }
 
 const Header: React.FC<IProps> = (props: IProps) => {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.buttonContainer}>
-        <HeaderButton
-            onPress={() =>
-              router.back()
-            }
-            >Back</HeaderButton>
+        {canGoBack() && (
+          <HeaderButton onPress={() => router.back()}>Back</HeaderButton>
+        )}
       </View>
       <View style={styles.logoContainer}>
-        <TouchableOpacity 
-        onPress={() =>
-              router.push({
-                pathname: `/club_meeting`,
-              })
-            }>
-        <Image
-          source={{
-            uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-          }}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: `/club_meeting`,
+            })
+          }
+        >
+          <Image
+            source={{
+              uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
+            }}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </TouchableOpacity>
       </View>
 
@@ -50,7 +51,7 @@ const Header: React.FC<IProps> = (props: IProps) => {
           </HeaderButton>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -60,17 +61,17 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#F1F6F5",
     flexDirection: "row",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   logoContainer: {
+    alignContent: "center",
     flex: 2,
   },
   buttonContainer: {
     flex: 1,
   },
   logo: {
-    height: 60,
-    marginVertical: 10,
-    marginLeft: 10,
+    height: 50,
+    marginVertical: 15,
   },
 });

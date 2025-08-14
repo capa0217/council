@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import {
-  Text,
-  View,
-  Alert,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
-import Header from "@/PTComponents/Header";
+import { Text, View, Alert, StyleSheet, ScrollView } from "react-native";
 import Button from "@/PTComponents/Button";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
+import { useLocalSearchParams } from "expo-router";
 
 const PORT = 8081;
 
 const Profile = () => {
   const router = useRouter();
   const [userId, setUserId] = useState("");
-  const [profiles, setProfiles] = useState<any>();
-  
+  const [profiles, setProfiles] = useState<any>([]);
+
   const local = useLocalSearchParams();
+
   useEffect(() => {
     (async () => {
       try {
@@ -44,38 +38,48 @@ const Profile = () => {
           `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${local.profileID}`
         );
         setProfiles(res.data);
-        console.log(res.data);
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
         Alert.alert("Error", "Failed to load user ID");
       }
     })();
-  }, [userId]);
+  }, [local]);
   return (
     <View style={styles.background}>
-      <Header enabled={false}/>
       <ScrollView>
         <View style={styles.title}>
           <Text style={styles.titleText}>
-            {profiles.first_name} {profiles.last_name}
+            {profiles.first_name} {profiles.last_name} {userId}
           </Text>
         </View>
         <View style={styles.information}>
           <Text style={styles.infoText}>Member_id: {profiles.user_id}</Text>
           <Text style={styles.infoText}>Email: {profiles.email}</Text>
-          {profiles.phone_number && <Text style={styles.infoText}>
-            Phone Number: {profiles.phone_number}
-          </Text>}
+          {profiles.phone_number && (
+            <Text style={styles.infoText}>
+              Phone Number: {profiles.phone_number}
+            </Text>
+          )}
           <Text style={styles.infoText}>
             Join_Date: {new Date(profiles.join_date).toLocaleDateString()}
           </Text>
-          {profiles.address && <Text style={styles.infoText}>Address: {profiles.address}</Text>}
-          {profiles.postcode && <Text style={styles.infoText}>Postcode: {profiles.postcode}</Text>}
-          {profiles.interests && <Text style={styles.infoText}>Interests: {profiles.interests}</Text>}
-          {profiles.dob && <Text style={styles.infoText}>
-            Date of Birth: {new Date(profiles.dob).toLocaleDateString()}
-          </Text>}
-          {profiles.pronouns && <Text style={styles.infoText}>Pronouns: {profiles.pronouns}</Text>}
+          {profiles.address && (
+            <Text style={styles.infoText}>Address: {profiles.address}</Text>
+          )}
+          {profiles.postcode && (
+            <Text style={styles.infoText}>Postcode: {profiles.postcode}</Text>
+          )}
+          {profiles.interests && (
+            <Text style={styles.infoText}>Interests: {profiles.interests}</Text>
+          )}
+          {profiles.dob && (
+            <Text style={styles.infoText}>
+              Date of Birth: {new Date(profiles.dob).toLocaleDateString()}
+            </Text>
+          )}
+          {profiles.pronouns && (
+            <Text style={styles.infoText}>Pronouns: {profiles.pronouns}</Text>
+          )}
           <Text style={styles.infoText}>
             Privacy:{" "}
             {profiles.private
@@ -85,27 +89,27 @@ const Profile = () => {
           <Text style={styles.infoText}>
             Marketing: {profiles.want_marketing ? "Opted In" : "Opted Out"}
           </Text>
-          
+
           <View style={styles.function}>
-          <Button
-            onPress={() =>
-              router.push({
-                pathname: "/club_meeting",
-              })
-            }
-          >
-            Go Back
-          </Button>
-          <Button
-            onPress={() =>
-              router.push({
-                pathname: "/editProfile",
-                params: { user_Id: userId },
-              })
-            }
-          >
-            Edit Profile
-          </Button>
+            <Button
+              onPress={() =>
+                router.push({
+                  pathname: "/club_meeting",
+                })
+              }
+            >
+              Go Back
+            </Button>
+            <Button
+              onPress={() =>
+                router.push({
+                  pathname: "/profile/editProfile/[profileID]",
+                  params: { profileID: local.profileID.toString() },
+                })
+              }
+            >
+              Edit Profile
+            </Button>
           </View>
         </View>
       </ScrollView>

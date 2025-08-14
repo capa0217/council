@@ -1,6 +1,5 @@
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import PTHeader from './components/PTHeader';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -61,7 +60,6 @@ const MeetingDetails = () => {
 
   return (
     <View style={styles.background}>
-      <PTHeader button={true} text={'Profile'} link={'profile'}/>
       <View style={styles.container}>
       <Text style={styles.header}>Meeting Details</Text>
       <Text style={styles.label}>Club id: <Text style={styles.value}>{meeting[0].club_id}</Text></Text>

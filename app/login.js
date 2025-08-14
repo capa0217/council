@@ -5,7 +5,6 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
-import PTHeader from "./components/PTHeader";
 import FormContainer from "./components/FormContainer";
 import FormLabel from "./components/FormLabel.js";
 import FormInput from "./components/FormInput.js";
@@ -77,7 +76,6 @@ const LoginForm = () => {
 
   return (
     <View style={styles.background}>
-      <PTHeader/>
       <FormContainer>
         <View style={styles.inputs}>
           {[

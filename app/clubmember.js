@@ -12,7 +12,6 @@ import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import BottomNav from "./components/BottomNav";
-import PTHeader from "./components/PTHeader";
 
 const ClubMembersPage = () => {
   const navigation = useNavigation();
@@ -86,9 +85,6 @@ const ClubMembersPage = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-      <PTHeader button={true} text={"Profile"} link={"profile"} />
-
       <ScrollView style={styles.content}>
         {/* Header Block */}
         <View style={styles.meetingHeaderBlock}>

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import BottomNav from "./components/BottomNav";
-import PTHeader from "./components/PTHeader";
 
 const MembersProjectPage1 = () => {
   const navigation = useNavigation();
@@ -20,9 +19,6 @@ const MembersProjectPage1 = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-      <PTHeader button={true} text={"Profile"} link={"profile"} />
-
       <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.headerBlock}>

@@ -1,12 +1,20 @@
 import React from "react";
-import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, Image, StyleSheet, TouchableOpacity, BackHandler } from "react-native";
 import { useRouter } from "expo-router";
+import Button from "@/PTComponents/Button";
 
 const PTHeader = ({ button, text, link }) => {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
+      <View style={styles.buttonContainer}>
+        <Button
+            onPress={() =>
+              router.back()
+            }
+            >Back</Button>
+      </View>
       <View style={styles.logoContainer}>
         <TouchableOpacity 
         onPress={() =>
@@ -26,16 +34,15 @@ const PTHeader = ({ button, text, link }) => {
 
       <View style={styles.buttonContainer}>
         {button && (
-          <TouchableOpacity
-            style={styles.button}
+          <Button
             onPress={() =>
               router.push({
                 pathname: `/${link}`,
               })
             }
           >
-            <Text>{text}</Text>
-          </TouchableOpacity>
+            text
+          </Button>
         )}
       </View>
     </View>
@@ -51,13 +58,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   logoContainer: {
+    justifyContent: "center",
+    alignContent: "center",
     flex: 2,
   },
   buttonContainer: {
     flex: 1,
   },
   logo: {
-    width: 150,
     height: 60,
     marginVertical: 10,
     marginLeft: 10,

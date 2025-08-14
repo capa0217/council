@@ -8,7 +8,6 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import PTHeader from "./components/PTHeader";
 import Button from "./components/Button";
 
 import { useRouter } from "expo-router";
@@ -50,7 +49,6 @@ const Profile = () => {
   }, [userId]);
   return (
     <View style={styles.background}>
-      <PTHeader button={false}/>
       <ScrollView>
         <View style={styles.title}>
           <Text style={styles.titleText}>

@@ -2,7 +2,7 @@ import React from "react";
 import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
-import Button from "./Button";
+import HeaderButton from "./HeaderButton";
 
 interface IProps {
     enabled: boolean,
@@ -13,6 +13,13 @@ const Header: React.FC<IProps> = (props: IProps) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.buttonContainer}>
+        <HeaderButton
+            onPress={() =>
+              router.back()
+            }
+            >Back</HeaderButton>
+      </View>
       <View style={styles.logoContainer}>
         <TouchableOpacity 
         onPress={() =>
@@ -32,7 +39,7 @@ const Header: React.FC<IProps> = (props: IProps) => {
 
       <View style={styles.buttonContainer}>
         {props.enabled && (
-          <Button
+          <HeaderButton
             onPress={() =>
               router.push({
                 pathname: `/profile`,
@@ -40,7 +47,7 @@ const Header: React.FC<IProps> = (props: IProps) => {
             }
           >
             Profile
-          </Button>
+          </HeaderButton>
         )}
       </View>
     </View>
@@ -53,7 +60,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#F1F6F5",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-evenly"
   },
   logoContainer: {
     flex: 2,
@@ -62,7 +69,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logo: {
-    width: 150,
     height: 60,
     marginVertical: 10,
     marginLeft: 10,

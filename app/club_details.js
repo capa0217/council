@@ -57,7 +57,6 @@ const MeetingDetails = () => {
         .get(`http://${process.env.EXPO_PUBLIC_IP}:8081/club_details/${clubId}`)
         .then((res) => {
           setClub(res.data);
-          console.log(res.data);
           setLoading(false);
         })
         .catch((err) => {

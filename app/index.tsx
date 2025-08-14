@@ -2,9 +2,11 @@ import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import React from "react";
 import * as NavigationBar from "expo-navigation-bar";
+import * as StatusBar from "expo-status-bar";
 
 const Home = () => {
   NavigationBar.setVisibilityAsync("hidden");
+  StatusBar.setStatusBarHidden(true);
   const router = useRouter();
 
   return (

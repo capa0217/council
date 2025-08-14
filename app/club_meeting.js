@@ -23,7 +23,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const PORT = 8081;
 
 const ProfileScreen = () => {
-  NavigationBar.setVisibilityAsync("hidden");
   const router = useRouter();
 
   const [userId, setUserId] = useState(null);

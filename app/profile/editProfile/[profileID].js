@@ -3,34 +3,26 @@ import axios from "axios";
 
 import {
   Text,
-  TextInput,
   View,
   Alert,
   StyleSheet,
-  Image,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 
-import PTHeader from "./components/PTHeader";
-import FormContainer from "./components/FormContainer";
-import FormLabel from "./components/FormLabel.js";
-import FormInput from "./components/FormInput.js";
-import Button from "./components/Button.js";
+import FormContainer from "@/PTComponents/FormContainer";
+import FormLabel from "@/PTComponents/FormLabel";
+import FormInput from "@/PTComponents/FormInput";
+import Button from "@/PTComponents/Button";
 
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLocalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import CheckBox from "@react-native-community/checkbox";
+import React from "react";
 
 const EditProfile = () => {
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitted },
-  } = useForm({
-    defaultValues: {
+    const fields = {
       first_name: "",
       last_name: "",
       email: "",
@@ -42,11 +34,19 @@ const EditProfile = () => {
       pronouns: "",
       private: false,
       want_marketing: false,
-    },
+    }
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitted },
+  } = useForm ({
+    defaultValues: fields,
   });
 
   const router = useRouter();
-  const [userId, setUserId] = useState(null);
+  const local = useLocalSearchParams();
+  const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState([]);
 
   const [privacy, setPrivacy] = useState(false);
@@ -59,6 +59,7 @@ const EditProfile = () => {
         if (storedUserId) {
           setUserId(storedUserId);
         }
+        console.log(userId);
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
         Alert.alert("Error", "Failed to load user ID");
@@ -70,12 +71,12 @@ const EditProfile = () => {
     (async () => {
       try {
         const res = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${userId}`
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${local.profileID}`
         );
         setProfiles(res.data);
       } catch (error) {
-        console.error("Error fetching userId from storage:", error);
-        Alert.alert("Error", "Failed to load user ID");
+        console.error("Error fetching profile:", error);
+        Alert.alert("Error", "Failed to fetch profile");
       }
     })();
   }, [userId]);
@@ -93,6 +94,7 @@ const EditProfile = () => {
     var phone = "";
 
     if (profiles) {
+        console.log(profiles.first_name);
       if (profiles.dob) {
         let currDate = new Intl.DateTimeFormat(undefined, {
           year: "numeric",
@@ -152,7 +154,6 @@ const EditProfile = () => {
       Alert.alert("Success", "Update successful");
       router.push({
         pathname: "/profile",
-        query: { userId: userId },
       });
     } catch (error) {
       console.error(
@@ -164,7 +165,6 @@ const EditProfile = () => {
   };
   return (
     <View style={styles.background}>
-      <PTHeader />
       <View style={styles.title}>
         <Text style={styles.titleText}>
           Editing the Profile of: {profiles.first_name} {profiles.last_name}
@@ -175,7 +175,7 @@ const EditProfile = () => {
           <View style={styles.inputs}>
             {[
               {
-                name: "first_name",
+                field: "first_name",
                 placeholder: "First Name",
                 label: "Full Name",
                 autocomplete: "given-name",
@@ -184,7 +184,7 @@ const EditProfile = () => {
                 rule: { required: "You must enter your first name" },
               },
               {
-                name: "last_name",
+                field: "last_name",
                 placeholder: "Last Name",
                 autocomplete: "family-name",
                 lines: 1,
@@ -192,7 +192,7 @@ const EditProfile = () => {
                 rule: { required: "You must enter your last name" },
               },
               {
-                name: "email",
+                field: "email",
                 placeholder: "Email Address",
                 label: "Contact Info",
                 autocomplete: "email",
@@ -207,7 +207,7 @@ const EditProfile = () => {
                 },
               },
               {
-                name: "phone_number",
+                field: "phone_number",
                 placeholder: "Phone Number",
                 autocomplete: "tel",
                 lines: 1,
@@ -224,7 +224,7 @@ const EditProfile = () => {
                 },
               },
               {
-                name: "address",
+                field: "address",
                 placeholder: "Address",
                 label: "Address",
                 autocomplete: "address-line1",
@@ -232,7 +232,7 @@ const EditProfile = () => {
                 multiline: false,
               },
               {
-                name: "postcode",
+                field: "postcode",
                 placeholder: "Postcode",
                 autocomplete: "postal-code",
                 lines: 1,
@@ -246,7 +246,7 @@ const EditProfile = () => {
                 },
               },
               {
-                name: "interests",
+                field: "interests",
                 placeholder: "What Interests You?",
                 label: "Interests",
                 autocomplete: "off",
@@ -254,7 +254,7 @@ const EditProfile = () => {
                 multiline: true,
               },
               {
-                name: "dob",
+                field: "dob",
                 placeholder: "YYYY-MM-DD",
                 label: "Date of Birth",
                 autocomplete: "off",
@@ -269,7 +269,7 @@ const EditProfile = () => {
                 },
               },
               {
-                name: "pronouns",
+                field: "pronouns",
                 placeholder: "Pronouns",
                 label: "Pronouns",
                 autocomplete: "off",
@@ -284,21 +284,20 @@ const EditProfile = () => {
               },
             ].map(
               ({
-                name,
+                field,
                 placeholder,
                 label,
                 lines,
                 multiline,
                 autocomplete,
-                defaultValue,
                 rule,
               }) => (
-                <View key={name} style={styles.inputGroup}>
+                <View key={field} style={styles.inputs}>
                   {label && <FormLabel>{label}</FormLabel>}
                   <Controller
-                    key={name}
+                    key={field}
                     control={control}
-                    name={name}
+                    name={field}
                     render={({ field: { onChange, value } }) => (
                       <FormInput
                         autoComplete={autocomplete}
@@ -308,13 +307,12 @@ const EditProfile = () => {
                         autoCapitalize="none"
                         multiline={multiline}
                         lines={lines}
-                        defaultValue={defaultValue}
                       />
                     )}
                     rules={rule}
                   />
-                  {errors[name] && isSubmitted && (
-                    <Text style={styles.errorText}>{errors[name].message}</Text>
+                  {errors[field] && isSubmitted && (
+                    <Text style={styles.errorText}>{errors[field].message?.toString()}</Text>
                   )}
                 </View>
               )
@@ -328,7 +326,6 @@ const EditProfile = () => {
               onPress={() =>
                 router.push({
                   pathname: "/profile",
-                  query: { user_Id: userId },
                 })
               }
             >

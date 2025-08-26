@@ -1,24 +1,13 @@
 import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import React from "react";
-import * as NavigationBar from "expo-navigation-bar";
-import * as StatusBar from "expo-status-bar";
 
 const Home = () => {
-  NavigationBar.setVisibilityAsync("hidden");
-  StatusBar.setStatusBarHidden(true);
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Image
-        source={{
-          uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-        }}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <Text style={styles.titleText}>Welcome to PowerTalk Australia </Text>
+      <Text style={styles.titleText}>Welcome to POWERTalk Australia</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => router.push("./login")}

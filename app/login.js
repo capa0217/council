@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
   Alert,
   StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
-import PTHeader from "./components/PTHeader";
 import FormContainer from "./components/FormContainer";
 import FormLabel from "./components/FormLabel.js";
 import FormInput from "./components/FormInput.js";
@@ -16,6 +17,7 @@ import { useRouter } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useKeyboard } from "@react-native-community/hooks";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -29,6 +31,16 @@ const LoginForm = () => {
       website_login: "",
       password: "",
     },
+  });
+
+  const keyboard = useKeyboard();
+  const [height, setHeight] = useState(50);
+  useEffect(() => {
+    if (keyboard.keyboardShown) {
+      setHeight(10);
+    } else {
+      setHeight(50);
+    }
   });
 
   const handleLogin = async (data) => {
@@ -52,7 +64,6 @@ const LoginForm = () => {
         await AsyncStorage.setItem("userId", response.data.user_id.toString());
         router.push({
           pathname: "/club_meeting",
-          query: { userId: response.data.user_id },
         });
       }
       /*
@@ -78,8 +89,7 @@ const LoginForm = () => {
 
   return (
     <View style={styles.background}>
-      <PTHeader/>
-      <View style={styles.gap}/>
+      <View style={{ marginTop: `${height}%` }} />
       <FormContainer>
         <View style={styles.inputs}>
           {[
@@ -153,7 +163,4 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
   },
-  gap: {
-    paddingTop: '30%',
-  }
 });

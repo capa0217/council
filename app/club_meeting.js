@@ -4,19 +4,18 @@ import {
   View,
   Alert,
   StyleSheet,
-  Image,
-  Button,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import PTHeader from "./components/PTHeader";
+import BottomNav from "@/PTComponents/BottomNav";
+import { Picker } from "@react-native-picker/picker";
+
+import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
-import { useRouter } from "expo-router";
-import BottomNav from "./components/BottomNav";
+
 
 const PORT = 8081;
 
@@ -139,9 +138,6 @@ const ProfileScreen = () => {
   };
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-      <PTHeader button={true} text={"Profile"} link={"profile"} />
-
       <ScrollView style={styles.content}>
         {/* Meeting Header Block */}
         <View style={styles.meetingHeaderBlock}>

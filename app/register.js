@@ -7,8 +7,6 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import PTHeader from "./components/PTHeader";
-
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
 import axios from "axios";
@@ -150,7 +148,6 @@ const RegisterForm = () => {
 
   return (
     <View style={styles.background}>
-      <PTHeader></PTHeader>
       <FormContainer>
         <View style={styles.inputs}>
           {[

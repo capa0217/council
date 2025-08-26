@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import PTHeader from './components/PTHeader';
 import BottomNav from './components/BottomNav';
 
 const ProjectLevelDetailPage = () => {
@@ -20,9 +19,6 @@ const ProjectLevelDetailPage = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-      <PTHeader button={true} text={'Profile'} link={'profile'}/>
-
       <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.headerBlock}>

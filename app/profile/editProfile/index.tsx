@@ -3,7 +3,7 @@ import { Redirect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 
-export default function profile() {
+export default function editProfile() {
   const [userId, setUserId] = useState("");
   useEffect(() => {
     (async () => {
@@ -24,7 +24,7 @@ export default function profile() {
     return (
       <Redirect
         href={{
-          pathname: "/profile/[profileID]",
+          pathname: "/profile/editProfile/[profileID]",
           params: { profileID: userId },
         }}
       />

@@ -214,11 +214,11 @@ const EditProfile = () => {
                 multiline: false,
                 rule: {
                   maxLength: {
-                    value: 10,
+                    value: 20,
                     message: "Enter a valid Phone Number",
                   },
                   pattern: {
-                    value: /\d{10}$/,
+                    value: /[\d\s]{10,20}$/,
                     message: "Enter a valid phone number",
                   },
                 },

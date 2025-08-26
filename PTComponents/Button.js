@@ -13,7 +13,7 @@ export default Button;
 
 const styles = StyleSheet.create({
   Button: {
-    backgroundColor: "#FFD347",
+    backgroundColor: "#8A7D6A",
     width: 130,
     height: 50,
     justifyContent: "center",

@@ -3,13 +3,10 @@ import axios from "axios";
 
 import {
   Text,
-  TextInput,
   View,
   Alert,
   StyleSheet,
-  Image,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 
 import FormContainer from "@/PTComponents/FormContainer";
@@ -19,6 +16,7 @@ import Button from "@/PTComponents/Button";
 
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLocalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import CheckBox from "@react-native-community/checkbox";
 import React from "react";
@@ -47,6 +45,7 @@ const EditProfile = () => {
   });
 
   const router = useRouter();
+  const local = useLocalSearchParams();
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState<any>([]);
 
@@ -72,12 +71,12 @@ const EditProfile = () => {
     (async () => {
       try {
         const res = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${userId}`
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${local.profileID}`
         );
         setProfiles(res.data);
       } catch (error) {
-        console.error("Error fetching userId from storage:", error);
-        Alert.alert("Error", "Failed to load user ID");
+        console.error("Error fetching profile:", error);
+        Alert.alert("Error", "Failed to fetch profile");
       }
     })();
   }, [userId]);

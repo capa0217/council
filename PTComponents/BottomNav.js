@@ -2,16 +2,8 @@ import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
-interface INavProps {
-  name: string,
-  active: boolean,
-  link:string,
-}
-interface IProps {
-  active: number,
-}
 
-function Nav (props: INavProps) {
+function Nav (props) {
   const router = useRouter();
   if (props.active){
     return <TouchableOpacity
@@ -30,7 +22,7 @@ function Nav (props: INavProps) {
   ;
 }
 
-const BottomNav: React.FC<IProps> = (props: IProps) => {
+const BottomNav = (props) => {
   return (
     <View style={styles.bottomNav}>
       <Nav name={'Club Members'} link={'clubmember'} active={props.active!=1}/>

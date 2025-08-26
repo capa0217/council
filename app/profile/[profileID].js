@@ -13,7 +13,7 @@ const PORT = 8081;
 const Profile = () => {
   const router = useRouter();
   const [userId, setUserId] = useState("");
-  const [profiles, setProfiles] = useState<any>([]);
+  const [profiles, setProfiles] = useState([]);
 
   const local = useLocalSearchParams();
 

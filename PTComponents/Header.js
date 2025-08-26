@@ -1,13 +1,9 @@
 import React from "react";
 import {
-  Text,
   View,
   Image,
   StyleSheet,
   TouchableOpacity,
-  Platform,
-  ScrollView,
-  KeyboardAvoidingView,
 } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -15,11 +11,7 @@ import HeaderButton from "./HeaderButton";
 import { canGoBack } from "expo-router/build/global-state/routing";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface IProps {
-  enabled: boolean;
-}
-
-const Header: React.FC<IProps> = (props: IProps) => {
+const Header = (props) => {
   const router = useRouter();
 
   return (

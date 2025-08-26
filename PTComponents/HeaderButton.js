@@ -1,12 +1,7 @@
 import React from "react";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
-interface IProps {
-    onPress:()=>void,
-    children:any,
-}
-
-const HeaderButton: React.FC<IProps> = (props: IProps) => {
+const HeaderButton = (props) => {
   return (
     <TouchableOpacity style={styles.Button} {...props}>
       <Text>{props.children}</Text>

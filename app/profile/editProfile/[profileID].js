@@ -22,7 +22,7 @@ import CheckBox from "@react-native-community/checkbox";
 import React from "react";
 
 const EditProfile = () => {
-    const fields:any = {
+    const fields = {
       first_name: "",
       last_name: "",
       email: "",
@@ -47,7 +47,7 @@ const EditProfile = () => {
   const router = useRouter();
   const local = useLocalSearchParams();
   const [userId, setUserId] = useState("");
-  const [profiles, setProfiles] = useState<any>([]);
+  const [profiles, setProfiles] = useState([]);
 
   const [privacy, setPrivacy] = useState(false);
   const [marketing, setMarketing] = useState(false);
@@ -131,7 +131,7 @@ const EditProfile = () => {
     }
   }, [profiles]);
 
-  const onSubmit = async (data:any) => {
+  const onSubmit = async (data) => {
     //Use the generated registration information to insert into the database
     for (var key in data) {
       if (data[key] == "") {
@@ -155,7 +155,7 @@ const EditProfile = () => {
       router.push({
         pathname: "/profile",
       });
-    } catch (error:any) {
+    } catch (error) {
       console.error(
         "Error submitting form:",
         error.response ? error.response.data : error.message

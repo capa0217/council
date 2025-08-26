@@ -1,11 +1,7 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
-interface IProps {
-  children: any;
-  onPress:()=>void,
-}
-const Button: React.FC<IProps> = (props: IProps) => {
+const Button = (props) => {
   return (
     <TouchableOpacity style={styles.Button} {...props}>
       <Text>{props.children}</Text>

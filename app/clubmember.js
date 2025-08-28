@@ -9,13 +9,11 @@ import {
   Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import BottomNav from "@/PTComponents/BottomNav";
 import { router } from "expo-router";
 
 const ClubMembersPage = () => {
-  const navigation = useNavigation();
   const [memberdetails, setDetails] = useState([]);
   const [sortByName, setSortByName] = useState("A-Z");
   const [selectedClub, setSelectedClub] = useState("All Clubs");
@@ -23,11 +21,6 @@ const ClubMembersPage = () => {
   const [ids, setids] = useState([]);
   const [selectedClubId, setSelectedClubId] = useState(null);
   const [clubBoardData, setClubBoardData] = useState([]);
-  const members = [
-    { name: "Susan connor", club: "Sunshine Club" },
-    { name: "Rick Novak", club: "Riverside Club" },
-    { name: "Jeff Johnson", club: "Brisbane Club" },
-  ];
 
   useEffect(() => {
     (async () => {
@@ -53,6 +46,7 @@ const ClubMembersPage = () => {
         Alert.alert("Error", "Failed to fetch clubs");
       });
   }, []);
+
   useEffect(() => {
     if (!selectedClubId) return;
     axios
@@ -139,23 +133,10 @@ const ClubMembersPage = () => {
             key={member.user_id}
             style={styles.meetingBlock}
             onPress={() =>
-              Alert.alert(
-                "Member Selected",
-                `${member.first_name} ${member.last_name}`,
-                [
-                  {
-                    text: "Close",
-                  },
-                  {
-                    text: "View Profile",
-                    onPress: () =>
-                      router.navigate({
-                        pathname: "/profile/[profileID]",
-                        params: { profileID: member.user_id },
-                      }),
-                  },
-                ]
-              )
+              router.push({
+                pathname: "/profile/[profileID]",
+                params: { profileID: member.user_id },
+              })
             }
           >
             <Text style={styles.meetingName}>

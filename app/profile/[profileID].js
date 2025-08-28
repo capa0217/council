@@ -5,6 +5,7 @@ import { Text, View, Alert, StyleSheet, ScrollView } from "react-native";
 import Button from "@/PTComponents/Button";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "expo-router";
 
 import { useLocalSearchParams } from "expo-router";
 
@@ -14,14 +15,17 @@ const Profile = () => {
   const router = useRouter();
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState([]);
+  const [access, setAccess] = useState(false);
 
   const local = useLocalSearchParams();
+  const nav = useNavigation();
 
   useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
+          console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -30,6 +34,26 @@ const Profile = () => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (userId) {
+          const res = await axios.get(
+            `http://${process.env.EXPO_PUBLIC_IP}:8081/clubaccess/${userId}`
+          );
+          if (res.status == 200) {
+            console.log("SHAMONe");
+            setAccess(true);
+          }
+        }
+      } catch (err) {
+        console.log("Yo THere");
+        console.error("Error With Club Access:", err);
+        Alert.alert("Error", err);
+      }
+    })();
+  }, [userId]);
 
   useEffect(() => {
     (async () => {
@@ -43,19 +67,25 @@ const Profile = () => {
         Alert.alert("Error", "Failed to load user ID");
       }
     })();
-  }, [local]);
+  }, []);
+
+  useEffect(() => {
+    nav.setOptions({
+      title: `Profile of ${profiles.first_name} ${profiles.last_name}`,
+    });
+
+    if (userId == local.profileID.toString()) {
+      setAccess(true);
+    }
+  });
+
   return (
     <View style={styles.background}>
       <ScrollView>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>
-            {profiles.first_name} {profiles.last_name}
-          </Text>
-        </View>
         <View style={styles.information}>
           <Text style={styles.infoText}>Member_id: {profiles.user_id}</Text>
           <Text style={styles.infoText}>Email: {profiles.email}</Text>
-          {profiles.phone_number && (
+          {profiles.phone_number && access && (
             <Text style={styles.infoText}>
               Phone Number: {profiles.phone_number}
             </Text>
@@ -63,16 +93,16 @@ const Profile = () => {
           <Text style={styles.infoText}>
             Join_Date: {new Date(profiles.join_date).toLocaleDateString()}
           </Text>
-          {profiles.address && (
+          {profiles.address && access && (
             <Text style={styles.infoText}>Address: {profiles.address}</Text>
           )}
-          {profiles.postcode && (
+          {profiles.postcode && access && (
             <Text style={styles.infoText}>Postcode: {profiles.postcode}</Text>
           )}
           {profiles.interests && (
             <Text style={styles.infoText}>Interests: {profiles.interests}</Text>
           )}
-          {profiles.dob && (
+          {profiles.dob && access && (
             <Text style={styles.infoText}>
               Date of Birth: {new Date(profiles.dob).toLocaleDateString()}
             </Text>
@@ -80,36 +110,33 @@ const Profile = () => {
           {profiles.pronouns && (
             <Text style={styles.infoText}>Pronouns: {profiles.pronouns}</Text>
           )}
-          <Text style={styles.infoText}>
-            Privacy:{" "}
-            {profiles.private
-              ? "Personal Info Private"
-              : "Personal Info Public"}
-          </Text>
-          <Text style={styles.infoText}>
-            Marketing: {profiles.want_marketing ? "Opted In" : "Opted Out"}
-          </Text>
+          {access && (
+            <Text style={styles.infoText}>
+              Privacy:{" "}
+              {profiles.private
+                ? "Personal Info Private"
+                : "Personal Info Public"}
+            </Text>
+          )}
+          {access && (
+            <Text style={styles.infoText}>
+              Marketing: {profiles.want_marketing ? "Opted In" : "Opted Out"}
+            </Text>
+          )}
 
           <View style={styles.function}>
-            <Button
-              onPress={() =>
-                router.push({
-                  pathname: "/club_meeting",
-                })
-              }
-            >
-              Go Back
-            </Button>
-            <Button
-              onPress={() =>
-                router.push({
-                  pathname: "/profile/editProfile/[profileID]",
-                  params: { profileID: local.profileID.toString() },
-                })
-              }
-            >
-              Edit Profile
-            </Button>
+            {access && (
+              <Button
+                onPress={() =>
+                  router.push({
+                    pathname: "/profile/editProfile/[profileID]",
+                    params: { profileID: local.profileID.toString() },
+                  })
+                }
+              >
+                Edit Profile
+              </Button>
+            )}
           </View>
         </View>
       </ScrollView>

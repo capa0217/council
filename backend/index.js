@@ -326,15 +326,19 @@ app.get("/club_details/:id", (req, res) => {
 });
 app.get("/clubAccess/:id", (req, res) => {
   const memberId = req.params.id;
-  const query = "SELECT * FROM boardmember WHERE member_id = ?";
+  const query = "SELECT * FROM board_members WHERE user_id = ?";
 
   db.query(query, [memberId], (err, results) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json({ message: "Internal server error" });
     }
+    
+    if (results.length === 0) {
+      return res.status(202).json({ message: "No Club Access" });
+    }
 
-    res.json(results[0]); // Send only the first (and only) result
+    res.status(200).json(results[0]); // Send only the first (and only) result
   });
 });
 app.get("/clubBoard/:id", (req, res) => {

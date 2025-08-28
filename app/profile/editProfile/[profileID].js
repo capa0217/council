@@ -18,8 +18,7 @@ import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
-import CheckBox from "@react-native-community/checkbox";
-import React from "react";
+import { useNavigation } from "expo-router";
 
 const EditProfile = () => {
     const fields = {
@@ -45,9 +44,11 @@ const EditProfile = () => {
   });
 
   const router = useRouter();
+  const nav = useNavigation();
   const local = useLocalSearchParams();
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState([]);
+  const [access, setAccess] = useState(false);
 
   const [privacy, setPrivacy] = useState(false);
   const [marketing, setMarketing] = useState(false);
@@ -82,11 +83,35 @@ const EditProfile = () => {
   }, [userId]);
 
   useEffect(() => {
+    axios
+      .get(`http://${process.env.EXPO_PUBLIC_IP}:8081/clubaccess/${userId}`)
+      .then((res) => {
+        if (res.status == 200) {
+          setAccess(true);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching clubs:", err);
+        Alert.alert("Error", err);
+      });
+  }, [userId]);
+
+  useEffect(() => {
     if (profiles) {
       setPrivacy(profiles.private ? true : false);
       setMarketing(profiles.want_marketing ? true : false);
     }
   }, [profiles]);
+  
+    useEffect(() => {
+      nav.setOptions({
+        title: `Editing ${profiles.first_name} ${profiles.last_name}`,
+      });
+  
+      if (userId == local.profileID.toString()) {
+        setAccess(true);
+      }
+    });
 
   useEffect(() => {
     var date = "";

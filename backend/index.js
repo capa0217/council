@@ -146,7 +146,7 @@ app.get("/profile/:id", (req, res) => {
 });
 app.post("/profile/edit/", (req, res) => {
   const {
-    userId,
+    profile_id,
     first_name,
     last_name,
     email,
@@ -175,7 +175,7 @@ app.post("/profile/edit/", (req, res) => {
       dob,
       privacy,
       marketing,
-      userId,
+      profile_id,
     ],
     (err, result) => {
       if (err) {

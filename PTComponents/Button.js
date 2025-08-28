@@ -3,8 +3,8 @@ import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const Button = (props) => {
   return (
-    <TouchableOpacity style={styles.Button} {...props}>
-      <Text>{props.children}</Text>
+    <TouchableOpacity style={styles.button} {...props}>
+      <Text style={styles.text}>{props.children}</Text>
     </TouchableOpacity>
   );
 };
@@ -12,7 +12,7 @@ const Button = (props) => {
 export default Button;
 
 const styles = StyleSheet.create({
-  Button: {
+  button: {
     backgroundColor: "#8A7D6A",
     width: 130,
     height: 50,
@@ -21,5 +21,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginVertical: 10, // Adds top and bottom spacing
     marginHorizontal: 15,
+  },
+  text: {
+    color: "#ffffff",
   },
 });

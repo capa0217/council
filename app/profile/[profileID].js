@@ -10,6 +10,8 @@ import { useNavigation } from "expo-router";
 import Checkbox from "expo-checkbox";
 
 import { useLocalSearchParams } from "expo-router";
+import Finger from "../../PTComponents/Finger";
+import { useFocusEffect } from "@react-navigation/native";
 
 const PORT = 8081;
 
@@ -18,7 +20,7 @@ const Profile = () => {
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState([]);
   const [access, setAccess] = useState(false);
-  
+
   const [isChecked, setChecked] = useState(false);
 
   const local = useLocalSearchParams();
@@ -57,7 +59,7 @@ const Profile = () => {
     })();
   }, [userId]);
 
-  useEffect(() => {
+  useFocusEffect(() => {
     (async () => {
       try {
         const res = await axios.get(
@@ -72,7 +74,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    nav.setOptions({ headerShown: true })
+    nav.setOptions({ headerShown: true });
     if (userId == local.profileID.toString()) {
       setAccess(true);
       nav.setOptions({
@@ -88,73 +90,52 @@ const Profile = () => {
   return (
     <View style={styles.background}>
       <ScrollView>
-        <View style={styles.function}>
+        <View style={styles.information}>
+          <View style={styles.function}>
             {access && (
               <Button
-                onPress={() => {
-                  nav.setOptions({
-                    headerShown: false,
-                  })
+                onPress={() =>
                   router.navigate({
                     pathname: "/profile/editProfile/[profileID]",
                     params: { profileID: local.profileID.toString() },
-                  });
-                }
+                  })
                 }
               >
                 Edit Profile
               </Button>
             )}
+            {access && <Button onPress={() => null}>Share Info</Button>}
           </View>
-        <View style={styles.information}>
-          <Text style={styles.infoText}>Member_id: {profiles.user_id}</Text>
-          <Text style={styles.infoText}>Email: {profiles.email}</Text>
+          <Text style={styles.infoText}>
+            <Finger /> Member_id: {profiles.user_id}
+          </Text>
+          <Text style={styles.infoText}>
+            <Finger /> {profiles.first_name} {profiles.last_name}
+          </Text>
+          <Text style={styles.infoText}>
+            <Finger /> Email: {profiles.email}
+          </Text>
           {profiles.phone_number && access && (
             <Text style={styles.infoText}>
-              Phone Number: {profiles.phone_number}
+              <Finger /> Phone Number: {profiles.phone_number}
             </Text>
           )}
-          <Text style={styles.infoText}>
-            Join_Date: {new Date(profiles.join_date).toLocaleDateString()}
-          </Text>
-          {profiles.address && access && (<View style={styles.checkContainer}>
-            <Checkbox
-              style={styles.checkbox}
-              value={isChecked}
-              onValueChange={setChecked}
-              color={isChecked ? '#4630EB' : undefined}
-            />
-            <Text style={styles.infoText}>Address: {profiles.address}</Text>
-
-          </View>
-          )}
-          {profiles.postcode && access && (
-            <Text style={styles.infoText}>Postcode: {profiles.postcode}</Text>
+          {profiles.address && access && (
+              <Text style={styles.infoText}><Finger/> Address: {profiles.address}, {profiles.postcode}</Text>
           )}
           {profiles.interests && (
-            <Text style={styles.infoText}>Interests: {profiles.interests}</Text>
+            <Text style={styles.infoText}><Finger/> Notes: {profiles.interests}</Text>
           )}
           {profiles.dob && access && (
             <Text style={styles.infoText}>
               Date of Birth: {new Date(profiles.dob).toLocaleDateString()}
             </Text>
           )}
-          {profiles.pronouns && (
-            <Text style={styles.infoText}>Pronouns: {profiles.pronouns}</Text>
-          )}
-          {access && (
-            <Text style={styles.infoText}>
-              Privacy:{" "}
-              {profiles.private
-                ? "Personal Info Private"
-                : "Personal Info Public"}
-            </Text>
-          )}
-          {access && (
-            <Text style={styles.infoText}>
-              Marketing: {profiles.want_marketing ? "Opted In" : "Opted Out"}
-            </Text>
-          )}
+
+          <Text style={[styles.infoText, {marginTop:40}]}>
+            <Finger /> Join_Date:{" "}
+            {new Date(profiles.join_date).toLocaleDateString()}
+          </Text>
         </View>
       </ScrollView>
     </View>
@@ -165,7 +146,7 @@ export default Profile;
 
 const styles = StyleSheet.create({
   background: {
-    backgroundColor: "#AFABA3",
+    backgroundColor: "#F1F6F5",
     height: "100%",
   },
   title: {
@@ -174,27 +155,24 @@ const styles = StyleSheet.create({
   },
   information: {
     padding: 10,
-    backgroundColor: "#F1F6F5",
+    margin: 10,
+    borderRadius: 10,
+    backgroundColor: "#ffffff",
   },
   infoText: {
     fontSize: 20,
     marginBottom: 5,
   },
-  container: {
-    padding: 20,
-    alignItems: "flex-start",
-  },
   checkContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   checkbox: {
-    padding:5,
+    padding: 5,
     margin: 5,
   },
   function: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-end",
     marginTop: 10,
   },
   titleText: {

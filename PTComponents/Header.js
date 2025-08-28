@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flex: 1,
+    marginRight: '15%'
   },
   buttonContainer: {
     flex: 1,

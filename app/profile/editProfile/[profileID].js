@@ -53,8 +53,7 @@ const EditProfile = () => {
 
   const [privacy, setPrivacy] = useState(false);
   const [marketing, setMarketing] = useState(false);
-
-  useEffect(() => {
+useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
@@ -169,10 +168,10 @@ const EditProfile = () => {
         data[key] = null;
       }
     }
-
+    let profile_id = local.profileID.toString()
     const payload = {
       ...data,
-      userId,
+      profile_id,
       privacy,
       marketing,
     };
@@ -183,9 +182,7 @@ const EditProfile = () => {
       );
       console.log("Server Response:", editProfileResponse.data);
       Alert.alert("Success", "Update successful");
-      router.push({
-        pathname: "/profile",
-      });
+      router.back();
     } catch (error) {
       console.error(
         "Error submitting form:",
@@ -349,9 +346,7 @@ const EditProfile = () => {
 
             <Button
               onPress={() =>
-                router.push({
-                  pathname: "/profile",
-                })
+                router.back()
               }
             >
               Cancel Changes

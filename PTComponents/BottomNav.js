@@ -9,7 +9,7 @@ function Nav (props) {
     return <TouchableOpacity
         style={styles.navButton}
         onPress={() =>
-          router.navigate({
+          router.replace({
             pathname: `/${props.link}`,
           })
         }

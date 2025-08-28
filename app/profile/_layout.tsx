@@ -7,7 +7,7 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: "#065395",
         },
@@ -24,7 +24,9 @@ export default function Layout() {
       <Stack.Screen
         name="[profileID]"
         options={{
-          title: "Profile"}}
+          title: "Profile",
+        }}
+        
       />
     </Stack>
   );

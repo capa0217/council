@@ -8,7 +8,6 @@ import {
 import { useRouter } from "expo-router";
 
 import HeaderButton from "./HeaderButton";
-import { canGoBack } from "expo-router/build/global-state/routing";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Header = (props) => {
@@ -17,11 +16,6 @@ const Header = (props) => {
   return (
     <SafeAreaView edges={["top"]}>
         <View style={styles.container}>
-          <View style={styles.buttonContainer}>
-            {canGoBack() && (
-              <HeaderButton onPress={() => router.back()}>Back</HeaderButton>
-            )}
-          </View>
           <View style={styles.logoContainer}>
             <TouchableOpacity
               onPress={() =>
@@ -64,11 +58,10 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#F1F6F5",
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
   },
   logoContainer: {
-    alignContent: "center",
-    flex: 2,
+    flex: 1,
   },
   buttonContainer: {
     flex: 1,

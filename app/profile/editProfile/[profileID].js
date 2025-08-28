@@ -7,6 +7,7 @@ import {
   Alert,
   StyleSheet,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 
 import FormContainer from "@/PTComponents/FormContainer";
@@ -21,25 +22,25 @@ import { useForm, Controller } from "react-hook-form";
 import { useNavigation } from "expo-router";
 
 const EditProfile = () => {
-    const fields = {
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone_number: "",
-      address: "",
-      postcode: "",
-      interests: "",
-      dob: "",
-      pronouns: "",
-      private: false,
-      want_marketing: false,
-    }
+  const fields = {
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    address: "",
+    postcode: "",
+    interests: "",
+    dob: "",
+    pronouns: "",
+    private: false,
+    want_marketing: false,
+  }
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitted },
-  } = useForm ({
+  } = useForm({
     defaultValues: fields,
   });
 
@@ -71,10 +72,12 @@ const EditProfile = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${local.profileID}`
-        );
-        setProfiles(res.data);
+        if (userId) {
+          const res = await axios.get(
+            `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${local.profileID}`
+          );
+          setProfiles(res.data);
+        }
       } catch (error) {
         console.error("Error fetching profile:", error);
         Alert.alert("Error", "Failed to fetch profile");
@@ -102,16 +105,19 @@ const EditProfile = () => {
       setMarketing(profiles.want_marketing ? true : false);
     }
   }, [profiles]);
-  
-    useEffect(() => {
+
+  useEffect(() => {
+    if (userId == local.profileID.toString()) {
+      setAccess(true);
+      nav.setOptions({
+        title: `Editing Your Profile`,
+      });
+    } else {
       nav.setOptions({
         title: `Editing ${profiles.first_name} ${profiles.last_name}`,
       });
-  
-      if (userId == local.profileID.toString()) {
-        setAccess(true);
-      }
-    });
+    }
+  });
 
   useEffect(() => {
     var date = "";
@@ -119,7 +125,7 @@ const EditProfile = () => {
     var phone = "";
 
     if (profiles) {
-        console.log(profiles.first_name);
+      console.log(profiles.first_name);
       if (profiles.dob) {
         let currDate = new Intl.DateTimeFormat(undefined, {
           year: "numeric",
@@ -189,13 +195,8 @@ const EditProfile = () => {
     }
   };
   return (
-    <View style={styles.background}>
-      <View style={styles.title}>
-        <Text style={styles.titleText}>
-          Editing the Profile of: {profiles.first_name} {profiles.last_name}
-        </Text>
-      </View>
-      <ScrollView>
+    <ScrollView>
+      <SafeAreaView style={styles.background}>
         <FormContainer>
           <View style={styles.inputs}>
             {[
@@ -343,7 +344,6 @@ const EditProfile = () => {
               )
             )}
           </View>
-
           <View style={styles.function}>
             <Button onPress={handleSubmit(onSubmit)}>Submit Changes</Button>
 
@@ -358,8 +358,8 @@ const EditProfile = () => {
             </Button>
           </View>
         </FormContainer>
-      </ScrollView>
-    </View>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 

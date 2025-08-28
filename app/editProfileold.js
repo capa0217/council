@@ -20,7 +20,6 @@ import Button from "./components/Button.js";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useForm, Controller } from "react-hook-form";
-import CheckBox from "@react-native-community/checkbox";
 
 const EditProfile = () => {
   const {

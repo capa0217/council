@@ -3,14 +3,9 @@ import axios from "axios";
 
 import { Text, View, Alert, StyleSheet, ScrollView } from "react-native";
 import Button from "@/PTComponents/Button";
-import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "expo-router";
-
-import Checkbox from "expo-checkbox";
-
-import { useLocalSearchParams } from "expo-router";
-import Finger from "../../PTComponents/Finger";
+import { useNavigation, useRouter, useLocalSearchParams } from "expo-router";
+import Finger from "@/PTComponents/Finger";
 import { useFocusEffect } from "@react-navigation/native";
 
 const PORT = 8081;
@@ -59,7 +54,7 @@ const Profile = () => {
     })();
   }, [userId]);
 
-  useFocusEffect(() => {
+  useFocusEffect(React.useCallback(() => {
     (async () => {
       try {
         const res = await axios.get(
@@ -71,7 +66,7 @@ const Profile = () => {
         Alert.alert("Error", "Failed to load user ID");
       }
     })();
-  }, []);
+  }));
 
   useEffect(() => {
     nav.setOptions({ headerShown: true });
@@ -107,7 +102,7 @@ const Profile = () => {
             {access && <Button onPress={() => null}>Share Info</Button>}
           </View>
           <Text style={styles.infoText}>
-            <Finger /> Member_id: {profiles.user_id}
+            <Finger /> Member ID: {profiles.user_id}
           </Text>
           <Text style={styles.infoText}>
             <Finger /> {profiles.first_name} {profiles.last_name}

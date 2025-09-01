@@ -8,12 +8,14 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
 
 import FormContainer from "@/PTComponents/FormContainer";
 import FormLabel from "@/PTComponents/FormLabel";
 import FormInput from "@/PTComponents/FormInput";
 import Button from "@/PTComponents/Button";
+import Finger from "@/PTComponents/Finger";
 
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,7 +36,7 @@ const EditProfile = () => {
     pronouns: "",
     private: false,
     want_marketing: false,
-  }
+  };
   const {
     control,
     handleSubmit,
@@ -49,11 +51,11 @@ const EditProfile = () => {
   const local = useLocalSearchParams();
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState([]);
-  const [access, setAccess] = useState(false);
+  const [shown, setShown] = useState(false);
 
   const [privacy, setPrivacy] = useState(false);
   const [marketing, setMarketing] = useState(false);
-useEffect(() => {
+  useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
@@ -85,20 +87,6 @@ useEffect(() => {
   }, [userId]);
 
   useEffect(() => {
-    axios
-      .get(`http://${process.env.EXPO_PUBLIC_IP}:8081/clubaccess/${userId}`)
-      .then((res) => {
-        if (res.status == 200) {
-          setAccess(true);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching clubs:", err);
-        Alert.alert("Error", err);
-      });
-  }, [userId]);
-
-  useEffect(() => {
     if (profiles) {
       setPrivacy(profiles.private ? true : false);
       setMarketing(profiles.want_marketing ? true : false);
@@ -107,7 +95,6 @@ useEffect(() => {
 
   useEffect(() => {
     if (userId == local.profileID.toString()) {
-      setAccess(true);
       nav.setOptions({
         title: `Editing Your Profile`,
       });
@@ -168,7 +155,7 @@ useEffect(() => {
         data[key] = null;
       }
     }
-    let profile_id = local.profileID.toString()
+    let profile_id = local.profileID.toString();
     const payload = {
       ...data,
       profile_id,
@@ -335,22 +322,27 @@ useEffect(() => {
                     rules={rule}
                   />
                   {errors[field] && isSubmitted && (
-                    <Text style={styles.errorText}>{errors[field].message?.toString()}</Text>
+                    <Text style={styles.errorText}>
+                      {errors[field].message?.toString()}
+                    </Text>
                   )}
                 </View>
               )
             )}
           </View>
           <View style={styles.function}>
+            <TouchableOpacity
+              onPress={() => router.push("/profile/editProfile/sharing")}
+            >
+              <FormLabel>
+                <Finger /> Share Your Info
+              </FormLabel>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.function}>
             <Button onPress={handleSubmit(onSubmit)}>Submit Changes</Button>
 
-            <Button
-              onPress={() =>
-                router.back()
-              }
-            >
-              Cancel Changes
-            </Button>
+            <Button onPress={() => router.back()}>Cancel Changes</Button>
           </View>
         </FormContainer>
       </SafeAreaView>

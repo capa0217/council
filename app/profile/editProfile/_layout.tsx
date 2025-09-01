@@ -27,6 +27,14 @@ export default function Layout() {
           title: "Edit Profile"
       }}
       />
+      
+      <Stack.Screen
+        name="sharing"
+        options={{
+          presentation:"transparentModal",
+          title: "Sharing Data",
+      }}
+      />
     </Stack>
   );
 }

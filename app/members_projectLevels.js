@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert} from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import BottomNav from './components/BottomNav';
 import PTHeader from './components/PTHeader';
@@ -8,22 +8,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const MembersProjectPage1 = () => {
-   const [userId, setUserId] = useState(null);
-    const [clubId, setclubid] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [clubId, setclubid] = useState(null);
   useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
 
-            if (storedUserId) {
+        if (storedUserId) {
           console.log(storedUserId);
           setUserId(storedUserId);
           const access = await axios.get(
-        `http://10.88.48.249:8081/clubBoards/${storedUserId}`
-      );
-        const accesses = access.data; 
-        console.log(accesses);
-        setclubid(accesses.club_id)
+            `http://${process.env.EXPO_PUBLIC_IP}:8081/clubBoards/${storedUserId}`
+          );
+          const accesses = access.data;
+          console.log(accesses);
+          setclubid(accesses.club_id)
         }
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
@@ -35,15 +35,15 @@ const MembersProjectPage1 = () => {
   const navigation = useNavigation();
 
   const handleLevelPress = async (level) => {
-     try {
+    try {
       await AsyncStorage.setItem("level", level);
       router.push("./members_projectLevels_name");
     } catch (error) {
       console.error("Error access level", error);
     }
   };
-  const handleClubPress = async (userId) =>{
-     try {
+  const handleClubPress = async (userId) => {
+    try {
       await AsyncStorage.setItem("id", userId);
       router.push("./members_projectLevels_name");
     } catch (error) {
@@ -52,11 +52,11 @@ const MembersProjectPage1 = () => {
   }
 
   return (
-  <View style={styles.container}>
+    <View style={styles.container}>
       {/* Top Bar */}
-      <PTHeader button={true} text={'Profile'} link={'profile'}/>
+      <PTHeader button={true} text={'Profile'} link={'profile'} />
 
-       {userId !=null &&  <ScrollView contentContainerStyle={styles.content}>
+      {userId != null && <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.headerBlock}>
           <Text style={styles.headerText}>Project Levels</Text>
@@ -70,20 +70,22 @@ const MembersProjectPage1 = () => {
           <TouchableOpacity
             key={level}
             style={styles.levelButton}
-            onPress={() => {handleLevelPress(level)
-                handleClubPress(userId)}
+            onPress={() => {
+              handleLevelPress(level)
+              handleClubPress(userId)
+            }
             }
           >
             <Text style={styles.buttonText}>Level {level}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>}
-      {userId == null && <TouchableOpacity style={styles.warning} onPress={()=>router.push("./login")}>Warning: You need to become a member and do the login to see this content</TouchableOpacity>}
+      {userId == null && <TouchableOpacity style={styles.warning} onPress={() => router.push("./login")}>Warning: You need to become a member and do the login to see this content</TouchableOpacity>}
       {/* Bottom Navigation */}
-                  <BottomNav active={3}/>
+      <BottomNav active={3} />
 
     </View>
-);
+  );
 };
 
 export default MembersProjectPage1;
@@ -93,11 +95,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  warning:{
-    textAlign:'center',
-    paddingTop:280,
-    paddingBottom:300,
-    fontSize:25,
+  warning: {
+    textAlign: 'center',
+    paddingTop: 280,
+    paddingBottom: 300,
+    fontSize: 25,
   },
   topBar: {
     flexDirection: 'row',
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#AFABA3',
     alignItems: 'center',
   },
-    bottomNav: {
+  bottomNav: {
     flexDirection: "row",
     justifyContent: "space-around",
     backgroundColor: "#F1F6F5",
@@ -132,7 +134,7 @@ const styles = StyleSheet.create({
   headerBlock: {
     marginTop: 30,
     backgroundColor: '#065395',
-    paddingVertical: 15, 
+    paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 10,
     width: '100%',

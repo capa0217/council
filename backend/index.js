@@ -1,18 +1,21 @@
+require('dotenv').config();
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
+const fs = require('fs');
+const path = require("path");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 8081;
-
 const db = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "root",
-  password: "123456789",
-  database: "sys",
+  host: process.env.DB_SERVER,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: +process.env.DB_PORT,
+  ssl: {ca: fs.readFileSync(path.resolve(__dirname,"../backend/DigiCertGlobalRootCA.crt.pem"))}
 });
 
 db.connect((err) => {
@@ -21,6 +24,20 @@ db.connect((err) => {
     return;
   }
   console.log("Connected to MySQL database.");
+  /* Testing connection
+  const Query = "SELECT * FROM members";
+  db.query(Query, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+    }
+    else{
+      console.log('Selected ' + result.length + ' row(s).');
+      for (i = 0; i < result.length; i++) {
+          console.log('Row: ' + JSON.stringify(result[i]));
+      }
+      console.log('Done.');
+    }
+  }); */
 });
 
 //Registers a members login and password into the member_logins table. This is done when a club treasurer confirms that the member has paid.
@@ -129,7 +146,7 @@ app.get("/profile/:id", (req, res) => {
 });
 app.post("/profile/edit/", (req, res) => {
   const {
-    user_id,
+    profile_id,
     first_name,
     last_name,
     email,
@@ -140,11 +157,11 @@ app.post("/profile/edit/", (req, res) => {
     pronouns,
     dob,
     privacy,
-    want_marketing,
+    marketing,
   } = req.body;
   const editProfileQuery =
     "UPDATE members SET first_name = ?, last_name = ?, email = ?, phone_number = ?, address = ?, postcode = ?, interests = ?, pronouns = ?, dob = ?, private = ?, want_marketing = ? WHERE user_id = ?";
-  db.query(
+    db.query(
     editProfileQuery,
     [
       first_name,
@@ -157,8 +174,8 @@ app.post("/profile/edit/", (req, res) => {
       pronouns,
       dob,
       privacy,
-      want_marketing,
-      user_id,
+      marketing,
+      profile_id,
     ],
     (err, result) => {
       if (err) {
@@ -194,84 +211,6 @@ app.post("/user/member", (req, res) => {
     return res.status(200).json({ message: "guest Updated Successfully" });
   });
 });
-app.post("/project/add", async (req, res) => {
-  try {
-    let { assignment_id, member_id, project_title, project_number, project_level } = req.body;
-
-  
-    const promises = [];
-
-    member_id.forEach(m_id => {
-      project_title.forEach(title => {
-        
-            db.query(
-              "INSERT INTO `development program` (assignment_id, member_id, project_number, project_title, project_level) VALUES (?, ?, ?, ?, ?)",
-              [assignment_id, m_id, project_number, title, project_level],
-              (err, result) => {
-                if (err) return (err);
-                else return (result);
-              }
-            )})});
-      
-    
-    res.status(200).json({ message: "Projects Added Successfully" });
-  } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({ message: "Database Error" });
-  }
-});
-app.get("/project/:id", (req, res) =>{
-  const projectlevel = req.params.id;
-  const query = "SELECT * FROM `development program` WHERE project_level = ?";
-
-  db.query(query, [projectlevel], (err, result) =>{
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-        res.json(result);
-
-  })
-});
-app.get("/projects/:id", (req, res) =>{
-  const projectlevel = req.params.id;
-  const query = "SELECT * FROM `development program` WHERE assignment_id = ?";
-
-  db.query(query, [projectlevel], (err, result) =>{
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-        res.json(result);
-
-  })
-});
-app.get("/projectss/:id/:level", (req, res) =>{
-  const projectlevel = req.params.level;
-  const projectid= req.params.id;
-  const query = "SELECT * FROM `development program` WHERE member_id= ? AND project_level = ?";
-
-  db.query(query, [projectid, projectlevel], (err, result) =>{
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-        res.json(result);
-
-  })
-});
 app.post("/users/login", (req, res) => {
   const { website_login, password } = req.body;
 
@@ -300,7 +239,7 @@ app.post("/users/login", (req, res) => {
 });
 app.get("/user/:id", (req, res) => {
   const userId = req.params.id;
-  const query = "SELECT * FROM members WHERE user_id = ?";
+  const query = "SELECT Club_id FROM `member's club` WHERE User_id = ?";
 
   db.query(query, [userId], (err, results) => {
     if (err) {
@@ -312,12 +251,13 @@ app.get("/user/:id", (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json(results);
+    const user = results;
+    res.json({ Club_id: user });
   });
 });
 app.get("/club/:id", (req, res) => {
   const clubId = req.params.id;
-  const query = "SELECT club_name FROM club WHERE club_id = ?";
+  const query = "SELECT Club_name FROM club WHERE Club_id = ?";
 
   db.query(query, [clubId], (err, results) => {
     if (err) {
@@ -386,37 +326,24 @@ app.get("/club_details/:id", (req, res) => {
 });
 app.get("/clubAccess/:id", (req, res) => {
   const memberId = req.params.id;
-  const query = "SELECT * FROM `board member` WHERE member_id = ?";
+  const query = "SELECT * FROM board_members WHERE user_id = ?";
 
   db.query(query, [memberId], (err, results) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json({ message: "Internal server error" });
     }
+    
+    if (results.length === 0) {
+      return res.status(202).json({ message: "No Club Access" });
+    }
 
-    res.json(results[0]); 
+    res.status(200).json(results[0]); // Send only the first (and only) result
   });
 });
 app.get("/clubBoard/:id", (req, res) => {
   const clubId = req.params.id;
-  const query = "SELECT member_id FROM `member's club` WHERE club_id = ?";
-
-  db.query(query, [clubId], (err, results) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-
-    if (results.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json(results);
-  });
-});
-app.get("/clubBoards/:id", (req, res) => {
-  const clubId = req.params.id;
-  const query = "SELECT club_id FROM `member's club` WHERE member_id = ?";
+  const query = "SELECT User_id FROM `member's club` WHERE Club_id = ?";
 
   db.query(query, [clubId], (err, results) => {
     if (err) {
@@ -516,6 +443,8 @@ app.post("/send-messages", async (req, res) => {
     res.json(result);
   });
 });
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ` + PORT);
+app.listen(+process.env.PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ` + process.env.PORT);
 });
+
+

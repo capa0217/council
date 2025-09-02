@@ -7,11 +7,13 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import PTHeader from "./components/PTHeader";
-
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
 import axios from "axios";
+import FormLabel from "./components/FormLabel";
+import FormInput from "./components/FormInput";
+import Button from "./components/Button";
+import FormContainer from "./components/FormContainer";
 
 const PORT = 8081;
 
@@ -49,7 +51,7 @@ const RegisterForm = () => {
 
     try {
       const memberResponse = await axios.post(
-        `http://192.168.1.132:8081/users/checkMonthlyMembers`
+        `http://${process.env.EXPO_PUBLIC_IP}:8081/users/checkMonthlyMembers`
       );
       console.log("Server Response:", memberResponse.data.message);
       Alert.alert("Success", "Membership successful");
@@ -78,9 +80,7 @@ const RegisterForm = () => {
 
       try {
         const checkIDResponse = await axios.post(
-                  `http://192.168.1.132:8081/users/checkIDExists`
-
-          ,
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/users/checkIDExists`,
           { user_id }
         );
         console.log("Server Response:", checkIDResponse.data.message);
@@ -110,7 +110,7 @@ const RegisterForm = () => {
 
     try {
       const createMemberResponse = await axios.post(
-        `http://192.168.1.132:8081/users/newMember`,
+        `http://${process.env.EXPO_PUBLIC_IP}:8081/users/newMember`,
         payload
       );
       console.log("Server Response:", createMemberResponse.data);
@@ -128,7 +128,7 @@ const RegisterForm = () => {
 
     try {
       const registerResponse = await axios.post(
-        `http://192.168.1.132:8081/users/register`,
+        `http://${process.env.EXPO_PUBLIC_IP}:8081/users/register`,
         payload
       );
       console.log("Server Response:", registerResponse.data);
@@ -148,8 +148,7 @@ const RegisterForm = () => {
 
   return (
     <View style={styles.background}>
-      <PTHeader></PTHeader>
-      <View style={styles.registerContainer}>
+      <FormContainer>
         <View style={styles.inputs}>
           {[
             {
@@ -180,13 +179,12 @@ const RegisterForm = () => {
             },
           ].map(({ name, placeholder, label, autocomplete, rule }) => (
             <View key={name} style={styles.inputGroup}>
-              {label && <Text style={styles.label}>{label}</Text>}
+              {label && <FormLabel>{label}</FormLabel>}
               <Controller
                 control={control}
                 name={name}
                 render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    style={styles.input}
+                  <FormInput
                     autoComplete={autocomplete}
                     placeholder={placeholder}
                     onChangeText={onChange}
@@ -202,21 +200,11 @@ const RegisterForm = () => {
             </View>
           ))}
           <View style={styles.function}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push("./login")}
-            >
-              <Text>Go Back</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleSubmit(onSubmit)}
-            >
-              <Text>Register</Text>
-            </TouchableOpacity>
+            <Button onPress={() => router.push("./login")}>Go Back</Button>
+            <Button onPress={handleSubmit(onSubmit)}>Register</Button>
           </View>
         </View>
-      </View>
+      </FormContainer>
     </View>
   );
 };
@@ -228,40 +216,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#AFABA3",
     height: "100%",
   },
-  button: {
-    backgroundColor: "#FFD347",
-    width: 130,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 6,
-    marginVertical: 10, // Adds top and bottom spacing
-    marginHorizontal: 15,
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: "#433D33",
-    width: "100%",
-    height: 50,
-    marginTop: "1%",
-    paddingLeft: 10,
-  },
   inputs: {
     marginHorizontal: 20,
-  },
-  label: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginTop: 10,
-  },
-  registerContainer: {
-    backgroundColor: "#F1F6F5",
-    borderWidth: 2,
-    borderColor: "#433D33",
-    marginTop: "10%",
-    paddingVertical: "5%",
-    marginHorizontal: "5%",
-    justifyContent: "center",
   },
   function: {
     flexDirection: "row",

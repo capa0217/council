@@ -46,7 +46,7 @@ const ClubMembersPage = () => {
     (async () => {
       try {
         const res = await axios.get(
-          `http://10.88.48.249:8081/members`
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/members`
         );
 
         setDetails(res.data.user);
@@ -56,19 +56,21 @@ const ClubMembersPage = () => {
       }
     })();
   }, []);
+
   useEffect(() => {
     axios
-      .get(`http://10.88.48.249:8081/clubs`)
+      .get(`http://${process.env.EXPO_PUBLIC_IP}:8081/clubs`)
       .then((res) => setClubs(res.data))
       .catch((err) => {
         console.error("Error fetching clubs:", err);
         Alert.alert("Error", "Failed to fetch clubs");
       });
   }, []);
+
   useEffect(() => {
     if (!selectedClubId) return;
     axios
-      .get(`http://10.88.48.249/clubBoard/${selectedClubId}`)
+      .get(`http://${process.env.EXPO_PUBLIC_IP}/clubBoard/${selectedClubId}`)
       .then((res) => setids(res.data))
       .catch((err) => {
         console.error("Error fetching clubs:", err);
@@ -175,10 +177,10 @@ const ClubMembersPage = () => {
             key={member.user_id}
             style={styles.meetingBlock}
             onPress={() =>
-              Alert.alert(
-                "Member Selected",
-                `${member.first_name} ${member.last_name}`
-              )
+              router.push({
+                pathname: "/profile/[profileID]",
+                params: { profileID: member.user_id },
+              })
             }
           >
             <Text style={styles.meetingName}>

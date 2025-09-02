@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -26,38 +26,38 @@ const ProjectDetailPage = () => {
 
   //const { projectName } = route.params;
 
-  
-     const [projectRows, setProject]= useState([]);
-     const [name, setName] = useState("");
- useEffect(() => {
+
+  const [projectRows, setProject] = useState([]);
+  const [name, setName] = useState("");
+  useEffect(() => {
     (async () => {
       try {
         const projectid = await AsyncStorage.getItem("projectId");
-        if(projectid){
-            const {data}= await axios.get(`http://10.88.48.249:8081/projects/${projectid}`);
-            setProject(data);
-            setName(data[0].project_number)
+        if (projectid) {
+          const { data } = await axios.get(`http://${process.env.EXPO_PUBLIC_IP}:8081/projects/${projectid}`);
+          setProject(data);
+          setName(data[0].project_number)
         }
-        
-        
+
+
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
         Alert.alert("Error", "Failed to load user ID");
       }
     })();
   }, []);
-   const uniqueProjects = projectRows.filter(
-  (p, index, self) =>
-    index === self.findIndex((q) => q.project_title === p.project_title)
-);
+  const uniqueProjects = projectRows.filter(
+    (p, index, self) =>
+      index === self.findIndex((q) => q.project_title === p.project_title)
+  );
   return (
     <View style={styles.container}>
       {/* Top Bar */}
-      <PTHeader button={true} text={'Profile'} link={'profile'}/>
+      <PTHeader button={true} text={'Profile'} link={'profile'} />
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Project Title Block */}
-      <View style={styles.headerBlock}>
+        <View style={styles.headerBlock}>
           <Text style={styles.headerText}>{name}</Text>
         </View>
 
@@ -74,7 +74,7 @@ const ProjectDetailPage = () => {
         {/* Table Rows */}
         {uniqueProjects.map((row, index) => (
           <View key={index} style={styles.tableRow}>
-            <Text style={styles.tableCell}>{index+1}</Text>
+            <Text style={styles.tableCell}>{index + 1}</Text>
             <Text style={styles.tableCell}>{row.project_title}</Text>
             <Text style={styles.tableCell}>{row.date}</Text>
           </View>
@@ -82,8 +82,8 @@ const ProjectDetailPage = () => {
       </ScrollView>
 
       {/* Bottom Navigation */}
-                  <BottomNav active={3}/>
-      </View>
+      <BottomNav active={3} />
+    </View>
   );
 };
 

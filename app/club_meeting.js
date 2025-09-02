@@ -4,20 +4,18 @@ import {
   View,
   Alert,
   StyleSheet,
-  Image,
-  Button,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import PTHeader from "./components/PTHeader";
-import { FontAwesome } from "@expo/vector-icons";
+import BottomNav from "@/PTComponents/BottomNav";
+import { Picker } from "@react-native-picker/picker";
+
+import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScrollView } from "react-native-web";
-import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
-import { useRouter } from "expo-router";
-import BottomNav from "./components/BottomNav";
+
 
 const PORT = 8081;
 
@@ -28,7 +26,6 @@ const ProfileScreen = () => {
   const [clubs, setClubs] = useState([]);
   const [clubMeetings, setClubwithMeetings] = useState([]);
   const navigation = useNavigation();
-  const [paids, setpaid]= useState(null);
   const [selectedMonth, setSelectedMonth] = useState("May");
   const [selectedYear, setSelectedYear] = useState("2025");
   const [selectedClub, setSelectedClub] = useState("All Clubs");
@@ -54,23 +51,22 @@ const ProfileScreen = () => {
     (async () => {
       try {
         // Step 1: Get club list from user info
-        const  data  = await axios.get(
-          `http://10.88.48.249:8081/clubBoards/${userId}`
+        const { data } = await axios.get(
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/user/${userId}`
         );
-        console.log(data);
-        const clubList = data.data || [];
-        console.log(clubList);
+        const clubList = data.Club_id || [];
+
         setClubs(clubList);
 
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubList.map(async (item) => {
             const res = await axios.get(
-              `http://10.88.48.249:8081/club/${item.club_id}`
+              `http://${process.env.EXPO_PUBLIC_IP}:8081/club/${item.Club_id}`
             );
             const clubNames = res.data.Club_name[0].Club_name;
             const resMeet = await axios.get(
-              `http://10.88.48.249:8081/meeting/${item.club_id}`
+              `http://${process.env.EXPO_PUBLIC_IP}:8081/meeting/${item.Club_id}`
             );
             const MeetNames = resMeet.data;
             return {
@@ -131,8 +127,9 @@ const ProfileScreen = () => {
 
   console.log(uniqueClubs);
   const handlePress = async (meetingId) => {
+    console.log(typeof(meetingId));
     try {
-      await AsyncStorage.setItem("meetingId", meetingId);
+      await AsyncStorage.setItem("meetingId", meetingId.toString());
       router.push("/meeting_details");
     } catch (error) {
       console.error("Error saving meeting_id:", error);
@@ -141,33 +138,6 @@ const ProfileScreen = () => {
   return (
    <View style={styles.container}>
       {/* Top Bar */}
-
-       {userId && <PTHeader button={true} text={"Profile"} link={"profile"} />}
-       
-             {/* Logo */}
-        {userId == null &&  ( <View style={styles.logoContainer}>
-               <TouchableOpacity
-                 onPress={() =>
-                   router.push({
-                     pathname: `/`,
-                   })
-                 }
-               >
-                 <Image
-                   source={{
-                     uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-                   }}
-                   style={styles.logo}
-                   resizeMode="contain"
-                 />
-               </TouchableOpacity>
-             
-             <TouchableOpacity
-                     style={styles.iconWrapper}
-                     onPress={() => router.push("/login")}
-                   >Login</TouchableOpacity>
-                   </View>)}
-
       {userId != null && (<ScrollView style={styles.content}>
         {/* Meeting Header Block */}
         <View style={styles.meetingHeaderBlock}>
@@ -273,7 +243,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#ffffff",
-   
   },
   sortingRow: {
     flexDirection: "row",

@@ -23,15 +23,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#065395",
     paddingVertical: 15,
     paddingHorizontal: 5,
-    flexDirection: "row"
+    flexDirection: "row",
   },
   Title: {
     marginLeft: 10,
-    marginTop: 5,
     fontSize: 20,
     fontWeight: "bold",
     color: "#ffffff",
     flex: 20,
+    alignSelf:"center"
   },
   Back: {
     flex: 1

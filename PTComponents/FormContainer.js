@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#433D33",
     paddingVertical: "5%",
-    marginHorizontal: "5%",
+    margin: "5%",
     justifyContent: "center",
   },
 });

@@ -31,7 +31,7 @@ export default function Layout() {
       <Stack.Screen
         name="sharing"
         options={{
-          presentation:"transparentModal",
+          presentation:"containedTransparentModal",
           title: "Sharing Data",
       }}
       />

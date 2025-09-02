@@ -99,7 +99,6 @@ const Profile = () => {
                 Edit Profile
               </Button>
             )}
-            {access && <Button onPress={() => null}>Share Info</Button>}
           </View>
           <Text style={styles.infoText}>
             <Finger /> Member ID: {profiles.user_id}

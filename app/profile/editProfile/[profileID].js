@@ -180,7 +180,7 @@ const EditProfile = () => {
   };
   return (
     <ScrollView>
-      <SafeAreaView style={styles.background}>
+      <View style={styles.background}>
         <FormContainer>
           <View style={styles.inputs}>
             {[
@@ -345,7 +345,7 @@ const EditProfile = () => {
             <Button onPress={() => router.back()}>Cancel Changes</Button>
           </View>
         </FormContainer>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };

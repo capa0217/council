@@ -16,8 +16,6 @@ const Profile = () => {
   const [profiles, setProfiles] = useState([]);
   const [access, setAccess] = useState(false);
 
-  const [isChecked, setChecked] = useState(false);
-
   const local = useLocalSearchParams();
   const nav = useNavigation();
 
@@ -87,7 +85,7 @@ const Profile = () => {
       <ScrollView>
         <View style={styles.information}>
           <View style={styles.function}>
-            {access || (
+            {access && (
               <Button
                 onPress={() =>
                   router.navigate({

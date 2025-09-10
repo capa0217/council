@@ -230,10 +230,6 @@ const GuestMeetingPages = () => {
   const renderMeetingListView = () => (
     <ScrollView style={styles.content}>
       <View style={styles.headerBlock}>
-        <Image
-          source={{ uri: 'https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png' }}
-          style={styles.logoSmall}
-        />
         <Text style={styles.headerText}>Meetings</Text>
       </View>
 

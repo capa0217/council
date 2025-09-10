@@ -5,7 +5,6 @@ import {
   Alert,
   StyleSheet,
   Image,
-  Button,
   TouchableOpacity,
   Modal,
   TextInput,
@@ -17,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
+import Button from '@/PTComponents/Button';
 
 export default function GuestPage() {
   const router = useRouter();
@@ -63,27 +63,8 @@ export default function GuestPage() {
 
   return (
     <View>
-      <View style={styles.topBar}>
-        <Image
-          source={{
-            uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-          }}
-          style={styles.logo}
-        />
-
-        <TouchableOpacity
-          style={styles.circle}
-          onPress={() =>
-            router.push({
-              pathname: "/profile",
-              query: { user_Id: userId },
-            })
-          }
-        >
-          <FontAwesome name="user" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
       <View style={styles.meetingHeaderBlock}>
+        <Button onPress={()=>router.navigate('GuestLimit')}>Test</Button>
         <Text style={styles.meetingHeaderText}>List of Our Clubs</Text>
       </View>
       <ScrollView>

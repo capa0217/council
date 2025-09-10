@@ -87,12 +87,11 @@ const Profile = () => {
       <ScrollView>
         <View style={styles.information}>
           <View style={styles.function}>
-            {access && (
+            {access || (
               <Button
                 onPress={() =>
                   router.navigate({
-                    pathname: "/profile/editProfile/[profileID]",
-                    params: { profileID: local.profileID.toString() },
+                    pathname: "/profile/editProfile/"+local.profileID.toString(),
                   })
                 }
               >

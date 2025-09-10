@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  Alert,
-  StyleSheet,
-  TouchableOpacity
-} from "react-native";
+import { Text, View, Alert, StyleSheet, TouchableOpacity } from "react-native";
 import FormContainer from "./components/FormContainer";
 import FormLabel from "./components/FormLabel.js";
 import FormInput from "./components/FormInput.js";
@@ -44,61 +38,69 @@ const LoginForm = () => {
 
   const handleLogin = async (data) => {
     try {
-      const response = await axios.post(
+      const login = await axios.post(
         `http://${process.env.EXPO_PUBLIC_IP}:8081/users/login`,
         {
           website_login: data.website_login.trim(),
           password: data.password.trim(),
         }
       );
-      console.log(response.data);
-      const user = await axios.get(`http://${process.env.EXPO_PUBLIC_IP}:8081/user/${response.data.user_id}`)
-      console.log("hello");
-      console.log(user.data[0].user_id);
-      const responses = await axios.get(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/clubAccess/${response.data.user_id}`,
+      const member = await axios.get(
+        `http://${process.env.EXPO_PUBLIC_IP}:8081/member/${login.data.user_id}`
       );
-      console.log(responses.data);
-      console.log(response.data[0]);
-      if (response.status == 401) {
-        Alert.alert("Login Failed", response.data.message);
+      const clubAccess = await axios.get(
+        `http://${process.env.EXPO_PUBLIC_IP}:8081/clubAccess/${member.data.User_id}`
+      );
+
+      console.log(member.data.User_id);
+      console.log(member.data.paid);
+
+      if (member.status == 401) {
+        Alert.alert("Login Failed", member.data.message);
       } else if (
-        user.data[0].paid == "1" &&
-        user.data[0].guest == "0" && responses.data.position == null
+        member.data.paid == "1" &&
+        member.data.guest == "0" &&
+        clubAccess.data.position == null
       ) {
         // Store user data in AsyncStorage
-        await AsyncStorage.setItem("userId", response.data.user_id.toString());
+        await AsyncStorage.setItem("userId", member.data.user_id.toString());
         router.push({
           pathname: "/club_meeting",
-          query: { userId: response.data.user_id },
+          query: { userId: member.data.user_id },
         });
-
-      } else if (user.data[0].paid == "1" &&
-        user.data[0].guest == "0" && responses.data.position != null) {
-        await AsyncStorage.setItem("userId", response.data.user_id.toString());
+      } else if (
+        member.data.paid == "1" &&
+        member.data.guest == "0" &&
+        clubAccess.data.position != null
+      ) {
+        await AsyncStorage.setItem("userId", member.data.user_id.toString());
         router.push({
           pathname: "./BoardMember",
-          query: { userId: response.data.user_id },
+          query: { userId: member.data.user_id },
         });
-      }
-      else if (user.data[0].paid == "0" &&
-        user.data[0].guest == "1" && responses.data.position == null || (response.data[0].paid == "1" &&
-          user.data[0].guest == "1" && responses.data.position == null)) {
-        await AsyncStorage.setItem("userId", response.data.user_id.toString());
+      } else if (
+        (member.data.paid == "0" &&
+          member.data.guest == "1" &&
+          clubAccess.data.position == null) ||
+        (member.data.paid == "1" &&
+          member.data.guest == "1" &&
+          clubAccess.data.position == null)
+      ) {
+        await AsyncStorage.setItem("userId", member.data.user_id.toString());
         router.push({
           pathname: "./GuestPage",
-          query: { userId: response.data.user_id },
+          query: { userId: member.data.user_id },
         });
       }
 
-      console.log("Server response:", response.data);
-      Alert.alert("Login Response", response.data.message);
+      console.log("Server Response:", login.data);
+      Alert.alert("Login Response", login.data.message);
     } catch (error) {
-      if (error.response) {
-        console.error("Server error response:", error.response.data);
+      if (error.login) {
+        console.error("Server error response:", error.login.data);
         Alert.alert(
           "Error",
-          error.response.data.message || "An error occurred"
+          error.login.data.message || "An error occurred"
         );
       } else {
         console.error("Network or other error:", error);
@@ -109,7 +111,6 @@ const LoginForm = () => {
 
   return (
     <View style={styles.background}>
-      
       <FormContainer>
         <View style={styles.inputs}>
           {[
@@ -120,7 +121,6 @@ const LoginForm = () => {
               autocomplete: "username",
               rule: { required: "You must enter your login" },
               secure: false,
-
             },
             {
               name: "password",
@@ -163,7 +163,7 @@ const LoginForm = () => {
       </FormContainer>
     </View>
   );
-}
+};
 
 export default LoginForm;
 

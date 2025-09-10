@@ -4,18 +4,12 @@ import {
   View,
   Alert,
   StyleSheet,
-  Image,
+  ScrollView,
   TouchableOpacity,
-  Modal,
-  TextInput,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScrollView } from "react-native-web";
-import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
 import Button from '@/PTComponents/Button';
 
 export default function GuestPage() {

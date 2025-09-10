@@ -64,10 +64,13 @@ const EditProfile = () => {
 
   const handleSharing = async () => {
     let profile_id = local.profileID.toString();
+    let phone_private = showPhone ? 1 : 0;
+    let address_private = showAddress ? 1 : 0;
+
     const payload = {
       profile_id,
-      showPhone,
-      showAddress
+      phone_private,
+      address_private,
     };
     try {
       const editSharingResponse = await axios.post(
@@ -75,8 +78,8 @@ const EditProfile = () => {
         payload
       );
       console.log("Server Response:", editSharingResponse.data);
-      Alert.alert("Success", "Update successful");
-      showSharing(false);
+      Alert.alert("Success", "Privacy Updated");
+      setSharing(false);
     } catch (error) {
       console.error(
         "Error submitting sharing:",
@@ -84,7 +87,7 @@ const EditProfile = () => {
       );
       Alert.alert("Error", error.response?.data?.message || "Update failed");
     }
-  }
+  };
 
   useEffect(() => {
     (async () => {
@@ -93,7 +96,6 @@ const EditProfile = () => {
         if (storedUserId) {
           setUserId(storedUserId);
         }
-        console.log(userId);
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
         Alert.alert("Error", "Failed to load user ID");
@@ -119,8 +121,8 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (profiles) {
-      setPrivacy(profiles.private ? true : false);
-      setMarketing(profiles.want_marketing ? true : false);
+      setPhone(profiles.phone_private ? true : false);
+      setAddress(profiles.address_private ? true : false);
     }
   }, [profiles]);
 
@@ -362,11 +364,7 @@ const EditProfile = () => {
             )}
           </View>
           <View style={styles.function}>
-            <TouchableOpacity
-              onPress={() =>
-                setSharing(true)
-              }
-            >
+            <TouchableOpacity onPress={() => setSharing(true)}>
               <FormLabel>
                 <Finger /> Share Your Info
               </FormLabel>
@@ -383,7 +381,8 @@ const EditProfile = () => {
         visible={showSharing}
         transparent={true}
         animationType="slide" // or 'fade' or 'none'
-        onRequestClose={() => setSharing(false)}>
+        onRequestClose={() => setSharing(false)}
+      >
         <View style={styles.modalBackground}>
           <View style={styles.modalView}>
             <Text style={styles.title}>Tick to share with other members:</Text>

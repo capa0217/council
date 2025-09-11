@@ -27,7 +27,7 @@ const ClubMembersPage = () => {
   const [clubBoardData, setClubBoardData] = useState([]);
   const [userId, setUserId] = useState("");
 
-   useEffect(() => {
+  useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Alert, StyleSheet, TouchableOpacity } from "react-native";
-import FormContainer from "./components/FormContainer";
-import FormLabel from "./components/FormLabel.js";
-import FormInput from "./components/FormInput.js";
-import Button from "./components/Button.js";
+import { Text, View, Alert, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import FormLabel from "@/PTComponents/FormLabel";
+import FormInput from "@/PTComponents/FormInput";
+import Button from "@/PTComponents/Button";
 
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
@@ -111,23 +110,21 @@ const LoginForm = () => {
 
   return (
     <View style={styles.background}>
-      <FormContainer>
-        <View style={styles.inputs}>
+      <View style={styles.container}>
+        <View style={styles.inputGroup}>
           {[
             {
               name: "website_login",
-              placeholder: "Please enter your login",
-              label: "Website-Login",
+              label: "Member Number",
               autocomplete: "username",
-              rule: { required: "You must enter your login" },
+              rule: { required: "You must enter your Member Login" },
               secure: false,
             },
             {
               name: "password",
-              placeholder: "Please Enter Your Password",
               label: "Password",
               autocomplete: "current-password",
-              rule: { required: "You must enter your password" },
+              rule: { required: "You must enter your Password" },
               secure: true,
             },
           ].map(({ name, placeholder, label, autocomplete, rule, secure }) => (
@@ -139,7 +136,6 @@ const LoginForm = () => {
                 render={({ field: { onChange, value } }) => (
                   <FormInput
                     autoComplete={autocomplete}
-                    placeholder={placeholder}
                     onChangeText={onChange}
                     secureTextEntry={secure}
                     value={value}
@@ -160,7 +156,7 @@ const LoginForm = () => {
 
           <Button onPress={handleSubmit(handleLogin)}>Login</Button>
         </View>
-      </FormContainer>
+      </View>
     </View>
   );
 };
@@ -169,12 +165,20 @@ export default LoginForm;
 
 const styles = StyleSheet.create({
   background: {
-    backgroundColor: "#AFABA3",
+    backgroundColor: "#F1F6F5",
     height: "100%",
   },
-  inputs: {
+  
+  container: {
+    padding: 10,
     marginHorizontal: 20,
+    borderRadius: 10,
+    backgroundColor: "#ffffff",
+    justifyContent: "center",
   },
+  inputGroup: {
+    marginHorizontal: 20,
+  }, 
   function: {
     flexDirection: "row",
     justifyContent: "center",

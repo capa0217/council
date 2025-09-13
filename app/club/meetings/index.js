@@ -27,7 +27,6 @@ const ProfileScreen = () => {
 
   const [userId, setUserId] = useState(null);
   const [clubs, setClubs] = useState([]);
-  const [allclubs, setAllClubs] = useState([]);
   const [clubMeetings, setClubwithMeetings] = useState([]);
   const nav = useNavigation();
   const [selectedMonth, setSelectedMonth] = useState("May");
@@ -54,10 +53,11 @@ const ProfileScreen = () => {
   });
 
   useEffect(() => {
+    if (!userId) return;
     (async () => {
       try {
         const { data } = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/allClubs/`
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/user/${userId}`
         );
         const userList = data.Club_id || [];
         setClubs(userList);
@@ -66,15 +66,14 @@ const ProfileScreen = () => {
         Alert.alert("Error", "Failed to fetch user or club data");
       }
     })();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
-    if (!userId) return;
     (async () => {
       try {
         // Step 1: Get club list from user info
         const { data } = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/user/${userId}`
+          `http://${process.env.EXPO_PUBLIC_IP}:8081/allClubs/`
         );
         const allList = data.Club_id || [];
         setClubs(allList);
@@ -83,7 +82,7 @@ const ProfileScreen = () => {
         Alert.alert("Error", "Failed to fetch user or club data");
       }
     })();
-  }, [userId]);
+  }, []);
 
   // Fetch user and club info
   useEffect(() => {

@@ -74,7 +74,7 @@ const EditProfile = () => {
     };
     try {
       const editSharingResponse = await axios.post(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/share`,
+        `${process.env.EXPO_PUBLIC_IP}/profile/share`,
         payload
       );
       console.log("Server Response:", editSharingResponse.data);
@@ -108,7 +108,7 @@ const EditProfile = () => {
       try {
         if (userId) {
           const res = await axios.get(
-            `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/${local.profileID}`
+            `${process.env.EXPO_PUBLIC_IP}/profile/${local.profileID}`
           );
           setProfiles(res.data);
         }
@@ -197,7 +197,7 @@ const EditProfile = () => {
     };
     try {
       const editProfileResponse = await axios.post(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/profile/edit`,
+        `${process.env.EXPO_PUBLIC_IP}/profile/edit`,
         payload
       );
       console.log("Server Response:", editProfileResponse.data);

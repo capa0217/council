@@ -44,7 +44,7 @@ const ClubMembersPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`http://10.88.15.226:8081/members`);
+        const res = await axios.get(`${process.env.EXPO_PUBLIC_IP}/members`);
 
         setDetails(res.data.user);
       } catch (error) {
@@ -55,7 +55,7 @@ const ClubMembersPage = () => {
   }, []);
   useEffect(() => {
     axios
-      .get(`http://10.88.15.226:8081/clubs`)
+      .get(`${process.env.EXPO_PUBLIC_IP}/clubs`)
       .then((res) => setClubs(res.data))
       .catch((err) => {
         console.error("Error fetching clubs:", err);
@@ -66,7 +66,7 @@ const ClubMembersPage = () => {
   useEffect(() => {
     if (!selectedClubId) return;
     axios
-      .get(`http://10.88.15.226:8081/clubBoard/${selectedClubId}`)
+      .get(`${process.env.EXPO_PUBLIC_IP}/clubBoard/${selectedClubId}`)
       .then((res) => setids(res.data))
       .catch((err) => {
         console.error("Error fetching clubs:", err);
@@ -78,16 +78,16 @@ const ClubMembersPage = () => {
       try {
         // Step 1: Get club list from user info
         const { data } = await axios.get(
-          `http://10.88.15.226:8081/clubBoard/${selectedClubId}`
+          `${process.env.EXPO_PUBLIC_IP}/clubBoard/${selectedClubId}`
         );
 
         const MemberDetails = await Promise.all(
           data.map(async (item) => {
             const res = await axios.get(
-              `http://10.88.15.226:8081/clubBoardMembers/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.member_id}`
             );
             const result = await axios.get(
-              `http://10.88.15.226:8081/clubAccess/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/clubAccess/${item.member_id}`
             );
             const position = result.data.position;
             const access = result.data.level_of_access;

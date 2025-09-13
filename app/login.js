@@ -1,38 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Alert, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { Text, View, Alert, StyleSheet } from "react-native";
+
 import FormLabel from "@/PTComponents/FormLabel";
 import FormInput from "@/PTComponents/FormInput";
 import Button from "@/PTComponents/Button";
+import PTHeader from "@/PTComponents/Header";
 
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
+import { useNavigation } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useKeyboard } from "@react-native-community/hooks";
+import { Header } from "@react-navigation/stack";
 
 const LoginForm = () => {
   const router = useRouter();
+  const nav = useNavigation();
+
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitted },
   } = useForm({
     defaultValues: {
       website_login: "",
       password: "",
     },
-  });
-
-  const keyboard = useKeyboard();
-  const [height, setHeight] = useState(50);
-  useEffect(() => {
-    if (keyboard.keyboardShown) {
-      setHeight(10);
-    } else {
-      setHeight(50);
-    }
   });
 
   const handleLogin = async (data) => {
@@ -51,45 +45,33 @@ const LoginForm = () => {
         `http://${process.env.EXPO_PUBLIC_IP}:8081/clubAccess/${member.data.User_id}`
       );
 
-      console.log(member.data.User_id);
-      console.log(member.data.paid);
-
       if (member.status == 401) {
         Alert.alert("Login Failed", member.data.message);
-      } else if (
-        member.data.paid == "1" &&
-        member.data.guest == "0" &&
-        clubAccess.data.position == null
-      ) {
-        // Store user data in AsyncStorage
+      } else {
+        // Store user data in AsyncStorag
         await AsyncStorage.setItem("userId", member.data.user_id.toString());
-        router.push({
-          pathname: "/club_meeting",
-          query: { userId: member.data.user_id },
-        });
-      } else if (
-        member.data.paid == "1" &&
-        member.data.guest == "0" &&
-        clubAccess.data.position != null
-      ) {
-        await AsyncStorage.setItem("userId", member.data.user_id.toString());
-        router.push({
-          pathname: "./BoardMember",
-          query: { userId: member.data.user_id },
-        });
-      } else if (
-        (member.data.paid == "0" &&
-          member.data.guest == "1" &&
-          clubAccess.data.position == null) ||
-        (member.data.paid == "1" &&
-          member.data.guest == "1" &&
-          clubAccess.data.position == null)
-      ) {
-        await AsyncStorage.setItem("userId", member.data.user_id.toString());
-        router.push({
-          pathname: "./GuestPage",
-          query: { userId: member.data.user_id },
-        });
+
+        if (member.data.paid == "1" && clubAccess.data.position == null) {
+          router.push({
+            pathname: "/club/meetings",
+            query: { userId: member.data.user_id },
+          });
+        } else if (
+          member.data.paid == "1" &&
+          clubAccess.data.position != null
+        ) {
+          await AsyncStorage.setItem("userId", member.data.user_id.toString());
+          router.push({
+            pathname: "./BoardMember",
+            query: { userId: member.data.user_id },
+          });
+        } else if (member.data.guest == "1") {
+          await AsyncStorage.setItem("userId", member.data.user_id.toString());
+          router.push({
+            pathname: "./GuestPage",
+            query: { userId: member.data.user_id },
+          });
+        }
       }
 
       console.log("Server Response:", login.data);
@@ -97,10 +79,7 @@ const LoginForm = () => {
     } catch (error) {
       if (error.login) {
         console.error("Server error response:", error.login.data);
-        Alert.alert(
-          "Error",
-          error.login.data.message || "An error occurred"
-        );
+        Alert.alert("Error", error.login.data.message || "An error occurred");
       } else {
         console.error("Network or other error:", error);
         Alert.alert("Error", "Failed to connect to server");
@@ -168,7 +147,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F1F6F5",
     height: "100%",
   },
-  
   container: {
     padding: 10,
     marginHorizontal: 20,
@@ -178,7 +156,7 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginHorizontal: 20,
-  }, 
+  },
   function: {
     flexDirection: "row",
     justifyContent: "center",

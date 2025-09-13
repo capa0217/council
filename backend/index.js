@@ -294,8 +294,25 @@ app.get("/user/:id", (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = results;
-    res.json({ Club_id: user });
+    res.json({ Club_id: results });
+  });
+});
+
+app.get("/allClubs/", (req, res) => {
+  const userId = req.params.id;
+  const query = "SELECT Club_id FROM club";
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ Club_id: results });
   });
 });
 app.get("/club/:id", (req, res) => {

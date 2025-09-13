@@ -14,6 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import AssocMenu from "@/PTComponents/AssocMenu";
+
 const ClubMembersPage = () => {
   const router = useRouter();
 
@@ -156,44 +158,8 @@ const ClubMembersPage = () => {
             Number of Board Members: {BoardMembers.length}
           </Text>
         </View>
-        <View style={styles.containers}>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() => router.push("/board/association/club/members/")}
-            >
-              <Text style={styles.name}>Members</Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() => router.push("/board/association/club/guests/")}
-            >
-              <Text style={styles.name}>Guest</Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() =>
-                router.push("/board/association/club/boardMembers/")
-              }
-            >
-              <Text style={styles.name}>Board Members</Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() =>
-                router.push("/board/association/club/councilMembers/")
-              }
-            >
-              <Text style={styles.name}>Council Board Members</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+
+        <AssocMenu/>
 
         {/* Sorting Dropdowns */}
         <View style={styles.sortingRow}>
@@ -236,7 +202,7 @@ const ClubMembersPage = () => {
         >
           <Text style={styles.navButton}>Project</Text>
         </TouchableOpacity>
-      </View>{" "}
+      </View>
     </View>
   );
 };
@@ -265,10 +231,6 @@ const styles = StyleSheet.create({
   containers: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  members: {
-    fontSize: "18px",
-    color: "white",
   },
   buttons: {
     backgroundColor: "#065395",

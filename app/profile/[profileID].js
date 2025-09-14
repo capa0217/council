@@ -59,7 +59,6 @@ const Profile = () => {
           `${process.env.EXPO_PUBLIC_IP}/profile/${local.profileID}`
         );
         setProfiles(res.data);
-        console.log("test");
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
         Alert.alert("Error", "Failed to load Profile Data");

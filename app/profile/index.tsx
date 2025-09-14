@@ -3,8 +3,6 @@ import { Redirect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 
-import { useGlobalSearchParams } from "expo-router";
-
 export default function profile() {
   const [userId, setUserId] = useState("");
   useEffect(() => {

@@ -1,11 +1,8 @@
 import {
   View,
   Text,
-  TextInput,
-  Image,
   StyleSheet,
   Alert,
-  TouchableOpacity,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";

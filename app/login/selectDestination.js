@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Alert, StyleSheet } from "react-native";
 
-import FormLabel from "@/PTComponents/FormLabel";
-import FormInput from "@/PTComponents/FormInput";
 import Button from "@/PTComponents/Button";
-import PTHeader from "@/PTComponents/Header";
 
-import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
 import { useNavigation } from "expo-router";
 
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Header } from "@react-navigation/stack";
+import axios from "axios";
 
 const LoginForm = () => {
   const router = useRouter();
   const nav = useNavigation();
   const [userId, setUserId] = useState(null);
+  const [accessLevel, setAccess] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -34,13 +30,33 @@ const LoginForm = () => {
     })();
   }, []);
 
+    useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      try {
+        const boardAccess = await axios.get(
+        `${process.env.EXPO_PUBLIC_IP}/boardMemberAccess/${userId}`
+      );
+      console.log(boardAccess.data.level_of_access);
+      switch(boardAccess.data.level_of_access){
+        case "club":setAccess(1); break;
+        case "council":setAccess(2); break;
+        case "association":setAccess(3);
+      }
+      } catch (error) {
+        console.error("Error fetching board access:", error);
+        Alert.alert("Error", "Failed to get board Access");
+      }
+    })();
+  }, [userId]);
+
   return (
     <View style={styles.background}>
       <View style={styles.container}>
-        <Button onPress={() => router.navigate("/club/meetings/")}>My Meetings</Button>
-        <Button onPress={() => router.navigate("/board/club/members")}>Club</Button>
-        <Button onPress={() => router.navigate("/board/council/")}>Council</Button>
-        <Button onPress={() => router.navigate("/board/association/club/members/")}>Association</Button>
+        {accessLevel >= 0 && <Button onPress={() => router.navigate("/club/meetings/")}>My Meetings</Button>}
+        {accessLevel >= 1 && <Button onPress={() => router.navigate("/board/club/members")}>Club</Button>}
+        {accessLevel >= 2 && <Button onPress={() => router.navigate("/board/council/")}>Council</Button>}
+        {accessLevel >= 3 && <Button onPress={() => router.navigate("/board/association/club/members/")}>Association</Button>}
       </View>
     </View>
   );

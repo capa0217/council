@@ -34,7 +34,6 @@ const ClubMembersPage = () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
-          console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -63,7 +62,7 @@ const ClubMembersPage = () => {
       .then((res) => setClubs(res.data))
       .catch((err) => {
         console.error("Error fetching clubs:", err);
-        Alert.alert("Error", "Failed to fetch clubs");
+        Alert.alert("Error", "Failed to fetch Clubs");
       });
   }, []);
 
@@ -112,8 +111,8 @@ const ClubMembersPage = () => {
         );
         setnames(MemberDetails);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching member details:", error);
+        Alert.alert("Error", "Failed to fetch Member Details");
       }
     })();
   }, [selectedClubId]);

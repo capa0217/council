@@ -44,6 +44,19 @@ db.connect((err) => {
   }); */
 });
 
+//Board Member Access
+app.get("/boardMemberAccess/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = "SELECT level_of_access FROM board_members WHERE user_id = ?";
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database Error" });
+    }
+    res.json(result[0]);
+  });
+});
+
 //Registers a members login and password into the member_logins table. This is done when a club treasurer confirms that the member has paid.
 app.post("/users/register", (req, res) => {
   const { user_id, website_login, password } = req.body;

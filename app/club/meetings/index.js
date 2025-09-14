@@ -69,6 +69,7 @@ const ProfileScreen = () => {
   }, [userId]);
 
   useEffect(() => {
+    if (userId) return;
     (async () => {
       try {
         // Step 1: Get club list from user info

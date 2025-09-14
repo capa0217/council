@@ -22,12 +22,6 @@ export default function Layout() {
       }}
     >
       <Stack.Screen
-        name="meetings"
-        options={{
-          title: "Club Meetings",
-        }}
-      />
-      <Stack.Screen
         name="members"
         options={{
           title: "Club Members",

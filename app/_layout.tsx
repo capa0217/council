@@ -46,30 +46,6 @@ export default function RootLayout() {
           headerShown:false,
         }}
       ></Stack.Screen>
-      <Stack.Screen
-        name="login"
-        options={{
-          header() {
-            return <PTHeader enabled={false} />;
-          },
-        }}
-      ></Stack.Screen>
-      <Stack.Screen
-        name="register"
-        options={{
-          header() {
-            return <PTHeader enabled={false} />;
-          },
-        }}
-      ></Stack.Screen>
-      <Stack.Screen
-        name="profile"
-        options={{
-          header() {
-            return <PTHeader enabled={false} />;
-          },
-        }}
-      ></Stack.Screen>
     </Stack>
   );
 }

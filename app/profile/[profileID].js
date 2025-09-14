@@ -52,21 +52,23 @@ const Profile = () => {
     })();
   }, [userId]);
 
-  useFocusEffect(React.useCallback(() => {
+  useEffect(() => {
     (async () => {
       try {
         const res = await axios.get(
           `${process.env.EXPO_PUBLIC_IP}/profile/${local.profileID}`
         );
         setProfiles(res.data);
+        console.log("test");
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
-        Alert.alert("Error", "Failed to load user ID");
+        Alert.alert("Error", "Failed to load Profile Data");
       }
     })();
-  }));
+  });
 
   useEffect(() => {
+    if (!userId && !profiles) return;
     nav.setOptions({ headerShown: true });
     if (userId == local.profileID.toString()) {
       setAccess(true);
@@ -78,7 +80,7 @@ const Profile = () => {
         title: `Profile of ${profiles.first_name} ${profiles.last_name}`,
       });
     }
-  });
+  }, [userId, profiles]);
 
   return (
     <View style={styles.background}>
@@ -89,7 +91,7 @@ const Profile = () => {
               <Button
                 onPress={() =>
                   router.navigate({
-                    pathname: "/profile/editProfile/"+local.profileID.toString(),
+                    pathname: "/profile/editProfile/",
                   })
                 }
               >
@@ -106,16 +108,20 @@ const Profile = () => {
           <Text style={styles.infoText}>
             <Finger /> Email: {profiles.email}
           </Text>
-          {profiles.phone_number && (access || profiles.phone_private==1) && (
+          {profiles.phone_number && (access || profiles.phone_private == 1) && (
             <Text style={styles.infoText}>
               <Finger /> Phone Number: {profiles.phone_number}
             </Text>
           )}
-          {profiles.address && (access || profiles.address_private==1) && (
-              <Text style={styles.infoText}><Finger/> Address: {profiles.address}, {profiles.postcode}</Text>
+          {profiles.address && (access || profiles.address_private == 1) && (
+            <Text style={styles.infoText}>
+              <Finger /> Address: {profiles.address}, {profiles.postcode}
+            </Text>
           )}
           {profiles.interests && (
-            <Text style={styles.infoText}><Finger/> Notes: {profiles.interests}</Text>
+            <Text style={styles.infoText}>
+              <Finger /> Notes: {profiles.interests}
+            </Text>
           )}
           {profiles.dob && (
             <Text style={styles.infoText}>
@@ -123,8 +129,8 @@ const Profile = () => {
             </Text>
           )}
 
-          <Text style={[styles.infoText, {marginTop:40}]}>
-            <Finger /> Join_Date:{" "}
+          <Text style={[styles.infoText, { marginTop: 40 }]}>
+            <Finger /> Join_Date:
             {new Date(profiles.join_date).toLocaleDateString()}
           </Text>
         </View>

@@ -21,7 +21,7 @@ export default function Layout() {
       }}
     >
       <Stack.Screen
-        name="[profileID]"
+        name="index"
         options={{
           title: "Edit Profile",
         }}

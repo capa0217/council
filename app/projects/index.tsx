@@ -8,7 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const MembersProjectPage1 = () => {
-   const [userId, setUserId] = useState(null);
+   const [userId, setUserId] = useState("");
     const [clubId, setclubid] = useState(null);
   useEffect(() => {
     (async () => {
@@ -34,7 +34,7 @@ const MembersProjectPage1 = () => {
 
   const navigation = useNavigation();
 
-  const handleLevelPress = async (level) => {
+  const handleLevelPress = async (level:any) => {
      try {
       await AsyncStorage.setItem("level", level);
       router.push("./test");
@@ -42,7 +42,7 @@ const MembersProjectPage1 = () => {
       console.error("Error access level", error);
     }
   };
-  const handleClubPress = async (clubId) =>{
+  const handleClubPress = async (clubId:any) =>{
      try {
       await AsyncStorage.setItem("id", clubId);
       router.push("./test");
@@ -56,7 +56,7 @@ const MembersProjectPage1 = () => {
       {/* Top Bar */}
       <PTHeader button={true} text={'Profile'} link={'profile'}/>
 
-       {userId !=null &&  <ScrollView contentContainerStyle={styles.content}>
+       {userId != "" &&  <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.headerBlock}>
           <Text style={styles.headerText}>Project Levels</Text>
@@ -78,23 +78,9 @@ const MembersProjectPage1 = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>}
-      {userId == null && <TouchableOpacity style={styles.warning} onPress={()=>router.push("./login")}>Warning: You need to become a member and do the login to see this content</TouchableOpacity>}
+      {userId == "" && <TouchableOpacity style={styles.warning} onPress={()=>router.push("./login")}><Text>Warning: You need to become a member and do the login to see this content</Text></TouchableOpacity>}
       {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-              <Text style={[styles.navButton, styles.activeButton]}>
-                Club Members
-              </Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("MembersMeetingPage")}
-              >
-                <Text style={styles.navButton}>Meeting</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ProjectLevelsPage")}
-              >
-                <Text style={styles.navButton}>Project</Text>
-              </TouchableOpacity>
-            </View>
+        <BottomNav active={3}/>
     </View>
 );
 };
@@ -169,19 +155,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#ffffff',
     fontWeight: '600',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#F1F6F5',
-    paddingVertical: 15,
-  },
-  navButton: {
-    fontSize: 16,
-    color: '#333',
-  },
-  activeButton: {
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
 });

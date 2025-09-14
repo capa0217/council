@@ -26,7 +26,7 @@ const BottomNav = (props) => {
     <View style={styles.bottomNav}>
       <Nav name={'Club Members'} link={'club/members'} active={props.active!=1}/>
       <Nav name={'Meetings'} link={'club/meetings'} active={props.active!=2}/>
-      <Nav name={'Projects'} link={'members_projectLevels'} active={props.active!=3}/>
+      <Nav name={'Projects'} link={'projects'} active={props.active!=3}/>
     </View>
   );
 };

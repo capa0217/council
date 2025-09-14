@@ -5,7 +5,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   StyleSheet,
   ScrollView,
   Alert,
@@ -13,7 +12,6 @@ import {
 import { Picker } from "@react-native-picker/picker";
 
 import BottomNav from "@/PTComponents/BottomNav";
-import PTHeader from "@/PTComponents/Header";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -21,15 +19,14 @@ import axios from "axios";
 const ClubMembersPage = () => {
   const router = useRouter();
 
-  const [memberdetails, setDetails] = useState([]);
+  const [memberdetails, setDetails] = useState<any>([]);
   const [sortByName, setSortByName] = useState("A-Z");
   const [selectedClub, setSelectedClub] = useState("All Clubs");
-  const [clubs, setClubs] = useState([]);
-  const [ids, setids] = useState([]);
+  const [clubs, setClubs] = useState<any>([]);
+  const [ids, setids] = useState<any>([]);
   const [selectedClubId, setSelectedClubId] = useState(null);
-  const [clubBoardData, setClubBoardData] = useState([]);
 
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState("");
   const nav = useNavigation();
 
   useEffect(() => {
@@ -46,7 +43,7 @@ const ClubMembersPage = () => {
         }
       } catch (error) {
         console.error("Error fetching userId from storage:", error);
-        Alert.alert("Error", "Failed to goad user ID");
+        Alert.alert("Error", "Failed to load user ID");
       }
     })();
   }, []);
@@ -78,34 +75,13 @@ const ClubMembersPage = () => {
   useEffect(() => {
     if (!selectedClubId) return;
     axios
-      .get(`http://${process.env.EXPO_PUBLIC_IP}/clubBoard/${selectedClubId}`)
+      .get(`${process.env.EXPO_PUBLIC_IP}/clubBoard/${selectedClubId}`)
       .then((res) => setids(res.data))
       .catch((err) => {
         console.error("Error fetching clubs:", err);
         Alert.alert("Error", "Failed to fetch clubs");
       });
   }, [selectedClubId]);
-
-  const sortedMembers = memberdetails.sort((a, b) => {
-    if (sortByName == "A-Z") {
-      const firstCompare = a.first_name.localeCompare(b.first_name);
-      if (firstCompare !== 0) {
-        return firstCompare;
-      } else {
-        return a.last_name.localeCompare(b.last_name);
-      }
-    }
-  });
-  const unsortedMembers = memberdetails.sort((a, b) => {
-    if (sortByName == "Z-A") {
-      const firstCompare = b.first_name.localeCompare(a.first_name);
-      if (firstCompare !== 0) {
-        return firstCompare;
-      } else {
-        return b.last_name.localeCompare(a.last_name);
-      }
-    }
-  });
 
   return (
     <View style={styles.container}>
@@ -129,7 +105,7 @@ const ClubMembersPage = () => {
                 setSelectedClub(itemValue);
 
                 const clubObj = clubs.find(
-                  (club) => club.Club_name === itemValue
+                  (club:any) => club.Club_name === itemValue
                 );
                 if (clubObj) {
                   setSelectedClubId(clubObj.Club_id);
@@ -137,7 +113,7 @@ const ClubMembersPage = () => {
               }}
             >
               <Picker.Item label="All Clubs" value="All Clubs" />
-              {clubs.map((club) => (
+              {clubs.map((club:any) => (
                 <Picker.Item
                   key={club.Club_id}
                   label={club.Club_name}
@@ -149,10 +125,10 @@ const ClubMembersPage = () => {
 
           {(selectedClub === "All Clubs"
             ? memberdetails
-            : memberdetails.filter((member) =>
-                ids.some((idObj) => idObj.User_id === member.user_id)
+            : memberdetails.filter((member:any) =>
+                ids.some((idObj:any) => idObj.User_id === member.user_id)
               )
-          ).map((member) => (
+          ).map((member:any) => (
             <TouchableOpacity
               key={member.user_id}
               style={styles.meetingBlock}
@@ -173,7 +149,7 @@ const ClubMembersPage = () => {
       {userId == null && (
         <TouchableOpacity
           style={styles.warning}
-          onPress={() => router.push("./login")}
+          onPress={() => router.navigate("/login")}
         >
           <Text>
             Warning: You need to become a member and do the login to see this
@@ -224,12 +200,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-  },
-  logo: {
-    width: 300,
-    height: 50,
-    right: 80,
-    resizeMode: "contain",
   },
   logoContainer: {
     backgroundColor: "#F1F6F5",

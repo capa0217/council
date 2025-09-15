@@ -12,7 +12,6 @@ import { useNavigation } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Header } from "@react-navigation/stack";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -54,9 +53,9 @@ const LoginForm = () => {
       } else {
         // Store user data in AsyncStorag
         await AsyncStorage.setItem("userId", member.data.user_id.toString());
-
+        router.dismissAll();
         if (member.data.paid == "1" && clubAccess.data.position == null) {
-          router.push({
+          router.replace({
             pathname: "/club/meetings",
           });
         } else if (
@@ -64,12 +63,12 @@ const LoginForm = () => {
           clubAccess.data.position != null
         ) {
           await AsyncStorage.setItem("userId", member.data.user_id.toString());
-          router.push({
+          router.replace({
             pathname: "/login/selectDestination",
           });
         } else if (member.data.guest == "1") {
           await AsyncStorage.setItem("userId", member.data.user_id.toString());
-          router.push({
+          router.replace({
             pathname: "/GuestPage",
           });
         }

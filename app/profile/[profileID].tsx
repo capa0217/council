@@ -12,8 +12,8 @@ const PORT = 8081;
 
 const Profile = () => {
   const router = useRouter();
-  const [userId, setUserId] = useState(null);
-  const [profiles, setProfiles] = useState([]);
+  const [userId, setUserId] = useState("");
+  const [profiles, setProfiles] = useState<any>([]);
   const [access, setAccess] = useState(false);
 
   const local = useLocalSearchParams();
@@ -45,7 +45,7 @@ const Profile = () => {
             setAccess(true);
           }
         }
-      } catch (err) {
+      } catch (err:any) {
         console.error("Error With Club Access:", err);
         Alert.alert("Error", err);
       }
@@ -90,7 +90,8 @@ const Profile = () => {
               <Button
                 onPress={() =>
                   router.navigate({
-                    pathname: "/profile/editProfile/",
+                    pathname: "/profile/editProfile",
+                    params:{profileID:local.profileID}
                   })
                 }
               >

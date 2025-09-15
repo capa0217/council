@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const PTHeader = (props) => {
+const PTHeader = () => {
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
   const [userId, setUserId] = useState(null);

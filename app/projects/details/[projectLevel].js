@@ -3,40 +3,45 @@ import {
   Text,
   View,
   StyleSheet,
-  TouchableOpacity,
-  Modal,
-  TextInput,
   ScrollView,
-  Button,
   Alert,
 } from "react-native";
+import PTButton from "@/PTComponents/Button";
 import axios from "axios";
 
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 
 const ProjectDetailPage = () => {
-  const navigation = useNavigation();
+  const nav = useNavigation();
   const local = useLocalSearchParams();
+  const projectUserID = +local.projectUserID;
+  const projectLevel = +local.projectLevel;
   const [projectRows, setProject] = useState([]);
-  const [name, setName] = useState("");
 
   useEffect(() => {
     (async () => {
       try {
-        if (local.projectID) {
-          const { data } = await axios.get(
-            `${process.env.EXPO_PUBLIC_IP}/projects/${local.projectID}`
+          const payload = {
+            program_level: projectLevel,
+            user_id: projectUserID
+          }
+          const { data } = await axios.post(
+            `${process.env.EXPO_PUBLIC_IP}/projects/`,
+            payload
           );
+          console.log(data);
           setProject(data);
-          setName(data[0].project_number);
-        }
       } catch (error) {
-        console.error("Error fetching userId from storage:", error);
-        Alert.alert("Error", "Failed to load user ID");
+        console.error("Error fetching projects:", error);
+        Alert.alert("Error", "Failed to load projects");
       }
     })();
+  }, [projectLevel, projectUserID]);
+
+  useEffect(() => {
+    nav.setOptions({ headerShown: true, title: `Project Level: ${projectLevel}` });
   }, []);
 
   const uniqueProjects = projectRows.filter(
@@ -46,14 +51,7 @@ const ProjectDetailPage = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-      <PTHeader button={true} text={"Profile"} link={"profile"} />
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Project Title Block */}
-        <View style={styles.headerBlock}>
-          <Text style={styles.headerText}>{name}</Text>
-        </View>
-
         {/* Spacer */}
         <View style={{ height: 20 }} />
 
@@ -68,14 +66,13 @@ const ProjectDetailPage = () => {
           <Text style={[styles.tableCell, styles.tableHeaderText]}>
             Date Completed
           </Text>
-        </View>
-
+        </View> 
         {/* Table Rows */}
         {uniqueProjects.map((row, index) => (
           <View key={index} style={styles.tableRow}>
             <Text style={styles.tableCell}>{index + 1}</Text>
             <Text style={styles.tableCell}>{row.project_title}</Text>
-            <Text style={styles.tableCell}>{row.date}</Text>
+            <Text style={styles.tableCell}>{row.date_achieved?new Date(row.date_achieved).toLocaleDateString():(<PTButton>Request</PTButton>)}</Text>
           </View>
         ))}
       </ScrollView>

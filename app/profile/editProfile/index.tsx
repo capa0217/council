@@ -61,6 +61,7 @@ const EditProfile = () => {
   const router = useRouter();
   const nav = useNavigation();
   const global = useGlobalSearchParams();
+  console.log(global);
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState<any>([]);
 

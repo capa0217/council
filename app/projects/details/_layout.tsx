@@ -21,7 +21,7 @@ export default function Layout() {
       }}
     >
       <Stack.Screen
-        name="[projectID]"
+        name="[projectLevel]"
         options={{
           title: "Project Details",
         }}

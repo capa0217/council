@@ -53,10 +53,10 @@ const LoginForm = () => {
   return (
     <View style={styles.background}>
       <View style={styles.container}>
-        {accessLevel >= 0 && <Button onPress={() => router.navigate("/club/meetings/")}>My Meetings</Button>}
-        {accessLevel >= 1 && <Button onPress={() => router.navigate("/board/club/members")}>Club</Button>}
-        {accessLevel >= 2 && <Button onPress={() => router.navigate("/board/council/")}>Council</Button>}
-        {accessLevel >= 3 && <Button onPress={() => router.navigate("/board/association/club/members/")}>Association</Button>}
+        {accessLevel >= 0 && <Button onPress={() => router.replace("/club/meetings/")}>My Meetings</Button>}
+        {accessLevel >= 1 && <Button onPress={() => router.replace("/board/club/members")}>Club</Button>}
+        {accessLevel >= 2 && <Button onPress={() => router.replace("/board/council/")}>Council</Button>}
+        {accessLevel >= 3 && <Button onPress={() => router.replace("/board/association/club/members/")}>Association</Button>}
       </View>
     </View>
   );

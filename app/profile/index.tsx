@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "expo-router";
+import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 
 export default function profile() {
   const [userId, setUserId] = useState("");
+  const router = useRouter();
   useEffect(() => {
     (async () => {
       try {
@@ -20,14 +21,13 @@ export default function profile() {
     })();
   }, []);
 
-  if (userId) {
-    return (
-      <Redirect
-        href={{
-          pathname: "/profile/[profileID]",
-          params: { profileID: userId },
-        }}
-      />
-    );
-  }
+  useEffect(() => {
+    if (userId=="") return;
+    router.replace({
+      pathname: "/profile/[profileID]",
+      params:{profileID: userId}
+    })
+  }, [userId]);
+
+  return(null);
 }

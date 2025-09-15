@@ -15,8 +15,6 @@ import BottomNav from './components/BottomNav';
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PTHeader from "./components/PTHeader";
-import { Picker } from "@react-native-picker/picker";
-import MultiSelect from "react-native-multiple-select";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 

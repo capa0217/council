@@ -22,7 +22,7 @@ export default function Layout() {
       }}
     >
       <Stack.Screen
-        name="index"
+        name="[projectUserID]"
         options={{
           title: "Projects",
         }}

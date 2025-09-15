@@ -36,7 +36,7 @@ export default function RootLayout() {
     <Stack
       screenOptions={{
         header({options}) {
-          return <PTHeader enabled={true}/>;
+          return <PTHeader/>;
         },
       }}
     >

@@ -15,6 +15,7 @@ import BottomNav from "@/PTComponents/BottomNav";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import NoAuthentication from "@/PTComponents/NoAuth";
 
 const ClubMembersPage = () => {
   const router = useRouter();
@@ -50,9 +51,7 @@ const ClubMembersPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/members`
-        );
+        const res = await axios.get(`${process.env.EXPO_PUBLIC_IP}/members`);
 
         setDetails(res.data.user);
       } catch (error) {
@@ -105,7 +104,7 @@ const ClubMembersPage = () => {
                 setSelectedClub(itemValue);
 
                 const clubObj = clubs.find(
-                  (club:any) => club.Club_name === itemValue
+                  (club: any) => club.Club_name === itemValue
                 );
                 if (clubObj) {
                   setSelectedClubId(clubObj.Club_id);
@@ -113,7 +112,7 @@ const ClubMembersPage = () => {
               }}
             >
               <Picker.Item label="All Clubs" value="All Clubs" />
-              {clubs.map((club:any) => (
+              {clubs.map((club: any) => (
                 <Picker.Item
                   key={club.Club_id}
                   label={club.Club_name}
@@ -125,10 +124,10 @@ const ClubMembersPage = () => {
 
           {(selectedClub === "All Clubs"
             ? memberdetails
-            : memberdetails.filter((member:any) =>
-                ids.some((idObj:any) => idObj.User_id === member.user_id)
+            : memberdetails.filter((member: any) =>
+                ids.some((idObj: any) => idObj.User_id === member.user_id)
               )
-          ).map((member:any) => (
+          ).map((member: any) => (
             <TouchableOpacity
               key={member.user_id}
               style={styles.meetingBlock}
@@ -146,17 +145,7 @@ const ClubMembersPage = () => {
           ))}
         </ScrollView>
       )}
-      {userId == null && (
-        <TouchableOpacity
-          style={styles.warning}
-          onPress={() => router.navigate("/login")}
-        >
-          <Text>
-            Warning: You need to become a member and do the login to see this
-            content
-          </Text>
-        </TouchableOpacity>
-      )}
+      {userId == null && <NoAuthentication />}
 
       {/* Bottom Navigation */}
       <BottomNav active={1} />
@@ -234,11 +223,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#ffffff",
-  },
-  warning: {
-    textAlign: "center",
-    paddingTop: 280,
-    paddingBottom: 300,
-    fontSize: 25,
   },
 });

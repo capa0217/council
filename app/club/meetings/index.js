@@ -219,9 +219,9 @@ const ProfileScreen = () => {
       </ScrollView>
       {/* Bottom Navigation */}
       {userId ? (
-        <BottomNav active={2} />
+        <BottomNav number={3} name={["Club Members", "Club Meetings", "Development Program"]} link={["/club/members", "/club/meetings", "/projects"]} active={2} />
       ) : (
-        <MeetingBottom/>
+        <MeetingBottom />
       )}
     </View>
   );

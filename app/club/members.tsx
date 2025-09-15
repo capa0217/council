@@ -148,7 +148,7 @@ const ClubMembersPage = () => {
       {userId == null && <NoAuthentication />}
 
       {/* Bottom Navigation */}
-      <BottomNav active={1} />
+            <BottomNav number={3} name={["Members", "Meetings", "Development Program"]} link={["/club/members", "/club/meetings", "/projects"]} active={1} />
     </View>
   );
 };

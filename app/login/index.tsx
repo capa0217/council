@@ -74,7 +74,6 @@ const LoginForm = () => {
         }
       }
 
-      console.log("Server Response:", login.data);
       Alert.alert("Login Response", login.data.message);
     } catch (error:any) {
       if (error.login) {

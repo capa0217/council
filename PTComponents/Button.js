@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const Button = (props) => {
+const PTButton = (props) => {
   return (
     <TouchableOpacity style={styles.button} {...props}>
       <Text style={styles.text}>{props.children}</Text>
@@ -9,7 +9,7 @@ const Button = (props) => {
   );
 };
 
-export default Button;
+export default PTButton;
 
 const styles = StyleSheet.create({
   button: {

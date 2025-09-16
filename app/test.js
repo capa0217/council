@@ -14,8 +14,6 @@ import axios from "axios";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PTHeader from "./components/PTHeader";
-import { Picker } from "@react-native-picker/picker";
-import MultiSelect from "react-native-multiple-select";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
@@ -42,7 +40,7 @@ const ProjectLevelDetailPage = () => {
       try {
         const level = await AsyncStorage.getItem("level");
         if(level){
-            const {data}= await axios.get(`http://10.88.48.249:8081/project/${level}`);
+            const {data}= await axios.get(`${process.env.EXPO_PUBLIC_IP}/project/${level}`);
             setProject(data);
             console.log(project);
         }
@@ -50,15 +48,15 @@ const ProjectLevelDetailPage = () => {
         const id= await AsyncStorage.getItem("id");
         console.log(id);
         if(id){
-        const { data }= await axios.get(`http://10.88.48.249:8081/clubBoard/${id}`);
+        const { data }= await axios.get(`${process.env.EXPO_PUBLIC_IP}/clubBoard/${id}`);
         const memberlist= data.member_id || [];
       
         const MemberDetails = await Promise.all(
           data.map(async (item) => {
-            const get = await axios.get(`http://10.88.48.249:8081/clubAccess/${item.member_id}`);
+            const get = await axios.get(`${process.env.EXPO_PUBLIC_IP}/clubAccess/${item.member_id}`);
             if(get.data==""){
             const res = await axios.get(
-              `http://10.88.48.249:8081/user/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/user/${item.member_id}`
             );
             const MemberNames =
               res.data[0].first_name + " " + res.data[0].last_name;
@@ -89,7 +87,7 @@ const addProject = async () => {
   const ids = generateShortId(6);
   try {
     await axios.post(
-      `http://10.88.48.249:8081/project/add`,
+      `${process.env.EXPO_PUBLIC_IP}/project/add`,
       {
         assignment_id: ids.toString().trim(),
         member_id: selected, 

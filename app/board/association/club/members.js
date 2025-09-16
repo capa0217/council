@@ -14,6 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import AssocMenu from "@/PTComponents/AssocMenu";
+
 const ClubMembersPage = () => {
   const router = useRouter();
 
@@ -32,7 +34,6 @@ const ClubMembersPage = () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
-          console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -45,52 +46,53 @@ const ClubMembersPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get(`http://10.88.15.226:8081/members`);
+        const res = await axios.get(`${process.env.EXPO_PUBLIC_IP}/members`);
 
         setDetails(res.data.user);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching Member:", error);
+        Alert.alert("Error", "Failed to fetch Members");
       }
     })();
   }, []);
 
   useEffect(() => {
     axios
-      .get(`http://10.88.15.226:8081/clubs`)
+      .get(`${process.env.EXPO_PUBLIC_IP}/clubs`)
       .then((res) => setClubs(res.data))
       .catch((err) => {
         console.error("Error fetching clubs:", err);
-        Alert.alert("Error", "Failed to fetch clubs");
+        Alert.alert("Error", "Failed to fetch Clubs");
       });
   }, []);
 
   useEffect(() => {
     if (!selectedClubId) return;
     axios
-      .get(`http://10.88.15.226:8081/clubBoard/${selectedClubId}`)
+      .get(`${process.env.EXPO_PUBLIC_IP}/clubBoard/${selectedClubId}`)
       .then((res) => setids(res.data))
       .catch((err) => {
-        console.error("Error fetching clubs:", err);
-        Alert.alert("Error", "Failed to fetch clubs");
+        console.error("Error fetching Club Board:", err);
+        Alert.alert("Error", "Failed to fetch Club Board");
       });
   }, [selectedClubId]);
 
   useEffect(() => {
+    if (!selectedClubId) return;
     (async () => {
       try {
         // Step 1: Get club list from user info
         const { data } = await axios.get(
-          `http://10.88.15.226:8081/clubBoard/${selectedClubId}`
+          `${process.env.EXPO_PUBLIC_IP}/clubBoard/${selectedClubId}`
         );
 
         const MemberDetails = await Promise.all(
           data.map(async (item) => {
             const res = await axios.get(
-              `http://10.88.15.226:8081/clubBoardMembers/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.member_id}`
             );
             const result = await axios.get(
-              `http://10.88.15.226:8081/clubAccess/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/clubAccess/${item.member_id}`
             );
             const position = result.data.position;
             const MemberNames =
@@ -109,8 +111,8 @@ const ClubMembersPage = () => {
         );
         setnames(MemberDetails);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching member details:", error);
+        Alert.alert("Error", "Failed to fetch Member Details");
       }
     })();
   }, [selectedClubId]);
@@ -174,48 +176,11 @@ const ClubMembersPage = () => {
               />
             ))}
           </Picker>
-          <Text style={styles.members}>
+          <Text>
             Number of Members: {members.length}
           </Text>
         </View>
-        <View style={styles.containers}>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() => router.push("/board/association/club/members/")}
-            >
-              <Text style={styles.name}>Members</Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() => router.push("/board/association/club/guests/")}
-            >
-              <Text style={styles.name}>Guest</Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() =>
-                router.push("/board/association/club/boardMembers/")
-              }
-            >
-              <Text style={styles.name}>Board Members</Text>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={() =>
-                router.push("/board/association/club/councilMembers/")
-              }
-            >
-              <Text style={styles.name}>Council Board Members</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <AssocMenu/>
 
         {/* Sorting Dropdowns */}
         <View style={styles.sortingRow}>
@@ -258,7 +223,7 @@ const ClubMembersPage = () => {
         >
           <Text style={styles.navButton}>Project</Text>
         </TouchableOpacity>
-      </View>{" "}
+      </View>
     </View>
   );
 };
@@ -271,8 +236,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   containers: {
+    flex:1,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   bottomNav: {
     flexDirection: "row",
@@ -293,38 +259,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 30,
   },
-  members: {
-    fontSize: "18px",
-    color: "white",
-  },
-  buttons: {
-    backgroundColor: "#065395",
-    paddingLeft: 90,
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingRight: 90,
-    gap: 10,
-    marginTop: 10,
-  },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 10,
-    backgroundColor: "#AFABA3",
-    alignItems: "center",
-  },
-  logo: {
-    width: 300,
-    height: 50,
-    resizeMode: "contain",
-  },
-  profileText: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "bold",
-  },
   content: {
     paddingHorizontal: 20,
     marginBottom: 20,
@@ -336,27 +270,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
-  logo: {
-    width: 300,
-    height: 50,
-    right: 80,
-    resizeMode: "contain",
-  },
-  logoContainer: {
-    backgroundColor: "#F1F6F5",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    zIndex: 10, // Ensure it's layered correctly
-  },
   meetingHeaderText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#ffffff",
-  },
-  name: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#ffffff",

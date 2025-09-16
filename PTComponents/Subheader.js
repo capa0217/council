@@ -29,10 +29,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#ffffff",
-    flex: 20,
-    alignSelf:"center"
+    flex: 1,
+    alignSelf:"center",
+    textAlign: "center",
   },
   Back: {
-    flex: 1
+    position:"absolute",
+    insetBlockStart:10,
+    zIndex:20
   },
 });

@@ -7,7 +7,7 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: "#065395",
         },
@@ -15,15 +15,16 @@ export default function Layout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        header({ options }) {
-          return <Subheader {...options} />;
-        },
+          header({options}) {
+            return <Subheader {...options} />;
+          },
+        
       }}
     >
       <Stack.Screen
-        name="index"
+        name="[projectUserID]"
         options={{
-          title: "Edit Profile",
+          title: "Projects",
         }}
       />
     </Stack>

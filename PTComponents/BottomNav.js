@@ -9,14 +9,14 @@ function Nav (props) {
         style={styles.navButton}
         onPress={() =>
           router.replace({
-            pathname: `/${props.link}`,
+            pathname: props.link,
           })
         }
       >
         <Text style={styles.navText}>{props.name}</Text>
       </TouchableOpacity>;
   }
-  return <View style={styles.active}><Text style={styles.activeText}>{props.name}</Text></View>
+  return <View style={[styles.navButton, styles.active]}><Text style={[styles.navText, styles.activeText]}>{props.name}</Text></View>
   
   ;
 }
@@ -24,9 +24,9 @@ function Nav (props) {
 const BottomNav = (props) => {
   return (
     <View style={styles.bottomNav}>
-      <Nav name={'Club Members'} link={'club/members'} active={props.active!=1}/>
-      <Nav name={'Meetings'} link={'club/meetings'} active={props.active!=2}/>
-      <Nav name={'Projects'} link={'members_projectLevels'} active={props.active!=3}/>
+      {props.number >= 1 && <Nav name={props.name[0]} link={props.link[0]} active={props.active!=1}/>}
+      {props.number >= 2 && <Nav name={props.name[1]} link={props.link[1]} active={props.active!=2}/>}
+      {props.number >= 3 && <Nav name={props.name[2]} link={props.link[2]} active={props.active!=3}/>}
     </View>
   );
 };
@@ -42,24 +42,24 @@ const styles = StyleSheet.create({
   navButton: {
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 15,
-    backgroundColor: '#FFD347',
+    height:70,
+    borderTopEndRadius:5,
+    borderTopStartRadius:5,
+    borderTopLeftRadius:5,
+    borderTopRightRadius:5,
+    backgroundColor: '#8A7D6A',
     flex: 1,
   },
   navText: {
     fontSize: 16,
-    color: "#333",
+    textAlign: "center",
+    color: "white",
   },
   active: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 15,
-    backgroundColor: '#ffc300',
-    flex:1,
+    backgroundColor: '#FFD347',
   },
   activeText: {
-    fontSize: 16,
-    color: "#333",
+    color:"black",
     fontWeight: "bold",
     textDecorationLine: "underline",
   },

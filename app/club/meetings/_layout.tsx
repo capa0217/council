@@ -22,6 +22,12 @@ export default function Layout() {
       }}
     >
       <Stack.Screen
+        name="index"
+        options={{
+          title: "Meetings",
+        }}
+      />
+      <Stack.Screen
         name="[meetingID]"
         options={{
           title: "Meeting Details",

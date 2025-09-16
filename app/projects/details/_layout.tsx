@@ -21,9 +21,9 @@ export default function Layout() {
       }}
     >
       <Stack.Screen
-        name="index"
+        name="[projectLevel]"
         options={{
-          title: "Edit Profile",
+          title: "Project Details",
         }}
       />
     </Stack>

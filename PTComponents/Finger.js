@@ -1,7 +1,7 @@
 import React from "react";
 
 import Svg, { Path } from "react-native-svg";
-const Finger = (props) => (
+const Finger = () => (
   <Svg viewBox="0 0 512 390" height="25" width="25">
     <Path
       fill="#8A7D6A"

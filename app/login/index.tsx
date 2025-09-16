@@ -12,7 +12,6 @@ import { useNavigation } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Header } from "@react-navigation/stack";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -36,17 +35,17 @@ const LoginForm = () => {
   const handleLogin = async (data:any) => {
     try {
       const login = await axios.post(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/users/login`,
+        `${process.env.EXPO_PUBLIC_IP}/users/login`,
         {
           website_login: data.website_login.trim(),
           password: data.password.trim(),
         }
       );
       const member = await axios.get(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/member/${login.data.user_id}`
+        `${process.env.EXPO_PUBLIC_IP}/member/${login.data.user_id}`
       );
       const clubAccess = await axios.get(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/clubAccess/${member.data.user_id}`
+        `${process.env.EXPO_PUBLIC_IP}/clubAccess/${member.data.user_id}`
       );
 
       if (member.status == 401) {
@@ -54,9 +53,9 @@ const LoginForm = () => {
       } else {
         // Store user data in AsyncStorag
         await AsyncStorage.setItem("userId", member.data.user_id.toString());
-
+        router.dismissAll();
         if (member.data.paid == "1" && clubAccess.data.position == null) {
-          router.push({
+          router.replace({
             pathname: "/club/meetings",
           });
         } else if (
@@ -64,18 +63,17 @@ const LoginForm = () => {
           clubAccess.data.position != null
         ) {
           await AsyncStorage.setItem("userId", member.data.user_id.toString());
-          router.push({
+          router.replace({
             pathname: "/login/selectDestination",
           });
         } else if (member.data.guest == "1") {
           await AsyncStorage.setItem("userId", member.data.user_id.toString());
-          router.push({
+          router.replace({
             pathname: "/GuestPage",
           });
         }
       }
 
-      console.log("Server Response:", login.data);
       Alert.alert("Login Response", login.data.message);
     } catch (error:any) {
       if (error.login) {

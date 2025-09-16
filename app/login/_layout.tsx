@@ -22,15 +22,9 @@ export default function Layout() {
       }}
     >
       <Stack.Screen
-        name="meetings"
+        name="index"
         options={{
-          title: "Club Meetings",
-        }}
-      />
-      <Stack.Screen
-        name="members"
-        options={{
-          title: "Club Members",
+          title: "Login",
         }}
       />
     </Stack>

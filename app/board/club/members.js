@@ -4,20 +4,18 @@ import {
   View,
   Alert,
   StyleSheet,
-  Image,
   Button,
   TouchableOpacity,
   Modal,
   TextInput,
+  ScrollView,
 } from "react-native";
 import axios from "axios";
+import BottomNav from "@/PTComponents/BottomNav"
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScrollView } from "react-native-web";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
-
-const PORT = 8081;
 
 const BoardMemberpage = () => {
   const router = useRouter();
@@ -27,6 +25,7 @@ const BoardMemberpage = () => {
   const [memberid, setid] = useState("");
   const [clubid, setids] = useState("");
   const [userid, setUserId] = useState(null);
+
   useEffect(() => {
     (async () => {
       try {
@@ -40,21 +39,21 @@ const BoardMemberpage = () => {
       }
     })();
   }, []);
-  console.log(userid);
+
   useEffect(() => {
     (async () => {
       try {
         // Step 1: Get club list from user info
         const { data } = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/clubBoard/1`
+          `${process.env.EXPO_PUBLIC_IP}/clubBoard/1`
         );
         const UseridList = data.User_id || [];
 
         const MemberDetails = await Promise.all(
           data.map(async (item) => {
-            
+
             const res = await axios.get(
-              `http://${process.env.EXPO_PUBLIC_IP}:8081/clubBoardMembers/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.member_id}`
             );
             const MemberNames =
               res.data[0].first_name + " " + res.data[0].last_name;
@@ -75,7 +74,7 @@ const BoardMemberpage = () => {
   const Search = async () => {
     try {
       const res = await axios.get(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/clubBoardMembers/${id}`
+        `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${id}`
       );
       setresults(res.data);
       console.log(res.data);
@@ -86,13 +85,13 @@ const BoardMemberpage = () => {
   const AddMember = async () => {
     try {
       const access = await axios.get(
-        `http://${process.env.EXPO_PUBLIC_IP}:8081/clubAccess/${userid}`
+        `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userid}`
       );
       const accesses = access.data;
 
       if (accesses) {
         const response = await axios.post(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/BoardMember`,
+          `${process.env.EXPO_PUBLIC_IP}/BoardMember`,
           {
             User_id: memberid.trim(),
             Club_id: clubid.trim(),
@@ -107,26 +106,6 @@ const BoardMemberpage = () => {
   };
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
-      <View style={styles.topBar}>
-        <Image
-          source={{
-            uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-          }}
-          style={styles.logo}
-        />
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/profile",
-              query: { user_Id: userId },
-            })
-          }
-        >
-          <Text style={styles.profileText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView style={styles.content}>
         {/* Meeting Header Block */}
         <View style={styles.meetingHeaderBlock}>
@@ -153,25 +132,11 @@ const BoardMemberpage = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <View style={styles.bottomNav}>
-        <Text style={[styles.navButton, styles.activeButton]}>
-          Club Members
-        </Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("MembersMeetingPage")}
-        >
-          <Text style={styles.navButton}>Meeting</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ProjectLevelsPage")}
-        >
-          <Text style={styles.navButton}>Project</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav number={3} name={["Members", "Guests", "Meeting"]} link={["/board/club/members", "/board/club/guests", "/board/club/meetings"]} active={1} />
       <Modal
         visible={modalVisible}
         transparent={true}
-        animationType="slide" // or 'fade' or 'none'
+        animationType="fade" // or 'fade' or 'none'
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalBackground}>
@@ -254,7 +219,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-     position: 'relative', 
+    position: 'relative',
     zIndex: -5,
   },
   meetingHeaderText: {

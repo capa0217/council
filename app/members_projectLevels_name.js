@@ -15,8 +15,6 @@ import BottomNav from './components/BottomNav';
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PTHeader from "./components/PTHeader";
-import { Picker } from "@react-native-picker/picker";
-import MultiSelect from "react-native-multiple-select";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
@@ -45,7 +43,7 @@ const ProjectLevelDetailPage = () => {
                 const id= await AsyncStorage.getItem("id");
 
         if(level && id){
-            const {data}= await axios.get(`http://10.88.48.249:8081/projectss/${id}/${level}`);
+            const {data}= await axios.get(`${process.env.EXPO_PUBLIC_IP}/projectss/${id}/${level}`);
             setProject(data);
             console.log(project);
         }

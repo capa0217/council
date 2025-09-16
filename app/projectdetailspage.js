@@ -14,8 +14,6 @@ import axios from "axios";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PTHeader from "./components/PTHeader";
-import { Picker } from "@react-native-picker/picker";
-import MultiSelect from "react-native-multiple-select";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
@@ -33,7 +31,7 @@ const ProjectDetailPage = () => {
       try {
         const projectid = await AsyncStorage.getItem("projectId");
         if(projectid){
-            const {data}= await axios.get(`http://10.88.48.249:8081/projects/${projectid}`);
+            const {data}= await axios.get(`${process.env.EXPO_PUBLIC_IP}/projects/${projectid}`);
             setProject(data);
             setName(data[0].project_number)
         }

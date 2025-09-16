@@ -24,8 +24,8 @@ export default function profile() {
   useEffect(() => {
     if (userId=="") return;
     router.replace({
-      pathname: "/profile/[profileID]",
-      params:{profileID: userId}
+      pathname: "/projects/[projectUserID]",
+      params:{projectUserID: userId}
     })
   }, [userId]);
 

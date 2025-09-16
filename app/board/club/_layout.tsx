@@ -15,15 +15,28 @@ export default function Layout() {
         headerTitleStyle: {
           fontWeight: "bold",
         },
-        header({ options }) {
-          return <Subheader {...options} />;
-        },
+          header({options}) {
+            return <Subheader {...options} />;
+          },
+        
       }}
     >
       <Stack.Screen
-        name="index"
+        name="members"
         options={{
-          title: "Edit Profile",
+          title: "Club Members",
+        }}
+      />
+      <Stack.Screen
+        name="guests"
+        options={{
+          title: "Guests",
+        }}
+      />
+      <Stack.Screen
+        name="meetings"
+        options={{
+          title: "Club Meetings",
         }}
       />
     </Stack>

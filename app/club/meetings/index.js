@@ -8,24 +8,22 @@ import {
   ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useFocusEffect } from "@react-navigation/native";
 
 import BottomNav from "@/PTComponents/BottomNav";
-import Button from "@/PTComponents/Button";
+import MeetingBottom from "@/PTComponents/MeetingBottom";
 
 import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import MeetingBottom from "@/PTComponents/MeetingBottom";
 
 const PORT = 8081;
 
 const ProfileScreen = () => {
   const router = useRouter();
 
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState("");
   const [clubs, setClubs] = useState([]);
   const [clubMeetings, setClubwithMeetings] = useState([]);
   const nav = useNavigation();
@@ -53,36 +51,37 @@ const ProfileScreen = () => {
   });
 
   useEffect(() => {
-    if (!userId) return;
+    if (userId == "") return;
     (async () => {
       try {
         const { data } = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/user/${userId}`
+          `${process.env.EXPO_PUBLIC_IP}/user/${userId}`
         );
         const userList = data.Club_id || [];
         setClubs(userList);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching user clubs:", error);
+        Alert.alert("Error", "Failed to fetch user clubs");
       }
     })();
   }, [userId]);
 
   useEffect(() => {
+    if (userId != "") return;
     (async () => {
       try {
         // Step 1: Get club list from user info
         const { data } = await axios.get(
-          `http://${process.env.EXPO_PUBLIC_IP}:8081/allClubs/`
+          `${process.env.EXPO_PUBLIC_IP}/allClubs/`
         );
         const allList = data.Club_id || [];
         setClubs(allList);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching all club data:", error);
+        Alert.alert("Error", "Failed to fetch all clubs");
       }
     })();
-  }, []);
+  }, [userId]);
 
   // Fetch user and club info
   useEffect(() => {
@@ -93,11 +92,11 @@ const ProfileScreen = () => {
         const clubMeetingDetails = await Promise.all(
           clubs.map(async (item) => {
             const res = await axios.get(
-              `http://${process.env.EXPO_PUBLIC_IP}:8081/club/${item.Club_id}`
+              `${process.env.EXPO_PUBLIC_IP}/club/${item.Club_id}`
             );
             const clubNames = res.data.Club_name[0].Club_name;
             const resMeet = await axios.get(
-              `http://${process.env.EXPO_PUBLIC_IP}:8081/meeting/${item.Club_id}`
+              `${process.env.EXPO_PUBLIC_IP}/meeting/${item.Club_id}`
             );
             const MeetNames = resMeet.data;
             return {
@@ -220,9 +219,9 @@ const ProfileScreen = () => {
       </ScrollView>
       {/* Bottom Navigation */}
       {userId ? (
-        <BottomNav active={2} />
+        <BottomNav number={3} name={["Club Members", "Club Meetings", "Development Program"]} link={["/club/members", "/club/meetings", "/projects"]} active={2} />
       ) : (
-        <MeetingBottom/>
+        <MeetingBottom />
       )}
     </View>
   );

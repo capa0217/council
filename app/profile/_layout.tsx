@@ -26,7 +26,6 @@ export default function Layout() {
         options={{
           title: "Profile",
         }}
-        
       />
     </Stack>
   );

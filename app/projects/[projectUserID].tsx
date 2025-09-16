@@ -65,14 +65,6 @@ const MembersProjectPage1 = () => {
 
       {userId != "" && (
         <ScrollView contentContainerStyle={styles.content}>
-          {/* Header */}
-          <View style={styles.headerBlock}>
-            <Text style={styles.headerText}>Project Levels</Text>
-          </View>
-
-          {/* Space between header and buttons */}
-          <View style={{ height: 30 }} />
-
           {/* Level Buttons */}
           {[1, 2, 3, 4].map((level) => (
             <TouchableOpacity

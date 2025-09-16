@@ -42,7 +42,7 @@ const PTHeader = () => {
           <TouchableOpacity
             onPress={() =>
               router.navigate({
-                pathname: "/login",
+                pathname: "/",
               })
             }
           >

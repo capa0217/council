@@ -7,7 +7,6 @@ import {
   Button,
   TouchableOpacity,
   Modal,
-  TextInput,
   ScrollView,
 } from "react-native";
 import axios from "axios";
@@ -19,18 +18,18 @@ import { useRouter } from "expo-router";
 
 const BoardMemberpage = () => {
   const router = useRouter();
-  const [names, setnames] = useState([]);
   const [results, setresults] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [memberid, setid] = useState("");
-  const [clubid, setids] = useState("");
-  const [userid, setUserId] = useState(null);
+  const [memberDetails, setDetails] = useState([]);
+  const [clubId, setClubId] = useState("");
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
+          console.log(`Hello There Fellow : ${storedUserId}`);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -41,36 +40,58 @@ const BoardMemberpage = () => {
   }, []);
 
   useEffect(() => {
+    if (userId == "") return;
+    (async () => {
+      try {
+    console.log(`Hello There : ${userId}`);
+        const access = await axios.get(
+          `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userId}`
+        );
+        setClubId(access.data.club_id);
+        console.log(`club: ${access.data.club_id}`);
+      } catch (error) {
+        console.error("Error fetching club:", error);
+        Alert.alert("Error", "Failed to load Club");
+      }
+    })();
+  }, [userId]);
+
+  useEffect(() => {
+    if (clubId == "") return;
     (async () => {
       try {
         // Step 1: Get club list from user info
+        console.log(`Hello There MY fgood Bfello: ${clubId}`);
         const { data } = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/clubBoard/1`
+          `${process.env.EXPO_PUBLIC_IP}/clubBoard/${clubId}`
         );
-        const UseridList = data.User_id || [];
 
         const MemberDetails = await Promise.all(
           data.map(async (item) => {
 
             const res = await axios.get(
-              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.User_id}`
             );
-            const MemberNames =
+            const fullName =
               res.data[0].first_name + " " + res.data[0].last_name;
             const id = res.data[0].user_id;
+            const paid = res.data[0].paid;
             return {
-              MemberNames,
+              fullName,
+              paid,
               id,
             };
           })
         );
-        setnames(MemberDetails);
+        setDetails(MemberDetails);
+        console.log(memberDetails);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching user details:", error);
+        Alert.alert("Error", "Failed to fetch user details");
       }
     })();
-  }, []);
+  }, [clubId]);
+
   const Search = async () => {
     try {
       const res = await axios.get(
@@ -93,8 +114,7 @@ const BoardMemberpage = () => {
         const response = await axios.post(
           `${process.env.EXPO_PUBLIC_IP}/BoardMember`,
           {
-            User_id: memberid.trim(),
-            Club_id: clubid.trim(),
+            Club_id: 1,
           }
         );
       } else {
@@ -104,30 +124,27 @@ const BoardMemberpage = () => {
       Alert.alert("Error", "Failed to add member data");
     }
   };
+  if (!memberDetails) return;
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content}>
-        {/* Meeting Header Block */}
-        <View style={styles.meetingHeaderBlock}>
-          <Text style={styles.meetingHeaderText}>Members</Text>
-        </View>
         <View>
           <TouchableOpacity
             style={styles.Add}
             onPress={() => setModalVisible(true)}
           >
             <Text style={{ color: "blue", fontSize: 16 }}>+ Add member</Text>
-          </TouchableOpacity>{" "}
+          </TouchableOpacity>
         </View>
         {/* Member List */}
-        {names.map((member, index) => (
+        {memberDetails.map((member, index) => (
           <TouchableOpacity
             key={index}
             style={styles.meetingBlock}
-            onPress={() => Alert.alert("Member Selected", member.name)}
+            onPress={() => Alert.alert("Member Selected", member.fullName)}
           >
             <Text style={styles.meetingName}>
-              {member.MemberNames} <Text>Paid: {member.PaidAmount}</Text>{" "}
+              {member.fullName} <Text>Paid: {member.paid ? "Yes" : "No"}</Text>{" "}
             </Text>
           </TouchableOpacity>
         ))}
@@ -141,16 +158,6 @@ const BoardMemberpage = () => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalBox}>
-            <TextInput
-              placeholder="Insert Id"
-              value={memberid}
-              onChangeText={setid}
-            ></TextInput>
-            <TextInput
-              placeholder="Insert Club Id"
-              value={clubid}
-              onChangeText={setids}
-            ></TextInput>
             <TouchableOpacity onPress={AddMember}>
               <Text>Add member</Text>
             </TouchableOpacity>

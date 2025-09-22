@@ -69,13 +69,13 @@ const EditProfile = () => {
   const [marketing, setMarketing] = useState(false);
 
   const [showSharing, setSharing] = useState(false);
-  const [showPhone, setPhone] = useState(false);
-  const [showAddress, setAddress] = useState(false);
+  const [hidePhone, setHidePhone] = useState(false);
+  const [hideAddress, setHideAddress] = useState(false);
 
   const handleSharing = async () => {
     let profile_id = global.profileID.toString();
-    let phone_private = showPhone ? 1 : 0;
-    let address_private = showAddress ? 1 : 0;
+    let phone_private = hidePhone ? 1 : 0;
+    let address_private = hideAddress ? 1 : 0;
 
     const payload = {
       profile_id,
@@ -131,8 +131,8 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (profiles) {
-      setPhone(profiles.phone_private ? true : false);
-      setAddress(profiles.address_private ? true : false);
+      setHidePhone(!!profiles.phone_private );
+      setHideAddress(!!profiles.address_private );
     }
   }, [profiles]);
 
@@ -375,7 +375,7 @@ const EditProfile = () => {
           <View style={styles.function}>
             <TouchableOpacity onPress={() => setSharing(true)}>
               <FormLabel>
-                <Finger /> Share Your Info
+                <Finger /> Hide Your Info
               </FormLabel>
             </TouchableOpacity>
           </View>
@@ -394,26 +394,26 @@ const EditProfile = () => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalView}>
-            <Text style={styles.title}>Tick to share with other members:</Text>
+            <Text style={styles.title}>Tick to hide from other members:</Text>
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
                 <Checkbox
-                  value={showPhone}
-                  onValueChange={setPhone}
-                  color={showPhone ? "#FFD347" : undefined}
+                  value={hidePhone}
+                  onValueChange={setHidePhone}
+                  color={hidePhone ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
-              <Text style={styles.label}>Share Email</Text>
+              <Text style={styles.label}>Hide Address</Text>
             </View>
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
                 <Checkbox
-                  value={showAddress}
-                  onValueChange={setAddress}
-                  color={showAddress ? "#FFD347" : undefined}
+                  value={hideAddress}
+                  onValueChange={setHideAddress}
+                  color={hideAddress ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
-              <Text style={styles.label}>Share Phone Number</Text>
+              <Text style={styles.label}>Hide Phone Number</Text>
             </View>
             <View style={styles.function}>
               <View style={{flex:3}}>

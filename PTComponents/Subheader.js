@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   Back: {
     position:"absolute",
-    insetBlockStart:10,
+    insetBlockStart:9,
     zIndex:20
   },
 });

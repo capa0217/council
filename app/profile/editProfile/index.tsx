@@ -74,6 +74,7 @@ const EditProfile = () => {
 
   const handleSharing = async () => {
     let profile_id = global.profileID.toString();
+
     let phone_private = hidePhone ? 1 : 0;
     let address_private = hideAddress ? 1 : 0;
 
@@ -201,15 +202,14 @@ const EditProfile = () => {
     const payload = {
       ...data,
       profile_id,
-      privacy,
       marketing,
     };
     try {
-      const editProfileResponse = await axios.post(
+      await axios.post(
         `${process.env.EXPO_PUBLIC_IP}/profile/edit`,
         payload
       );
-      console.log("Server Response:", editProfileResponse.data);
+      
       Alert.alert("Success", "Update successful");
       router.back();
     } catch (error: any) {
@@ -403,7 +403,7 @@ const EditProfile = () => {
                   color={hidePhone ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
-              <Text style={styles.label}>Hide Address</Text>
+              <Text style={styles.label}>Hide Phone Number</Text>
             </View>
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
@@ -413,7 +413,7 @@ const EditProfile = () => {
                   color={hideAddress ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
-              <Text style={styles.label}>Hide Phone Number</Text>
+              <Text style={styles.label}>Hide Address</Text>
             </View>
             <View style={styles.function}>
               <View style={{flex:3}}>

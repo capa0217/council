@@ -125,8 +125,8 @@ const ClubMembersPage = () => {
           {(selectedClub === "All Clubs"
             ? memberdetails
             : memberdetails.filter((member: any) =>
-                ids.some((idObj: any) => idObj.User_id === member.user_id)
-              )
+              ids.some((idObj: any) => idObj.User_id === member.user_id)
+            )
           ).map((member: any) => (
             <TouchableOpacity
               key={member.user_id}
@@ -148,7 +148,7 @@ const ClubMembersPage = () => {
       {userId == null && <NoAuthentication />}
 
       {/* Bottom Navigation */}
-            <BottomNav number={3} name={["Members", "Meetings", "Development Program"]} link={["/club/members", "/club/meetings", "/projects"]} active={1} />
+      <BottomNav number={3} name={["Members", "Meetings", "Development Program"]} link={["/club/members", "/club/meetings", "/projects"]} active={1} />
     </View>
   );
 };

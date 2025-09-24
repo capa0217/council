@@ -15,6 +15,7 @@ const Profile = () => {
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState<any>([]);
   const [access, setAccess] = useState(false);
+  const [clubAccess, setClubAccess] = useState(false);
 
   const local = useLocalSearchParams();
   const nav = useNavigation();
@@ -43,9 +44,10 @@ const Profile = () => {
           );
           if (res.status == 200) {
             setAccess(true);
+            setClubAccess(true);
           }
         }
-      } catch (err:any) {
+      } catch (err: any) {
         console.error("Error With Club Access:", err);
         Alert.alert("Error", err);
       }
@@ -91,7 +93,7 @@ const Profile = () => {
                 onPress={() =>
                   router.navigate({
                     pathname: "/profile/editProfile",
-                    params:{profileID:local.profileID}
+                    params: { profileID: local.profileID },
                   })
                 }
               >
@@ -130,9 +132,15 @@ const Profile = () => {
           )}
 
           <Text style={[styles.infoText, { marginTop: 40 }]}>
-            <Finger /> Join_Date:
+            <Finger /> Join Date:{" "}
             {new Date(profiles.join_date).toLocaleDateString()}
           </Text>
+          {clubAccess && profiles.paid_date && (
+            <Text style={styles.infoText}>
+              <Finger /> Paid Date:{" "}
+              {new Date(profiles.paid_date).toLocaleDateString()}
+            </Text>
+          )}
         </View>
       </ScrollView>
     </View>

@@ -39,6 +39,24 @@ export default function Layout() {
           title: "Club Meetings",
         }}
       />
+      <Stack.Screen
+        name="addMember"
+        options={{
+          title: "Add New Member",
+        }}
+      />
+      <Stack.Screen
+        name="addExisting"
+        options={{
+          title: "Add Existing Member",
+        }}
+      />
+      <Stack.Screen
+        name="addGuest"
+        options={{
+          title: "Add Guest",
+        }}
+      />
     </Stack>
   );
 }

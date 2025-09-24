@@ -4,27 +4,24 @@ import {
   View,
   Alert,
   StyleSheet,
-  Button,
   TouchableOpacity,
-  Modal,
-  TextInput,
   ScrollView,
 } from "react-native";
 import axios from "axios";
-import BottomNav from "@/PTComponents/BottomNav"
+import BottomNav from "@/PTComponents/BottomNav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
+
 import { useRouter } from "expo-router";
 
-const BoardMemberpage = () => {
+import { useIsFocused } from "@react-navigation/native";
+
+const ClubBoardMemberPage = () => {
   const router = useRouter();
-  const [names, setnames] = useState([]);
-  const [results, setresults] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [memberid, setid] = useState("");
-  const [clubid, setids] = useState("");
-  const [userid, setUserId] = useState(null);
+
+  const [memberDetails, setDetails] = useState([]);
+  const [clubId, setClubId] = useState("");
+  const [userId, setUserId] = useState("");
+  const [payment, setPayment] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -41,129 +38,159 @@ const BoardMemberpage = () => {
   }, []);
 
   useEffect(() => {
+    if (userId == "") return;
+    (async () => {
+      try {
+        const access = await axios.get(
+          `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userId}`
+        );
+        setClubId(access.data.club_id);
+      } catch (error) {
+        console.error("Error fetching club:", error);
+        Alert.alert("Error", "Failed to load Club");
+      }
+    })();
+  }, [userId]);
+
+  useEffect(() => {
+    if (clubId == "") return;
     (async () => {
       try {
         // Step 1: Get club list from user info
         const { data } = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/clubBoard/1`
+          `${process.env.EXPO_PUBLIC_IP}/clubBoard/${clubId}`
         );
-        const UseridList = data.User_id || [];
 
         const MemberDetails = await Promise.all(
           data.map(async (item) => {
-
             const res = await axios.get(
-              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.member_id}`
+              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.User_id}`
             );
-            const MemberNames =
+            const fullName =
               res.data[0].first_name + " " + res.data[0].last_name;
             const id = res.data[0].user_id;
+            const paid = res.data[0].paid;
+            const paid_date = res.data[0].paid_date;
+            const guest = res.data[0].guest;
             return {
-              MemberNames,
+              fullName,
+              paid,
+              paid_date,
               id,
+              guest,
             };
           })
         );
-        setnames(MemberDetails);
+        setDetails(MemberDetails);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching user details:", error);
+        Alert.alert("Error", "Failed to fetch user details");
       }
     })();
-  }, []);
-  const Search = async () => {
-    try {
-      const res = await axios.get(
-        `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${id}`
-      );
-      setresults(res.data);
-      console.log(res.data);
-    } catch (error) {
-      console.error("Search failed:", error);
-    }
-  };
-  const AddMember = async () => {
-    try {
-      const access = await axios.get(
-        `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userid}`
-      );
-      const accesses = access.data;
+  }, [clubId, useIsFocused(), payment]);
 
-      if (accesses) {
-        const response = await axios.post(
-          `${process.env.EXPO_PUBLIC_IP}/BoardMember`,
-          {
-            User_id: memberid.trim(),
-            Club_id: clubid.trim(),
-          }
-        );
-      } else {
-        console.log("You can not add member");
+  const handlePayment = async (member, index) => {
+    try {
+      let user_id = member.id;
+      let paid = 0;
+      let paid_date = null;
+      let guest = 1;
+
+      //If the member is unpaid, the values are reversed
+      if (member.paid == 0) {
+        paid = 1;
+        guest = 0;
+        paid_date = "";
+
+        let currDate = new Intl.DateTimeFormat(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(new Date());
+
+        let [day, month, year] = currDate.split("/");
+        paid_date += year;
+        paid_date += "-";
+        paid_date += month;
+        paid_date += "-";
+        paid_date += day;
       }
+
+      const payload = {
+        user_id,
+        paid,
+        paid_date,
+        guest,
+      };
+
+      await axios.post(
+        `${process.env.EXPO_PUBLIC_IP}/updatePayment/`,
+        payload
+      );
+
+      setPayment(payment+1);
+      Alert.alert("Success", "Payment Updated");
     } catch (error) {
-      Alert.alert("Error", "Failed to add member data");
+      console.error(
+        "Error Updating Payment:",
+        error.response ? error.response.data : error.message
+      );
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Payment Update Failed"
+      );
     }
   };
+
+  if (!memberDetails) return;
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content}>
-        {/* Meeting Header Block */}
-        <View style={styles.meetingHeaderBlock}>
-          <Text style={styles.meetingHeaderText}>Members</Text>
-        </View>
-        <View>
+        <View style={{flexDirection:"row", flex:1, justifyContent: "space-evenly"}}>
           <TouchableOpacity
             style={styles.Add}
-            onPress={() => setModalVisible(true)}
+            onPress={() => router.push("/board/club/addMember")}
           >
-            <Text style={{ color: "blue", fontSize: 16 }}>+ Add member</Text>
-          </TouchableOpacity>{" "}
+            <Text style={{ color: "blue", fontSize: 16 }}>+ Add New Member</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.Add}
+            onPress={() => router.push("/board/club/addExisting")}
+          >
+            <Text style={{ color: "blue", fontSize: 16 }}>+ Add Existing Member</Text>
+          </TouchableOpacity>
         </View>
         {/* Member List */}
-        {names.map((member, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.meetingBlock}
-            onPress={() => Alert.alert("Member Selected", member.name)}
-          >
-            <Text style={styles.meetingName}>
-              {member.MemberNames} <Text>Paid: {member.PaidAmount}</Text>{" "}
-            </Text>
-          </TouchableOpacity>
+        {memberDetails.map((member, index) => (
+          <View style={styles.member}>
+            <TouchableOpacity
+              style={styles.name}
+              onPress={() => router.push({pathname: "/profile/[profileID]", params: {profileID: member.id}})}
+            >
+              <Text style={styles.statusText}>{member.fullName}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.status}
+              onPress={() => handlePayment(member, index)}
+            >
+              <Text style={styles.statusText}>
+                {member.paid ? "Paid" : "Unpaid"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
-      <BottomNav number={3} name={["Members", "Guests", "Meeting"]} link={["/board/club/members", "/board/club/guests", "/board/club/meetings"]} active={1} />
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="fade" // or 'fade' or 'none'
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalBox}>
-            <TextInput
-              placeholder="Insert Id"
-              value={memberid}
-              onChangeText={setid}
-            ></TextInput>
-            <TextInput
-              placeholder="Insert Club Id"
-              value={clubid}
-              onChangeText={setids}
-            ></TextInput>
-            <TouchableOpacity onPress={AddMember}>
-              <Text>Add member</Text>
-            </TouchableOpacity>
-
-            <Button title="Close" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
-      {results.map((member, index) => (
-        <Text key={index}>
-          {member.first_name} {member.last_name} Paid: {member.paid}
-        </Text>
-      ))}
+      <BottomNav
+        number={3}
+        name={["Members", "Guests", "Meeting"]}
+        link={[
+          "/board/club/members",
+          "/board/club/guests",
+          "/board/club/meetings",
+        ]}
+        active={1}
+      />
     </View>
   );
 };
@@ -176,99 +203,34 @@ const styles = StyleSheet.create({
   Add: {
     marginTop: 20,
     marginBottom: 10,
-    marginLeft: 1080,
   },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalBox: {
-    margin: 30,
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  topBar: {
+  member: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 10,
+  },
+  name: {
+    marginTop: 15,
+    backgroundColor: "#8A7D6A",
+    padding: 15,
+    borderTopStartRadius: 10,
+    borderBottomStartRadius: 10,
+    flex: 4,
+  },
+  status: {
+    marginTop: 15,
     backgroundColor: "#AFABA3",
-    alignItems: "center",
+    padding: 15,
+    borderTopEndRadius: 10,
+    borderBottomEndRadius: 10,
+    flex: 1,
   },
-  logo: {
-    width: 300,
-    height: 50,
-    resizeMode: "contain",
-  },
-  profileText: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "bold",
+  statusText: {
+    color: "#ffffff",
+    flex:1,
+    textAlign:"center"
   },
   content: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  meetingHeaderBlock: {
-    marginTop: 20,
-    backgroundColor: "#065395",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    position: 'relative',
-    zIndex: -5,
-  },
-  meetingHeaderText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#ffffff",
-  },
-  sortingRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  picker: {
-    flex: 1,
-    height: 50,
-  },
-  meetingBlock: {
-    marginTop: 15,
-    backgroundColor: "#8A7D6A",
-    padding: 15,
-    borderRadius: 10,
-  },
-  meetingClub: {
-    fontWeight: "600",
-    color: "#ffffff",
-  },
-  meetingName: {
-    fontSize: 16,
-    marginTop: 4,
-    color: "#ffffff",
-  },
-  meetingDate: {
-    fontSize: 14,
-    color: "#E0E0E0",
-    marginTop: 2,
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#F1F6F5",
-    paddingVertical: 15,
-  },
-  navButton: {
-    fontSize: 16,
-    color: "#333",
-  },
-  activeButton: {
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-  },
 });
-export default BoardMemberpage;
+export default ClubBoardMemberPage;

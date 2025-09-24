@@ -15,6 +15,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~5.0.4",
     "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/datetimepicker": "8.4.1",
@@ -24,7 +25,6 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.3.1",
     "axios": "^1.9.0",
-    "body-parser": "^2.2.0",
     "expo": "^53.0.22",
     "expo-blur": "~14.1.5",
     "expo-checkbox": "~4.1.4",
@@ -41,9 +41,7 @@
     "expo-system-ui": "~5.0.11",
     "expo-web-browser": "~14.2.0",
     "jwt-decode": "^4.0.0",
-    "knex": "^3.1.0",
-    "mysql2": "^3.14.0",
-    "nanoid": "^5.1.5",
+    "nanoid": "^5.1.6",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-hook-form": "^7.56.1",
@@ -54,20 +52,15 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
-    "react-native-sfsymbols": "^1.2.2",
     "react-native-svg": "15.11.2",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
-    "react-native-worklets": "0.5.1",
-    "@expo/metro-runtime": "~5.0.4"
+    "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@types/jest": "^29.5.12",
     "@types/react": "~19.0.10",
-    "@types/react-test-renderer": "^18.3.0",
-    "jest-expo": "~53.0.10",
     "typescript": "~5.8.3"
   },
   "private": true

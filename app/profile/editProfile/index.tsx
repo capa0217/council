@@ -69,13 +69,14 @@ const EditProfile = () => {
   const [marketing, setMarketing] = useState(false);
 
   const [showSharing, setSharing] = useState(false);
-  const [showPhone, setPhone] = useState(false);
-  const [showAddress, setAddress] = useState(false);
+  const [hidePhone, setHidePhone] = useState(false);
+  const [hideAddress, setHideAddress] = useState(false);
 
   const handleSharing = async () => {
     let profile_id = global.profileID.toString();
-    let phone_private = showPhone ? 0 : 1;
-    let address_private = showAddress ? 0 : 1;
+
+    let phone_private = hidePhone ? 1 : 0;
+    let address_private = hideAddress ? 1 : 0;
 
     const payload = {
       profile_id,
@@ -131,8 +132,8 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (profiles) {
-      setPhone(profiles.phone_private ? false : true);
-      setAddress(profiles.address_private ? false : true);
+      setHidePhone(!!profiles.phone_private );
+      setHideAddress(!!profiles.address_private );
     }
   }, [profiles]);
 
@@ -397,9 +398,9 @@ const EditProfile = () => {
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
                 <Checkbox
-                  value={showPhone}
-                  onValueChange={setPhone}
-                  color={showPhone ? "#FFD347" : undefined}
+                  value={hidePhone}
+                  onValueChange={setHidePhone}
+                  color={hidePhone ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
               <Text style={styles.label}>Hide Phone Number</Text>
@@ -407,9 +408,9 @@ const EditProfile = () => {
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
                 <Checkbox
-                  value={showAddress}
-                  onValueChange={setAddress}
-                  color={showAddress ? "#FFD347" : undefined}
+                  value={hideAddress}
+                  onValueChange={setHideAddress}
+                  color={hideAddress ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
               <Text style={styles.label}>Hide Address</Text>

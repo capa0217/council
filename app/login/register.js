@@ -98,11 +98,13 @@ const RegisterForm = () => {
     }
 
     //Use the generated registration information to insert into the database
+    let join_date = null;
     const payload = {
       ...data,
       user_id,
       website_login,
       password,
+      join_date,
     };
 
     try {

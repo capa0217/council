@@ -74,8 +74,8 @@ const EditProfile = () => {
 
   const handleSharing = async () => {
     let profile_id = global.profileID.toString();
-    let phone_private = showPhone ? 1 : 0;
-    let address_private = showAddress ? 1 : 0;
+    let phone_private = showPhone ? 0 : 1;
+    let address_private = showAddress ? 0 : 1;
 
     const payload = {
       profile_id,
@@ -131,8 +131,8 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (profiles) {
-      setPhone(profiles.phone_private ? true : false);
-      setAddress(profiles.address_private ? true : false);
+      setPhone(profiles.phone_private ? false : true);
+      setAddress(profiles.address_private ? false : true);
     }
   }, [profiles]);
 
@@ -201,15 +201,14 @@ const EditProfile = () => {
     const payload = {
       ...data,
       profile_id,
-      privacy,
       marketing,
     };
     try {
-      const editProfileResponse = await axios.post(
+      await axios.post(
         `${process.env.EXPO_PUBLIC_IP}/profile/edit`,
         payload
       );
-      console.log("Server Response:", editProfileResponse.data);
+      
       Alert.alert("Success", "Update successful");
       router.back();
     } catch (error: any) {
@@ -375,7 +374,7 @@ const EditProfile = () => {
           <View style={styles.function}>
             <TouchableOpacity onPress={() => setSharing(true)}>
               <FormLabel>
-                <Finger /> Share Your Info
+                <Finger /> Hide Your Info
               </FormLabel>
             </TouchableOpacity>
           </View>
@@ -394,7 +393,7 @@ const EditProfile = () => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalView}>
-            <Text style={styles.title}>Tick to share with other members:</Text>
+            <Text style={styles.title}>Tick to hide from other members:</Text>
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
                 <Checkbox
@@ -403,7 +402,7 @@ const EditProfile = () => {
                   color={showPhone ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
-              <Text style={styles.label}>Share Email</Text>
+              <Text style={styles.label}>Hide Phone Number</Text>
             </View>
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
@@ -413,7 +412,7 @@ const EditProfile = () => {
                   color={showAddress ? "#FFD347" : undefined}
                 ></Checkbox>
               </View>
-              <Text style={styles.label}>Share Phone Number</Text>
+              <Text style={styles.label}>Hide Address</Text>
             </View>
             <View style={styles.function}>
               <View style={{flex:3}}>

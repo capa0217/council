@@ -1,32 +1,30 @@
-import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  Alert,
-  StyleSheet,
-  Image,
-  Button,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-} from "react-native";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScrollView } from "react-native-web";
-import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
+import { View, Text, StyleSheet, Alert } from "react-native";
+import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
 
-const PORT = 8081;
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import FormLabel from "@/PTComponents/FormLabel";
+import FormInput from "@/PTComponents/FormInput";
+import Button from "@/PTComponents/Button";
+import FormContainer from "@/PTComponents/FormContainer";
 
-const BoardMemberpage = () => {
+import React, { useState, useEffect } from "react";
+// Function to generate a random numeric user ID
+function generateShortId(length) {
+  let id = "";
+  for (let i = 0; i < length + 1; i++) {
+    id += Math.floor(Math.random() * 10); // 0–9
+  }
+  return Number(id);
+}
+
+const AddMemberPage = () => {
   const router = useRouter();
-  const [names, setnames] = useState([]);
-  const [results, setresults] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [memberid, setid] = useState("");
-  const [clubid, setids] = useState("");
-  const [userid, setUserId] = useState(null);
+
+  const [userId, setUserId] = useState("");
+  const [clubId, setClubId] = useState("");
+
   useEffect(() => {
     (async () => {
       try {
@@ -40,270 +38,261 @@ const BoardMemberpage = () => {
       }
     })();
   }, []);
-  console.log(userid);
+
   useEffect(() => {
+    if (userId == "") return;
     (async () => {
       try {
-        // Step 1: Get club list from user info
-        const { data } = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/clubBoard/1`
+        const access = await axios.get(
+          `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userId}`
         );
-        const UseridList = data.User_id || [];
-
-        const MemberDetails = await Promise.all(
-          data.map(async (item) => {
-            
-            const res = await axios.get(
-              `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${item.member_id}`
-            );
-            const MemberNames =
-              res.data[0].first_name + " " + res.data[0].last_name;
-            const id = res.data[0].user_id;
-            return {
-              MemberNames,
-              id,
-            };
-          })
-        );
-        setnames(MemberDetails);
+        setClubId(access.data.club_id);
+        console.log(clubId);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching club:", error);
+        Alert.alert("Error", "Failed to load Club");
       }
     })();
-  }, []);
-  const Search = async () => {
-    try {
-      const res = await axios.get(
-        `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${id}`
-      );
-      setresults(res.data);
-      console.log(res.data);
-    } catch (error) {
-      console.error("Search failed:", error);
-    }
-  };
-  const AddMember = async () => {
-    try {
-      const access = await axios.get(
-        `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userid}`
-      );
-      const accesses = access.data;
+  }, [userId]);
 
-      if (accesses) {
-        const response = await axios.post(
-          `${process.env.EXPO_PUBLIC_IP}/BoardMember`,
-          {
-            User_id: memberid.trim(),
-            Club_id: clubid.trim(),
-          }
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitted },
+  } = useForm({
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+    },
+  });
+
+  const onSubmit = async (data) => {
+    console.log(clubId);
+    var today = new Date();
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+
+    let website_login = "";
+    let password = "";
+
+    try {
+      const memberResponse = await axios.post(
+        `${process.env.EXPO_PUBLIC_IP}/users/checkMonthlyMembers`
+      );
+      console.log("Server Response:", memberResponse.data.monthlyMembers);
+      Alert.alert("Success", "Membership successful");
+      website_login =
+        yyyy + mm + memberResponse.data.monthlyMembers;
+      password =
+        data.first_name.charAt(0).toUpperCase() +
+        data.last_name.charAt(0).toUpperCase() +
+        website_login;
+    } catch (error) {
+      console.error(
+        "Error checking members:",
+        error.response ? error.response.data : error.message
+      );
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Member Check Failed"
+      );
+      return;
+    }
+
+    let uniqueID = false;
+    let user_id = 0;
+    while (uniqueID == false) {
+      user_id = generateShortId(6); // generate new ID each time
+
+      try {
+        const checkIDResponse = await axios.post(
+          `${process.env.EXPO_PUBLIC_IP}/users/checkIDExists`,
+          { user_id }
         );
-      } else {
-        console.log("You can not add member");
+        console.log("Server Response:", checkIDResponse.data.message);
+
+        if (checkIDResponse.data.exists == false) {
+          uniqueID = true;
+        }
+      } catch (error) {
+        console.error(
+          "Error checking members:",
+          error.response ? error.response.data : error.message
+        );
+        Alert.alert(
+          "Error",
+          error.response?.data?.message || "Member Check Failed"
+        );
+        return;
       }
+    }
+
+    //Use the generated registration information to insert into the database
+    const payload = {
+      ...data,
+      user_id,
+      website_login,
+      password,
+    };
+
+    try {
+      await axios.post(
+        `${process.env.EXPO_PUBLIC_IP}/users/newMember`,
+        payload
+      );
+    } catch (error) {
+      console.error(
+        "Error submitting form:",
+        error.response ? error.response.data : error.message
+      );
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Membership failed"
+      );
+      return;
+    }
+
+    try {
+      await axios.post(`${process.env.EXPO_PUBLIC_IP}/users/register`, payload);
+    } catch (error) {
+      console.error(
+        "Error submitting form:",
+        error.response ? error.response.data : error.message
+      );
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Registration failed"
+      );
+      return;
+    }
+
+    try {
+      const clubPayload = {
+        User_id: user_id,
+        Club_id: clubId,
+      };
+      await axios.post(
+        `${process.env.EXPO_PUBLIC_IP}/BoardMember/`,
+        clubPayload
+      );
+      Alert.alert("Success", "Member added to your club");
+    router.back();
     } catch (error) {
       Alert.alert("Error", "Failed to add member data");
     }
+
   };
+
   return (
-    <View style={styles.container}>
-      {/* Top Bar */}
-      <View style={styles.topBar}>
-        <Image
-          source={{
-            uri: "https://www.powertalkaustralia.org.au/wp-content/uploads/2023/12/Asset-74x.png",
-          }}
-          style={styles.logo}
-        />
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/profile",
-              query: { user_Id: userId },
-            })
-          }
-        >
-          <Text style={styles.profileText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView style={styles.content}>
-        {/* Meeting Header Block */}
-        <View style={styles.meetingHeaderBlock}>
-          <Text style={styles.meetingHeaderText}>Members</Text>
-        </View>
-        <View>
-          <TouchableOpacity
-            style={styles.Add}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={{ color: "blue", fontSize: 16 }}>+ Add member</Text>
-          </TouchableOpacity>{" "}
-        </View>
-        {/* Member List */}
-        {names.map((member, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.meetingBlock}
-            onPress={() => Alert.alert("Member Selected", member.name)}
-          >
-            <Text style={styles.meetingName}>
-              {member.MemberNames} <Text>Paid: {member.PaidAmount}</Text>{" "}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <View style={styles.bottomNav}>
-        <Text style={[styles.navButton, styles.activeButton]}>
-          Club Members
-        </Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("MembersMeetingPage")}
-        >
-          <Text style={styles.navButton}>Meeting</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ProjectLevelsPage")}
-        >
-          <Text style={styles.navButton}>Project</Text>
-        </TouchableOpacity>
-      </View>
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide" // or 'fade' or 'none'
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalBox}>
-            <TextInput
-              placeholder="Insert Id"
-              value={memberid}
-              onChangeText={setid}
-            ></TextInput>
-            <TextInput
-              placeholder="Insert Club Id"
-              value={clubid}
-              onChangeText={setids}
-            ></TextInput>
-            <TouchableOpacity onPress={AddMember}>
-              <Text>Add member</Text>
-            </TouchableOpacity>
-
-            <Button title="Close" onPress={() => setModalVisible(false)} />
+    <View style={styles.background}>
+      <FormContainer>
+        <View style={styles.inputs}>
+          {[
+            {
+              name: "first_name",
+              placeholder: "First Name",
+              label: "Full Name",
+              autocomplete: "given-name",
+              rule: { required: "You must enter your first name" },
+            },
+            {
+              name: "last_name",
+              placeholder: "Last Name",
+              autocomplete: "family-name",
+              rule: { required: "You must enter your last name" },
+            },
+            {
+              name: "email",
+              placeholder: "Email",
+              label: "Email Address",
+              autocomplete: "email",
+              rule: {
+                required: "You must enter your email",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Enter a valid email address",
+                },
+              },
+            },
+            {
+              name: "phone_number",
+              placeholder: "Phone Number",
+              label: "Phone Number (Optional)",
+              autocomplete: "tel",
+              rule: {
+                maxLength: {
+                  value: 20,
+                  message: "Enter a valid Phone Number",
+                },
+                pattern: {
+                  value: /[\d\s]{10,20}$/,
+                  message: "Enter a valid phone number",
+                },
+              },
+            },
+            {
+              name: "join_date",
+              placeholder: "YYYY-MM-DD",
+              label: "Join Date (Optional)",
+              rule: {
+                maxLength: { value: 10, message: "Enter a valid date" },
+                pattern: {
+                  value: /\d{4}-\d{2}-\d{2}/,
+                  message: "Enter a valid date (YYYY-MM-DD)",
+                },
+              },
+            },
+          ].map(({ name, placeholder, label, autocomplete, rule }) => (
+            <View key={name} style={styles.inputGroup}>
+              {label && <FormLabel>{label}</FormLabel>}
+              <Controller
+                control={control}
+                name={name}
+                render={({ field: { onChange, value } }) => (
+                  <FormInput
+                    autoComplete={autocomplete}
+                    placeholder={placeholder}
+                    onChangeText={onChange}
+                    value={value}
+                    autoCapitalize="none"
+                  />
+                )}
+                rules={rule}
+              />
+              {errors[name] && isSubmitted && (
+                <Text style={styles.errorText}>{errors[name].message}</Text>
+              )}
+            </View>
+          ))}
+          <View style={styles.function}>
+            <Button onPress={() => router.back()}>Go Back</Button>
+            <Button onPress={handleSubmit(onSubmit)}>Add Member</Button>
           </View>
         </View>
-      </Modal>
-      {results.map((member, index) => (
-        <Text key={index}>
-          {member.first_name} {member.last_name} Paid: {member.paid}
-        </Text>
-      ))}
+      </FormContainer>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  Add: {
-    marginTop: 20,
-    marginBottom: 10,
-    marginLeft: 1080,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalBox: {
-    margin: 30,
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 10,
+  background: {
     backgroundColor: "#AFABA3",
-    alignItems: "center",
+    height: "100%",
   },
-  logo: {
-    width: 300,
-    height: 50,
-    resizeMode: "contain",
+  inputs: {
+    marginHorizontal: 20,
   },
-  profileText: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "bold",
-  },
-  content: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  meetingHeaderBlock: {
-    marginTop: 20,
-    backgroundColor: "#065395",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-     position: 'relative', 
-    zIndex: -5,
-  },
-  meetingHeaderText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#ffffff",
-  },
-  sortingRow: {
+  function: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
   },
-  picker: {
-    flex: 1,
-    height: 50,
-  },
-  meetingBlock: {
-    marginTop: 15,
-    backgroundColor: "#8A7D6A",
-    padding: 15,
-    borderRadius: 10,
-  },
-  meetingClub: {
-    fontWeight: "600",
-    color: "#ffffff",
-  },
-  meetingName: {
-    fontSize: 16,
-    marginTop: 4,
-    color: "#ffffff",
-  },
-  meetingDate: {
-    fontSize: 14,
-    color: "#E0E0E0",
-    marginTop: 2,
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#F1F6F5",
-    paddingVertical: 15,
-  },
-  navButton: {
-    fontSize: 16,
-    color: "#333",
-  },
-  activeButton: {
-    fontWeight: "bold",
-    textDecorationLine: "underline",
+  errorText: {
+    color: "red",
   },
 });
-export default BoardMemberpage;
+
+export default AddMemberPage;

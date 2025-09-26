@@ -89,7 +89,7 @@ const ClubBoardMemberPage = () => {
     })();
   }, [clubId, useIsFocused(), payment]);
 
-  const handlePayment = async (member, index) => {
+  const handlePayment = async (member) => {
     try {
       let user_id = member.id;
       let paid = 0;
@@ -163,7 +163,7 @@ const ClubBoardMemberPage = () => {
         </View>
         {/* Member List */}
         {memberDetails.map((member, index) => (
-          <View style={styles.member}>
+          <View key={index} style={styles.member}>
             <TouchableOpacity
               style={styles.name}
               onPress={() => router.push({pathname: "/profile/[profileID]", params: {profileID: member.id}})}
@@ -172,7 +172,7 @@ const ClubBoardMemberPage = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.status}
-              onPress={() => handlePayment(member, index)}
+              onPress={() => handlePayment(member)}
             >
               <Text style={styles.statusText}>
                 {member.paid ? "Paid" : "Unpaid"}

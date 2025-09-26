@@ -7,7 +7,7 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         headerStyle: {
           backgroundColor: "#065395",
         },
@@ -25,6 +25,18 @@ export default function Layout() {
         name="index"
         options={{
           title: "Login",
+        }}
+      />
+      <Stack.Screen
+        name="register"
+        options={{
+          title: "Register",
+        }}
+      />
+      <Stack.Screen
+        name="selectDestination"
+        options={{
+          title: "Select Destination",
         }}
       />
     </Stack>

@@ -286,7 +286,7 @@ app.get("/member/:id", (req, res) => {
 });
 app.get("/user/:id", (req, res) => {
   const userId = req.params.id;
-  const query = "SELECT Club_id FROM `member's club` WHERE User_id = ?";
+  const query = "SELECT Club_id as club_id FROM `member's club` WHERE User_id = ?";
 
   db.query(query, [userId], (err, results) => {
     if (err) {
@@ -298,7 +298,7 @@ app.get("/user/:id", (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ Club_id: results });
+    res.json(results);
   });
 });
 
@@ -320,7 +320,7 @@ app.get("/allGuests/", (req, res) => {
 });
 
 app.get("/allClubs/", (req, res) => {
-  const query = "SELECT Club_id FROM club";
+  const query = "SELECT club_id FROM club";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -332,12 +332,12 @@ app.get("/allClubs/", (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ Club_id: results });
+    res.json(results);
   });
 });
 app.get("/club/:id", (req, res) => {
   const clubId = req.params.id;
-  const query = "SELECT Club_name FROM club WHERE Club_id = ?";
+  const query = "SELECT club_name FROM club WHERE club_id = ?";
 
   db.query(query, [clubId], (err, results) => {
     if (err) {
@@ -349,8 +349,7 @@ app.get("/club/:id", (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = results;
-    res.json({ Club_name: user });
+    res.json(results[0]);
   });
 });
 
@@ -365,7 +364,7 @@ app.get("/meeting/:id", (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(201).json({ message: "No Meetings Found" });
     } else if (results.length > 0) {
       res.json(results);
     }

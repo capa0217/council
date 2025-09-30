@@ -181,7 +181,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    marginBottom: 20,
   },
   meetingHeaderBlock: {
     marginTop: 20,

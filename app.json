@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/POWERtalk-adaptive-icon.png",
         "backgroundColor": "#F1F6F5"
-      }
+      },
+      "package": "com.ratenoki.mm"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "be39176e-b6c7-46df-a5a7-90db8f50a8c5"
+      }
     }
   }
 }

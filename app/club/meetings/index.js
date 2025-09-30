@@ -57,7 +57,7 @@ const ProfileScreen = () => {
         const { data } = await axios.get(
           `${process.env.EXPO_PUBLIC_IP}/user/${userId}`
         );
-        const userList = data.Club_id || [];
+        const userList = data || [];
         setClubs(userList);
       } catch (error) {
         console.error("Error fetching user clubs:", error);
@@ -74,7 +74,7 @@ const ProfileScreen = () => {
         const { data } = await axios.get(
           `${process.env.EXPO_PUBLIC_IP}/allClubs/`
         );
-        const allList = data.Club_id || [];
+        const allList = data || [];
         setClubs(allList);
       } catch (error) {
         console.error("Error fetching all club data:", error);
@@ -85,34 +85,46 @@ const ProfileScreen = () => {
 
   // Fetch user and club info
   useEffect(() => {
-    if (!clubs) return;
+    console.log(clubs);
+    if (clubs == []) return;
     (async () => {
       try {
+        console.log(clubs);
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubs.map(async (item) => {
             const res = await axios.get(
-              `${process.env.EXPO_PUBLIC_IP}/club/${item.Club_id}`
+              `${process.env.EXPO_PUBLIC_IP}/club/${item.club_id}`
             );
-            const clubNames = res.data.Club_name[0].Club_name;
+            const clubNames = res.data.club_name;
+
             const resMeet = await axios.get(
-              `${process.env.EXPO_PUBLIC_IP}/meeting/${item.Club_id}`
+              `${process.env.EXPO_PUBLIC_IP}/meeting/${item.club_id}`
             );
             const MeetNames = resMeet.data;
+            if (resMeet.status != 200) return null;
             return {
               clubNames,
               MeetNames,
             };
           })
         );
-        const flattenedMeetings = clubMeetingDetails.flatMap((club) =>
-          club.MeetNames.map((meeting) => ({
-            club: club.clubNames,
-            name: meeting.meetingname,
-            date: meeting.meeting_date,
-            id: meeting.meeting_id,
-          }))
-        );
+
+        const flattenedMeetings = clubMeetingDetails.flatMap((club) => {
+          if (club == null) {
+            return [];
+          } else {
+            const flatClub = club.MeetNames.map((meeting) => ({
+              club: club.clubNames,
+              name: meeting.meeting_name,
+              date: meeting.meeting_date,
+              id: meeting.meeting_id,
+            }));
+          
+          return flatClub;
+          }
+        });
+
         setClubwithMeetings(flattenedMeetings);
       } catch (error) {
         console.error("Error fetching user or club data:", error);
@@ -137,7 +149,7 @@ const ProfileScreen = () => {
       return monthMatches && yearMatches && clubMatches;
     }
   });
-
+  console.log(clubMeetings);
   const years = clubMeetings.map((meeting) =>
     new Date(meeting.date).getFullYear().toString()
   );
@@ -219,7 +231,12 @@ const ProfileScreen = () => {
       </ScrollView>
       {/* Bottom Navigation */}
       {userId ? (
-        <BottomNav number={3} name={["Club Members", "Club Meetings", "Development Program"]} link={["/club/members", "/club/meetings", "/projects"]} active={2} />
+        <BottomNav
+          number={3}
+          name={["Club Members", "Club Meetings", "Development Program"]}
+          link={["/club/members", "/club/meetings", "/projects"]}
+          active={2}
+        />
       ) : (
         <MeetingBottom />
       )}

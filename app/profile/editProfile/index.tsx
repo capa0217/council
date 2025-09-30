@@ -394,7 +394,7 @@ const EditProfile = () => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalView}>
-            <Text style={styles.title}>Tick to hide from other members:</Text>
+            <Text style={styles.title}>Tick to hide from other members</Text>
             <View style={styles.contents}>
               <View style={styles.checkContainer}>
                 <Checkbox
@@ -415,17 +415,15 @@ const EditProfile = () => {
               </View>
               <Text style={styles.label}>Hide Address</Text>
             </View>
-            <View style={styles.function}>
-              <View style={{flex:3}}>
+            <View style={styles.modalFunction}>
+              <View style={{flex:1}}>
                 <Text style={styles.disclaimer}>
                   All information in the member list is for association use only
                   and may not be shared outside the association without the
                   express permission of the individual
                 </Text>
               </View>
-              <View style={{flex:2, marginRight:"10%"}}>
                 <Button onPress={() => handleSharing()}>Done</Button>
-              </View>
             </View>
           </View>
         </View>
@@ -447,7 +445,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 25,
     backgroundColor: "#F1F6F5",
-    maxWidth: "80%",
+    maxWidth: "90%",
   },
   contents: {
     flexDirection: "row",
@@ -474,6 +472,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
+  modalFunction: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
   title: {
     padding: 10,
     alignItems: "center",
@@ -484,7 +487,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     color:"white",
     fontWeight:"bold",
-    fontSize:18,
+    fontSize:15,
   },
   checkbox: {
     marginTop: 15,
@@ -500,5 +503,5 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
   },
-  disclaimer: { fontSize: 9, textAlign: "center", flex: 1, paddingHorizontal:20 },
+  disclaimer: { alignSelf:"center", fontSize: 6, textAlign: "right", flex: 1, paddingLeft:10, paddingTop:"10%"},
 });

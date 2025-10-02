@@ -13,6 +13,7 @@ const Profile = () => {
   const [profiles, setProfiles] = useState<any>([]);
   const [access, setAccess] = useState(false);
   const [clubAccess, setClubAccess] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   const local = useLocalSearchParams();
   const nav = useNavigation();
@@ -22,7 +23,6 @@ const Profile = () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
-          console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -69,11 +69,12 @@ const Profile = () => {
     if (!userId && !profiles) return;
     nav.setOptions({ headerShown: true });
     if (userId == local.profileID.toString()) {
-      setAccess(true);
+      setIsOwnProfile(true);
       nav.setOptions({
         title: `Your Profile`,
       });
     } else {
+      setIsOwnProfile(false);
       nav.setOptions({
         title: `Profile of ${profiles.first_name} ${profiles.last_name}`,
       });
@@ -85,7 +86,7 @@ const Profile = () => {
       <ScrollView>
         <View style={styles.information}>
           <View style={styles.function}>
-            {access && (
+            {userId == local.profileID.toString() && (
               <Button
                 onPress={() =>
                   router.navigate({
@@ -107,12 +108,12 @@ const Profile = () => {
           <Text style={styles.infoText}>
             <Finger /> Email: {profiles.email}
           </Text>
-          {profiles.phone_number && (access || profiles.phone_private == 1) && (
+          {profiles.phone_number && (isOwnProfile || profiles.phone_private == 0) && (
             <Text style={styles.infoText}>
               <Finger /> Phone Number: {profiles.phone_number}
             </Text>
           )}
-          {profiles.address && (access || profiles.address_private == 1) && (
+          {profiles.address && (isOwnProfile || profiles.address_private == 0) && (
             <Text style={styles.infoText}>
               <Finger /> Address: {profiles.address}, {profiles.postcode}
             </Text>

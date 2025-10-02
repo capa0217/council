@@ -15,6 +15,7 @@ const Profile = () => {
   const [userId, setUserId] = useState("");
   const [profiles, setProfiles] = useState<any>([]);
   const [access, setAccess] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   const local = useLocalSearchParams();
   const nav = useNavigation();
@@ -70,11 +71,12 @@ const Profile = () => {
     if (!userId && !profiles) return;
     nav.setOptions({ headerShown: true });
     if (userId == local.profileID.toString()) {
-      setAccess(true);
+      setIsOwnProfile(true);
       nav.setOptions({
         title: `Your Profile`,
       });
     } else {
+      setIsOwnProfile(false);
       nav.setOptions({
         title: `Profile of ${profiles.first_name} ${profiles.last_name}`,
       });
@@ -108,12 +110,12 @@ const Profile = () => {
           <Text style={styles.infoText}>
             <Finger /> Email: {profiles.email}
           </Text>
-          {profiles.phone_number && (access || profiles.phone_private == 0) && (
+          {profiles.phone_number && (isOwnProfile || profiles.phone_private == 0) && (
             <Text style={styles.infoText}>
               <Finger /> Phone Number: {profiles.phone_number}
             </Text>
           )}
-          {profiles.address && (access || profiles.address_private == 0) && (
+          {profiles.address && (isOwnProfile || profiles.address_private == 0) && (
             <Text style={styles.infoText}>
               <Finger /> Address: {profiles.address}, {profiles.postcode}
             </Text>

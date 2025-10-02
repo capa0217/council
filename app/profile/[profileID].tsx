@@ -108,12 +108,12 @@ const Profile = () => {
           <Text style={styles.infoText}>
             <Finger /> Email: {profiles.email}
           </Text>
-          {profiles.phone_number && (access || profiles.phone_private == 1) && (
+          {profiles.phone_number && (access || profiles.phone_private == 0) && (
             <Text style={styles.infoText}>
               <Finger /> Phone Number: {profiles.phone_number}
             </Text>
           )}
-          {profiles.address && (access || profiles.address_private == 1) && (
+          {profiles.address && (access || profiles.address_private == 0) && (
             <Text style={styles.infoText}>
               <Finger /> Address: {profiles.address}, {profiles.postcode}
             </Text>

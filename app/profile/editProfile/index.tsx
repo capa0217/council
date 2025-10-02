@@ -97,6 +97,15 @@ const EditProfile = () => {
     })();
   }, []);
 
+  // prevent editing another user's profile
+  useEffect(() => {
+    if (!userId || !global.profileID) return;
+    if (userId !== global.profileID.toString()) {
+      Alert.alert("Permission denied", "You can only edit your own profile.");
+      router.replace({ pathname: "/profile/[profileID]", params: { profileID: global.profileID } });
+    }
+  }, [userId, global.profileID]);
+
   useEffect(() => {
     (async () => {
       try {

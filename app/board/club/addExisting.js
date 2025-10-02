@@ -148,7 +148,7 @@ const AddExistingPage = () => {
       {filteredDetails.length == 0 ? (
         <Text style={[styles.content, { flex: 1 }]}>User Not Found</Text>
       ) : (
-        <ScrollView style={[styles.content, { flex: 1 }]}>
+        <ScrollView style={[styles.content]}>
           {filteredDetails.map((member, index) => (
             <TouchableOpacity
               key={index}
@@ -168,9 +168,9 @@ const AddExistingPage = () => {
             onPress={() =>
               Alert.alert(
                 `${filteredDetails[active].firstName} ${filteredDetails[active].lastName}`,
-                `Email: ${filteredDetails[active].email}` +
-                  (filteredDetails[active].phone_number &&
-                    `Phone Number: ${filteredDetails[active].phone_number}`)
+                `Email: ${filteredDetails[active].email}\n` +
+                  (filteredDetails[active].phone_number != null ?
+                    `Phone Number: ${filteredDetails[active].phone_number}` : 'No phone number provided')
               )
             }
           >
@@ -187,7 +187,6 @@ const AddExistingPage = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#F1F6F5",
   },
   content: {
@@ -198,8 +197,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   function: {
-    flex: 1,
     flexDirection: "row",
+    justifyContent: "space-evenly"
   },
   memberInfo: {
     marginTop: 15,

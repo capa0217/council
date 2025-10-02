@@ -4,7 +4,6 @@ import { Text, View, Alert, StyleSheet } from "react-native";
 import FormLabel from "@/PTComponents/FormLabel";
 import FormInput from "@/PTComponents/FormInput";
 import Button from "@/PTComponents/Button";
-import PTHeader from "@/PTComponents/Header";
 
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
@@ -59,7 +58,6 @@ const LoginForm = () => {
             pathname: "/club/meetings",
           });
         } else if (
-          member.data.paid == "1" &&
           clubAccess.data.position != null
         ) {
           await AsyncStorage.setItem("userId", member.data.user_id.toString());
@@ -144,11 +142,11 @@ export default LoginForm;
 const styles = StyleSheet.create({
   background: {
     backgroundColor: "#F1F6F5",
-    height: "100%",
+    flex:1
   },
   container: {
     padding: 10,
-    marginHorizontal: 20,
+    margin: 20,
     borderRadius: 10,
     backgroundColor: "#ffffff",
     justifyContent: "center",

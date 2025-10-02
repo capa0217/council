@@ -30,19 +30,24 @@ const LoginForm = () => {
     })();
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!userId) return;
     (async () => {
       try {
         const boardAccess = await axios.get(
-        `${process.env.EXPO_PUBLIC_IP}/boardMemberAccess/${userId}`
-      );
-      console.log(boardAccess.data.level_of_access);
-      switch(boardAccess.data.level_of_access){
-        case "club":setAccess(1); break;
-        case "council":setAccess(2); break;
-        case "association":setAccess(3);
-      }
+          `${process.env.EXPO_PUBLIC_IP}/boardMemberAccess/${userId}`
+        );
+        console.log(boardAccess.data.level_of_access);
+        switch (boardAccess.data.level_of_access) {
+          case "club":
+            setAccess(1);
+            break;
+          case "council":
+            setAccess(2);
+            break;
+          case "association":
+            setAccess(3);
+        }
       } catch (error) {
         console.error("Error fetching board access:", error);
         Alert.alert("Error", "Failed to get board Access");
@@ -53,10 +58,30 @@ const LoginForm = () => {
   return (
     <View style={styles.background}>
       <View style={styles.container}>
-        {accessLevel >= 0 && <Button onPress={() => router.replace("/club/meetings/")}>My Meetings</Button>}
-        {accessLevel >= 1 && <Button onPress={() => router.replace("/board/club/members")}>Club</Button>}
-        {accessLevel >= 2 && <Button onPress={() => router.replace("/board/council/")}>Council</Button>}
-        {accessLevel >= 3 && <Button onPress={() => router.replace("/board/association/club/members/")}>Association</Button>}
+        <View style={styles.function}>
+          {accessLevel >= 0 && (
+            <Button onPress={() => router.replace("/club/meetings/")}>
+              My Meetings
+            </Button>
+          )}
+          {accessLevel >= 1 && (
+            <Button onPress={() => router.replace("/board/club/members")}>
+              Club
+            </Button>
+          )}
+          {accessLevel >= 2 && (
+            <Button onPress={() => router.replace("/board/council/")}>
+              Council
+            </Button>
+          )}
+          {accessLevel >= 3 && (
+            <Button
+              onPress={() => router.replace("/board/association/club/members/")}
+            >
+              Association
+            </Button>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -67,23 +92,20 @@ export default LoginForm;
 const styles = StyleSheet.create({
   background: {
     backgroundColor: "#F1F6F5",
-    height: "100%",
+    flex: 1,
   },
   container: {
     padding: 10,
-    marginHorizontal: 20,
+    margin: 50,
     borderRadius: 10,
     backgroundColor: "#ffffff",
-    justifyContent: "center",
   },
   inputGroup: {
     marginHorizontal: 20,
   },
   function: {
-    flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
+    marginVertical: 10,
   },
   errorText: {
     color: "red",

@@ -102,7 +102,7 @@ const EditProfile = () => {
     if (!userId || !global.profileID) return;
     if (userId !== global.profileID.toString()) {
       Alert.alert("Permission denied", "You can only edit your own profile.");
-      router.replace({ pathname: "/profile/[profileID]", params: { profileID: global.profileID } });
+      router.replace({ pathname: "/profile/[profileID]", params: { profileID: global.profileID.toString() } });
     }
   }, [userId, global.profileID]);
 
@@ -393,6 +393,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#8A7D6A",
     borderTopEndRadius: 20,
     borderTopStartRadius: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20, //iOS and android use different words to set specific border radii
     color: "white",
     fontWeight: "bold",
     fontSize: 15,

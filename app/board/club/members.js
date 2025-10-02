@@ -81,6 +81,7 @@ const ClubBoardMemberPage = () => {
             };
           })
         );
+        
         setDetails(MemberDetails);
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -148,17 +149,17 @@ const ClubBoardMemberPage = () => {
       <ScrollView style={styles.content}>
         <View style={{flexDirection:"row", flex:1, justifyContent: "space-evenly"}}>
           <TouchableOpacity
-            style={styles.Add}
+            style={styles.add}
             onPress={() => router.push("/board/club/addMember")}
           >
-            <Text style={{ color: "blue", fontSize: 16 }}>+ Add New Member</Text>
+            <Text style={styles.addText}>+ Add New Member</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-            style={styles.Add}
+            style={styles.add}
             onPress={() => router.push("/board/club/addExisting")}
           >
-            <Text style={{ color: "blue", fontSize: 16 }}>+ Add Existing Member</Text>
+            <Text style={styles.addText}>+ Add Existing Member</Text>
           </TouchableOpacity>
         </View>
         {/* Member List */}
@@ -200,9 +201,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
   },
-  Add: {
-    marginTop: 20,
-    marginBottom: 10,
+  add: {
+    marginTop:20,
+    marginBottom:10,
+  },
+  addText: {
+    color:"#065395",
+    fontSize:15
   },
   member: {
     flexDirection: "row",

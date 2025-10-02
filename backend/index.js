@@ -389,6 +389,41 @@ app.get("/meeting_details/:id", (req, res) => {
   });
 });
 
+app.post("/meeting/edit/", (req, res) => {
+  const {
+    meetingid,
+    meetingname,
+    meetingplace,
+    meetingdate,
+    meetingstarttime,
+    meetingarrivaltime,
+    link,
+    instructions,
+  } = req.body;
+  const editProfileQuery =
+    "UPDATE meeting SET meeting_name = ?, meeting_date = ?, meeting_time = ?, arrival_time = ?, meeting_place = ?, agenda_file_link = ?, entry_instructions = ? WHERE meeting_id = ?";
+  db.query(
+    editProfileQuery,
+    [
+      meetingname,
+      meetingdate,
+      meetingstarttime,
+      meetingarrivaltime,
+      meetingplace,
+      link,
+      instructions,
+      meetingid,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database Error" });
+      }
+      return res.status(200).json({ message: "Meeting Updated Successfully" });
+    }
+  );
+});
+
 app.get("/club_details/:id", (req, res) => {
   const clubId = req.params.id;
   const query = "SELECT * FROM club WHERE Club_id = ?";
@@ -400,7 +435,7 @@ app.get("/club_details/:id", (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({ message: "CLub not found" });
+      return res.status(404).json({ message: "Club not found" });
     }
 
     res.json(results); // Send only the first (and only) result

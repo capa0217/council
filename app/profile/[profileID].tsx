@@ -86,7 +86,7 @@ const Profile = () => {
       <ScrollView>
         <View style={styles.information}>
           <View style={styles.function}>
-            {access && (
+            {userId == local.profileID.toString() && (
               <Button
                 onPress={() =>
                   router.navigate({

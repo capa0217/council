@@ -37,3 +37,6 @@ yarn-error.*
 
 app-example
 .env
+android/build/generated/autolinking/yarn.lock.sha
+android/build/generated/autolinking/autolinking.json
+android/build/generated/autolinking/package.json.sha

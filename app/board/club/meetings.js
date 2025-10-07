@@ -53,18 +53,14 @@ const ProfileScreen = () => {
         const { data } = await axios.get(
           `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userId}`
         );
-        console.log(data)
         const clubList = data.club_id || [];
-        console.log(clubList)
         setClubs(clubList);
-
 
         const resMeet = await axios.get(
           `${process.env.EXPO_PUBLIC_IP}/meeting/${clubList}`
         );
         setClubwithMeetings(resMeet.data);
-        setid(resMeet.data.meeting_id)
-        console.log(clubMeetings)
+        setid(resMeet.data.meeting_id);
       } catch (error) {
         console.error("Error fetching user or club data:", error);
         Alert.alert("Error", "Failed to fetch user or club data");
@@ -73,17 +69,14 @@ const ProfileScreen = () => {
   }, [userId]);
 
   useEffect(() => {
-      nav.setOptions({ headerShown: true, title: "Upcoming Meetings" });
-    });
+    nav.setOptions({ headerShown: true, title: "Upcoming Meetings" });
+  });
 
   const handlePress = async (meetingId) => {
-      router.push(`club/meetings/${meetingId}`);
+    router.push(`club/meetings/${meetingId}`);
   };
 
-
-
   const handlePre = async (meetingId) => {
-    console.log(typeof (meetingId));
     try {
       await AsyncStorage.setItem("meetingId", meetingId.toString());
       router.push(`board/club/editMeeting/${meetingId}`);
@@ -92,12 +85,16 @@ const ProfileScreen = () => {
     }
   };
 
-
   return (
     <View style={styles.container}>
       {/* Top Bar */}
       <ScrollView style={styles.content}>
-        <TouchableOpacity style={styles.add} onPress={() => router.push("/board/club/addMeeting")}><Text style={styles.addText}>+ Add new meeting</Text> </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.add}
+          onPress={() => router.push("/board/club/addMeeting")}
+        >
+          <Text style={styles.addText}>+ Add new meeting</Text>
+        </TouchableOpacity>
 
         {/* Sorting Dropdowns */}
         <View style={styles.sortingRow}>
@@ -107,7 +104,6 @@ const ProfileScreen = () => {
             onValueChange={(itemValue) => setSelectedMonth(itemValue)}
           >
             <Picker.Item label="Year" value="Year selected" />
-
           </Picker>
 
           <Picker
@@ -118,14 +114,12 @@ const ProfileScreen = () => {
             <Picker.Item label="Month" value="Month selected" />
           </Picker>
 
-
           <Picker
             selectedValue={selectedClub}
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedClub(itemValue)}
           >
             <Picker.Item label="Select Club" value="Club selected" />
-
           </Picker>
         </View>
 
@@ -133,34 +127,36 @@ const ProfileScreen = () => {
         {clubMeetings.map((meeting, index) => {
           const d = new Date(meeting.meeting_date);
 
-          const dayName = new Intl.DateTimeFormat('en-AU', {
-            weekday: 'long',
-            timeZone: 'Australia/Sydney',
+          const dayName = new Intl.DateTimeFormat("en-AU", {
+            weekday: "long",
+            timeZone: "Australia/Sydney",
           }).format(d);
 
-          const dateStr = new Intl.DateTimeFormat('en-AU', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            timeZone: 'Australia/Sydney',
+          const dateStr = new Intl.DateTimeFormat("en-AU", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            timeZone: "Australia/Sydney",
           }).format(d);
-          return (<View key={meeting.meeting_id} style={styles.row}>
-            <TouchableOpacity onPress={() => handlePre(meeting.meeting_id)}
-            >
-              <Pencil />
-            </TouchableOpacity>
-            <TouchableOpacity
-              key={index}
-              style={styles.meetingBlock}
-              onPress={() => handlePress(meeting.meeting_id)}
-            >
-              <Text style={styles.meetingClub}>{meeting.meetingname} #{meeting.meeting_id}</Text>
-              <Text style={styles.meetingClub}>Date:  {dateStr} {dayName}</Text>
-
-            </TouchableOpacity>
-          </View>
-
-          )
+          return (
+            <View key={meeting.meeting_id} style={styles.row}>
+              <TouchableOpacity onPress={() => handlePre(meeting.meeting_id)}>
+                <Pencil />
+              </TouchableOpacity>
+              <TouchableOpacity
+                key={index}
+                style={styles.meetingBlock}
+                onPress={() => handlePress(meeting.meeting_id)}
+              >
+                <Text style={styles.meetingClub}>
+                  {meeting.meetingname} #{meeting.meeting_id}
+                </Text>
+                <Text style={styles.meetingClub}>
+                  Date: {dateStr} {dayName}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
         })}
       </ScrollView>
 
@@ -181,8 +177,8 @@ const ProfileScreen = () => {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 16,
     marginVertical: 8,
     marginTop: 20,
@@ -192,7 +188,7 @@ const styles = StyleSheet.create({
   },
   addText: {
     color: "#065395",
-    fontSize: 15
+    fontSize: 15,
   },
   container: {
     flex: 1,
@@ -220,11 +216,10 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  symbol: {
-    fontSize: 40
 
+    marginBottom: 20,  },
+  symbol: {
+    fontSize: 40,
   },
   meetingHeaderBlock: {
     marginTop: 100,
@@ -232,15 +227,13 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    position: 'relative',
+    position: "relative",
     zIndex: -9999,
-
   },
   meetingHeaderText: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#ffffff",
-
   },
   sortingRow: {
     flexDirection: "row",
@@ -256,14 +249,13 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: "#E5E7EB",
     backgroundColor: "#8A7D6A",
-
   },
   meetingClub: {
     fontWeight: "600",
     color: "#ffffff",
-    fontSize: 20
+    fontSize: 20,
   },
   meetingName: {
     fontSize: 16,
@@ -285,7 +277,7 @@ const styles = StyleSheet.create({
     zIndex: 10, // Ensure it's layered correctly
   },
   warning: {
-    textAlign: 'center',
+    textAlign: "center",
     paddingTop: 280,
     paddingBottom: 300,
     fontSize: 25,

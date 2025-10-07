@@ -141,6 +141,14 @@ const Profile = () => {
               {new Date(profiles.paid_date).toLocaleDateString()}
             </Text>
           )}
+          <Button
+                onPress={() =>
+                  router.navigate({
+                    pathname: "/profile/feedback",
+                    params: { profileID: local.profileID }
+                  })
+                }
+              >Feedback</Button>
         </View>
       </ScrollView>
     </View>
@@ -152,7 +160,7 @@ export default Profile;
 const styles = StyleSheet.create({
   background: {
     backgroundColor: "#F1F6F5",
-    height: "100%",
+    flex:1,
   },
   title: {
     padding: 10,

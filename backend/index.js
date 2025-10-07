@@ -286,7 +286,8 @@ app.get("/member/:id", (req, res) => {
 });
 app.get("/user/:id", (req, res) => {
   const userId = req.params.id;
-  const query = "SELECT Club_id as club_id FROM `member's club` WHERE User_id = ?";
+  const query =
+    "SELECT Club_id as club_id FROM `member's club` WHERE User_id = ?";
 
   db.query(query, [userId], (err, results) => {
     if (err) {
@@ -899,6 +900,57 @@ app.post("/request-project", async (req, res) => {
       return res.status(500).json({ message: "Database Error" });
     }
     return res.status(200).json({ message: "New Request Successful" });
+  });
+});
+app.post("/projects/sendFeedback", async (req, res) => {
+  const { project_id, recipient_id, feedback } = req.body;
+
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0");
+  var yyyy = today.getFullYear();
+
+  var date_feedback_sent = yyyy + "-" + mm + "-" + dd;
+  const query =
+    "INSERT INTO `project_feedback` (project_id, recipient_id, feedback, date_feedback_sent) VALUES (?, ?, ?, ?)";
+  db.query(
+    query,
+    [project_id, recipient_id, feedback, date_feedback_sent],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database Error" });
+      }
+      return res.status(200).json({ message: "New Request Successful" });
+    }
+  );
+});
+app.post("/projects/deleteFeedback/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const query =
+    "DELETE * FROM `project_feedback` WHERE feedback_id = ?";
+  db.query(
+    query,
+    [id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database Error" });
+      }
+      return res.status(200).json({ message: "New Request Successful" });
+    }
+  );
+});
+app.get("/projects/getFeedback/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = "SELECT * FROM project_feedback as A LEFT JOIN development_program AS B ON A.project_id = B.project_id WHERE a.recipient_id = ?";
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database Error" });
+    }
+    res.json(result);
   });
 });
 app.post("/autofill-meetings", async (req, res) => {

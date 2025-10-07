@@ -12,6 +12,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 
 import BottomNav from "@/PTComponents/BottomNav";
+import Filter from "@/PTComponents/Filter";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -25,6 +26,8 @@ const ClubMembersPage = () => {
   const [selectedClub, setSelectedClub] = useState("All Clubs");
   const [clubs, setClubs] = useState<any>([]);
   const [ids, setids] = useState<any>([]);
+  
+  const [filterShow, setFilterShow] = useState(false);
   const [selectedClubId, setSelectedClubId] = useState(null);
 
   const [userId, setUserId] = useState("");
@@ -87,7 +90,11 @@ const ClubMembersPage = () => {
       {userId != null && (
         <ScrollView style={styles.content}>
           {/* Sorting Dropdowns */}
-          <View style={styles.sortingRow}>
+                  <TouchableOpacity onPress={() => setFilterShow(!filterShow)}
+                    style={styles.filterButton}>
+                    <Text style={styles.filterText}>Filter <Filter/></Text>
+                  </TouchableOpacity>
+                  {filterShow && <View style={styles.sortingRow}>
             <Picker
               selectedValue={sortByName}
               style={styles.picker}
@@ -121,6 +128,7 @@ const ClubMembersPage = () => {
               ))}
             </Picker>
           </View>
+            }
 
           {(selectedClub === "All Clubs"
             ? memberdetails
@@ -182,35 +190,26 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
   },
-  meetingHeaderBlock: {
-    marginTop: 20,
+  filterButton: {
+    flex:1,
+    marginVertical:10,
+    padding:5,
+    borderRadius:8,
     backgroundColor: "#065395",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
+    alignItems:"center",
+    justifyContent:"center"
   },
-  logoContainer: {
-    backgroundColor: "#F1F6F5",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    zIndex: 10, // Ensure it's layered correctly
-  },
-  meetingHeaderText: {
+  filterText: {
+    color: "white",
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#ffffff",
   },
   sortingRow: {
-    flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
   },
   picker: {
     flex: 1,
-    height: 50,
+    backgroundColor:"#F1F6F5",
+    marginBottom:5,
   },
   meetingBlock: {
     marginTop: 15,

@@ -12,7 +12,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 
 import BottomNav from "@/PTComponents/BottomNav";
-import Filter from "@/PTComponents/Filter";
+import FilterButton from "@/PTComponents/FilterButton";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -26,7 +26,7 @@ const ClubMembersPage = () => {
   const [selectedClub, setSelectedClub] = useState("All Clubs");
   const [clubs, setClubs] = useState<any>([]);
   const [ids, setids] = useState<any>([]);
-  
+
   const [filterShow, setFilterShow] = useState(false);
   const [selectedClubId, setSelectedClubId] = useState(null);
 
@@ -90,51 +90,44 @@ const ClubMembersPage = () => {
       {userId != null && (
         <ScrollView style={styles.content}>
           {/* Sorting Dropdowns */}
-                  <TouchableOpacity onPress={() => setFilterShow(!filterShow)}
-                    style={styles.filterButton}>
-                    <Text style={styles.filterText}>Filter <Filter/></Text>
-                  </TouchableOpacity>
-                  {filterShow && <View style={styles.sortingRow}>
-            <Picker
-              selectedValue={sortByName}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSortByName(itemValue)}
-            >
-              <Picker.Item label="A-Z" value="A-Z" />
-              <Picker.Item label="Z-A" value="Z-A" />
-            </Picker>
+          <FilterButton
+            onFilter={() => setFilterShow(!filterShow)}
+          />
+          {filterShow && (
+            <View style={styles.sortingRow}>
+              <Picker
+                selectedValue={sortByName}
+                style={styles.picker}
+                onValueChange={(itemValue) => setSortByName(itemValue)}
+              >
+                <Picker.Item label="A-Z" value="A-Z" />
+                <Picker.Item label="Z-A" value="Z-A" />
+              </Picker>
 
-            <Picker
-              selectedValue={selectedClub}
-              style={styles.picker}
-              onValueChange={(itemValue, itemIndex) => {
-                setSelectedClub(itemValue);
-
-                const clubObj = clubs.find(
-                  (club: any) => club.Club_name === itemValue
-                );
-                if (clubObj) {
-                  setSelectedClubId(clubObj.Club_id);
-                }
-              }}
-            >
-              <Picker.Item label="All Clubs" value="All Clubs" />
-              {clubs.map((club: any) => (
-                <Picker.Item
-                  key={club.Club_id}
-                  label={club.Club_name}
-                  value={club.Club_name}
-                />
-              ))}
-            </Picker>
-          </View>
-            }
+              <Picker
+                selectedValue={selectedClub}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) => {
+                  setSelectedClub(itemValue);
+                }}
+              >
+                <Picker.Item label="All Clubs" value="All Clubs" />
+                {clubs.map((club: any) => (
+                  <Picker.Item
+                    key={club.club_id}
+                    label={club.club_name}
+                    value={club.club_id}
+                  />
+                ))}
+              </Picker>
+            </View>
+          )}
 
           {(selectedClub === "All Clubs"
             ? memberdetails
             : memberdetails.filter((member: any) =>
-              ids.some((idObj: any) => idObj.User_id === member.user_id)
-            )
+                ids.some((idObj: any) => idObj.User_id === member.user_id)
+              )
           ).map((member: any) => (
             <TouchableOpacity
               key={member.user_id}
@@ -156,7 +149,12 @@ const ClubMembersPage = () => {
       {userId == null && <NoAuthentication />}
 
       {/* Bottom Navigation */}
-      <BottomNav number={3} name={["Members", "Meetings", "Development Program"]} link={["/club/members", "/club/meetings", "/projects"]} active={1} />
+      <BottomNav
+        number={3}
+        name={["Members", "Meetings", "Development Program"]}
+        link={["/club/members", "/club/meetings", "/projects"]}
+        active={1}
+      />
     </View>
   );
 };
@@ -190,26 +188,13 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
   },
-  filterButton: {
-    flex:1,
-    marginVertical:10,
-    padding:5,
-    borderRadius:8,
-    backgroundColor: "#065395",
-    alignItems:"center",
-    justifyContent:"center"
-  },
-  filterText: {
-    color: "white",
-    fontSize: 20,
-  },
   sortingRow: {
     justifyContent: "space-between",
   },
   picker: {
     flex: 1,
-    backgroundColor:"#F1F6F5",
-    marginBottom:5,
+    backgroundColor: "#F1F6F5",
+    marginBottom: 5,
   },
   meetingBlock: {
     marginTop: 15,

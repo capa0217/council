@@ -463,6 +463,7 @@ app.get("/clubAccess/:id", (req, res) => {
 
 app.get("/clubBoard/:id", (req, res) => {
   const clubId = req.params.id;
+  
   const query = "SELECT User_id FROM `member's club` WHERE Club_id = ?";
 
   db.query(query, [clubId], (err, results) => {
@@ -516,10 +517,20 @@ app.get("/clubBoardMembers/:id", (req, res) => {
 });
 
 app.get("/members", (req, res) => {
-  const query = "SELECT * FROM members";
+  const query = "SELECT user_id FROM members where paid = 1";
   db.query(query, (err, results) => {
-    const user = results;
-    res.json({ user });
+    res.json(results);
+  });
+});
+
+app.get("/association/boardMembers/:access", (req, res) => {
+  const access = req.params.access;
+  const levels = ['club','council','association'];
+
+  const query = `SELECT user_id FROM board_members WHERE level_of_access IN ('${levels.slice(access-1).join("','")}')`;
+  
+  db.query(query, (err, results) => {
+    res.json(results);
   });
 });
 
@@ -576,7 +587,7 @@ app.post("/updatePayment", (req, res) => {
 });
 
 app.get("/clubs", (req, res) => {
-  const query = "SELECT Club_id, Club_name FROM club";
+  const query = "SELECT club_id, club_name FROM club";
   db.query(query, (err, results) => {
     if (err) return res.status(500).json({ message: "Internal server error" });
     res.json(results);

@@ -1,7 +1,7 @@
 import React from "react";
 
 import Svg, { Path } from "react-native-svg";
-const FilterButton = () => (
+const Filter = () => (
   <Svg
     viewBox="0 -5 18 25"
     height="20"
@@ -16,4 +16,4 @@ const FilterButton = () => (
   </Svg>
 );
 
-export default FilterButton;
+export default Filter;

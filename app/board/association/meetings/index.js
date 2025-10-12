@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import Filter from "@/PTComponents/Filter";
+import FilterButton from "@/PTComponents/FilterButton";
 
 import BottomNav from "@/PTComponents/BottomNav";
 import MeetingBottom from "@/PTComponents/MeetingBottom";
@@ -21,16 +21,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileScreen = () => {
   const router = useRouter();
+  const nav = useNavigation();
 
   const [userId, setUserId] = useState("");
   const [clubs, setClubs] = useState([]);
   const [clubMeetings, setClubwithMeetings] = useState([]);
-  const nav = useNavigation();
+  const [filteredMeetings, setFiltered] = useState([]);
 
   const [filterShow, setFilterShow] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState("May");
-  const [selectedYear, setSelectedYear] = useState("2025");
+
+  const [months, setMonths] = useState([]);
+  const [years, setYears] = useState([]);
+
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
   const [selectedClub, setSelectedClub] = useState("All Clubs");
+  
+  const clubss = clubMeetings.map((club) => club.club);
+  const uniqueClubs = Array.from(new Set(clubss));
+  const dropdownClubs = ["All Clubs", ...uniqueClubs];
+
 
   useEffect(() => {
     (async () => {
@@ -52,22 +62,6 @@ const ProfileScreen = () => {
   });
 
   useEffect(() => {
-    if (userId == "") return;
-    (async () => {
-      try {
-        const { data } = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/user/${userId}`
-        );
-        const userList = data || [];
-        setClubs(userList);
-      } catch (error) {
-        console.error("Error fetching user clubs:", error);
-        Alert.alert("Error", "Failed to fetch user clubs");
-      }
-    })();
-  }, [userId]);
-
-  useEffect(() => {
     if (userId != "") return;
     (async () => {
       try {
@@ -84,13 +78,11 @@ const ProfileScreen = () => {
     })();
   }, [userId]);
 
-  // Fetch user and club info
+  
   useEffect(() => {
-    console.log(clubs);
     if (clubs == []) return;
     (async () => {
       try {
-        console.log(clubs);
         // Step 2: Fetch names for all clubs
         const clubMeetingDetails = await Promise.all(
           clubs.map(async (item) => {
@@ -121,8 +113,8 @@ const ProfileScreen = () => {
               date: meeting.meeting_date,
               id: meeting.meeting_id,
             }));
-          
-          return flatClub;
+
+            return flatClub;
           }
         });
 
@@ -134,89 +126,88 @@ const ProfileScreen = () => {
     })();
   }, [clubs]);
 
-  const filteredMeetings = clubMeetings.filter((meeting) => {
-    const meetingDate = new Date(meeting.date);
-    const meetingMonth = meetingDate.toLocaleString("default", {
-      month: "long",
-    });
-    const meetingYear = meetingDate.getFullYear().toString();
-    const monthMatches = selectedMonth === meetingMonth;
-    const yearMatches = selectedYear === meetingYear;
-    const clubMatches =
-      selectedClub === "All Clubs" || meeting.club === selectedClub;
-    if (selectedClub == "All Clubs") {
-      return clubMeetings;
-    } else {
-      return monthMatches && yearMatches && clubMatches;
-    }
-  });
-  console.log(clubMeetings);
-  const years = clubMeetings.map((meeting) =>
+  useEffect(() => {
+  const allYears = clubMeetings.map((meeting) =>
     new Date(meeting.date).getFullYear().toString()
   );
   const uniquesyears = new Set([]);
-  years.forEach((year) => {
+  allYears.forEach((year) => {
     uniquesyears.add(year);
   });
-  const uniqueYears = Array.from(uniquesyears);
+  setYears(Array.from(uniquesyears));
 
-  const clubss = clubMeetings.map((club) => club.club);
-  const uniqueClubs = Array.from(new Set(clubss));
-  const dropdownClubs = ["All Clubs", ...uniqueClubs];
-
-  const months = clubMeetings.map((meeting) =>
+  const allMonths = clubMeetings.map((meeting) =>
     new Date(meeting.date).toLocaleString("default", { month: "long" })
   );
-  const uniqueMonths = Array.from(new Set(months));
+  setMonths(Array.from(new Set(allMonths)));
+  }, [clubMeetings]);
+  
+  useEffect(() => {
+    setSelectedMonth(months[0]);
+    setSelectedYear(years[0]);
+  }, [months, years]);
+  useEffect(() => {
+    if (clubs == []) return;
+    (async () => {
+      setFiltered(
+        clubMeetings.filter((meeting) => {
+          const meetingDate = new Date(meeting.date);
+          const meetingMonth = meetingDate.toLocaleString("default", {
+            month: "long",
+          });
+          const meetingYear = meetingDate.getFullYear().toString();
+          const monthMatches = selectedMonth === meetingMonth;
+          const yearMatches = selectedYear === meetingYear;
+          const clubMatches =
+            selectedClub === "All Clubs" || meeting.club === selectedClub;
+          if (selectedClub == "All Clubs") {
+            return monthMatches && yearMatches && clubMeetings;
+          } else {
+            return monthMatches && yearMatches && clubMatches;
+          }
+        })
+      );
+    })();
+  }, [clubs, selectedClub, selectedMonth, selectedYear]);
 
-  const handlePress = async (meetingId) => {
-    try {
-      await AsyncStorage.setItem("meetingId", meetingId.toString());
-      router.push(`club/meetings/${meetingId}`);
-    } catch (error) {
-      console.error("Error saving meeting_id:", error);
-    }
-  };
+
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content}>
         {/* Sorting Dropdowns */}
-        <TouchableOpacity onPress={() => setFilterShow(!filterShow)}
-          style={styles.filterButton}>
-          <Text style={styles.filterText}>Filter <Filter/></Text>
-        </TouchableOpacity>
-        {filterShow && <View style={styles.sortingRow}>
-          <Picker
-            selectedValue={selectedMonth}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-          >
-            {uniqueMonths.map((month) => (
-              <Picker.Item key={month} label={month} value={month} />
-            ))}
-          </Picker>
-
-          <Picker
-            selectedValue={selectedYear}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedYear(itemValue)}
-          >
-            {uniqueYears.map((year) => (
-              <Picker.Item key={year} label={year} value={year} />
-            ))}
-          </Picker>
-
-          <Picker
-            selectedValue={selectedClub}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedClub(itemValue)}
-          >
-            {dropdownClubs.map((club) => (
-              <Picker.Item key={club} label={club} value={club}></Picker.Item>
-            ))}
-          </Picker>
-        </View>}
+        <FilterButton onFilter={() => setFilterShow(!filterShow)} />
+        {filterShow && (
+          <View style={styles.sortingRow}>
+            <Picker
+              selectedValue={selectedClub}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedClub(itemValue)}
+            >
+              {dropdownClubs.map((club) => (
+                <Picker.Item key={club} label={club} value={club}></Picker.Item>
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={selectedYear}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedYear(itemValue)}
+            >
+              {years.map((year) => (
+                <Picker.Item key={year} label={year} value={year} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={selectedMonth}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+            >
+              {months.map((month) => (
+                <Picker.Item key={month} label={month} value={month} />
+              ))}
+            </Picker>
+          </View>
+        )}
 
         {/* Meeting Buttons */}
         {filteredMeetings.map((meeting, index) => {
@@ -225,7 +216,12 @@ const ProfileScreen = () => {
             <TouchableOpacity
               key={index}
               style={styles.meetingBlock}
-              onPress={() => handlePress(meeting.id)}
+              onPress={() =>
+                router.navigate({
+                  pathname: "/club/meetings/[meetingID]",
+                  params: { meetingID: meeting.id },
+                })
+              }
             >
               <Text style={styles.meetingClub}>Club : {meeting.club}</Text>
               <Text style={styles.meetingName}>Meeting : {meeting.name}</Text>
@@ -237,14 +233,14 @@ const ProfileScreen = () => {
       {/* Bottom Navigation */}
       {userId ? (
         <BottomNav
-        number={3}
-        name={["Members", "Meetings", "Projects"]}
-        link={[
-          "/board/association/members",
-          "/board/association/meetings",
-          "/board/association/projects",
-        ]}
-        active={2}
+          number={3}
+          name={["Members", "Meetings", "Projects"]}
+          link={[
+            "/board/association/members",
+            "/board/association/meetings",
+            "/board/association/projects",
+          ]}
+          active={2}
         />
       ) : (
         <MeetingBottom />
@@ -281,13 +277,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   filterButton: {
-    flex:1,
-    marginVertical:10,
-    padding:5,
-    borderRadius:8,
+    flex: 1,
+    marginVertical: 10,
+    padding: 5,
+    borderRadius: 8,
     backgroundColor: "#065395",
-    alignItems:"center",
-    justifyContent:"center"
+    alignItems: "center",
+    justifyContent: "center",
   },
   filterText: {
     color: "white",
@@ -298,8 +294,8 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
-    backgroundColor:"#F1F6F5",
-    marginBottom:5,
+    backgroundColor: "#F1F6F5",
+    marginBottom: 5,
   },
   meetingBlock: {
     marginTop: 15,

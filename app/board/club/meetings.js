@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import BottomNav from "@/PTComponents/BottomNav";
 import Pencil from "@/PTComponents/Pencil";
+import FilterButton from "@/PTComponents/FilterButton";
 import { Picker } from "@react-native-picker/picker";
 
 import { useNavigation } from "@react-navigation/native";
@@ -22,12 +23,23 @@ const ProfileScreen = () => {
   const nav = useNavigation();
 
   const [userId, setUserId] = useState(null);
-  const [clubs, setClubs] = useState([]);
+  const [club, setClub] = useState([]);
   const [clubMeetings, setClubwithMeetings] = useState([]);
+  const [filteredMeetings, setFiltered] = useState([]);
 
-  const [selectedMonth, setSelectedMonth] = useState("Month");
-  const [selectedYear, setSelectedYear] = useState("Year");
+  const [filterShow, setFilterShow] = useState(false);
+
+  const [months, setMonths] = useState([]);
+  const [years, setYears] = useState([]);
+
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
   const [selectedClub, setSelectedClub] = useState("All Clubs");
+
+  const clubss = clubMeetings.map((club) => club.club);
+  const uniqueClubs = Array.from(new Set(clubss));
+  const dropdownClubs = ["All Clubs", ...uniqueClubs];
+
   const [id, setid] = useState(null);
   useEffect(() => {
     (async () => {
@@ -53,11 +65,11 @@ const ProfileScreen = () => {
         const { data } = await axios.get(
           `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userId}`
         );
-        const clubList = data.club_id || [];
-        setClubs(clubList);
+        const clubID = data.club_id || [];
+        setClub(clubID);
 
         const resMeet = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/meeting/${clubList}`
+          `${process.env.EXPO_PUBLIC_IP}/meeting/${clubID}`
         );
         setClubwithMeetings(resMeet.data);
         setid(resMeet.data.meeting_id);
@@ -77,13 +89,91 @@ const ProfileScreen = () => {
   };
 
   const handlePre = async (meetingId) => {
-    try {
-      await AsyncStorage.setItem("meetingId", meetingId.toString());
-      router.push(`board/club/editMeeting/${meetingId}`);
-    } catch (error) {
-      console.error("Error saving meeting_id:", error);
-    }
+    router.push(`board/club/editMeeting/${meetingId}`);
   };
+
+  useEffect(() => {
+    if (club == []) return;
+    (async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.EXPO_PUBLIC_IP}/club/${club}`
+        );
+        const clubNames = res.data.club_name;
+
+        const resMeet = await axios.get(
+          `${process.env.EXPO_PUBLIC_IP}/upcomingMeetings/${club}`
+        );
+        const MeetNames = resMeet.data;
+        if (resMeet.status != 200) return null;
+        const clubMeetingDetails = { clubNames, MeetNames };
+        const flattenedMeetings = clubMeetingDetails.flatMap((club) => {
+          if (club == null) {
+            return [];
+          } else {
+            const flatClub = club.MeetNames.map((meeting) => ({
+              club: club.clubNames,
+              name: meeting.meeting_name,
+              date: meeting.meeting_date,
+              id: meeting.meeting_id,
+            }));
+
+            return flatClub;
+          }
+        });
+
+        setClubwithMeetings(flattenedMeetings);
+      } catch (error) {
+        console.error("Error fetching user or club data:", error);
+        Alert.alert("Error", "Failed to fetch user or club data");
+      }
+    })();
+  }, [club]);
+
+  useEffect(() => {
+    const allYears = clubMeetings.map((meeting) =>
+      new Date(meeting.date).getFullYear().toString()
+    );
+    const uniquesyears = new Set([]);
+    allYears.forEach((year) => {
+      uniquesyears.add(year);
+    });
+    setYears(Array.from(uniquesyears));
+
+    const allMonths = clubMeetings.map((meeting) =>
+      new Date(meeting.date).toLocaleString("default", { month: "long" })
+    );
+    setMonths(Array.from(new Set(allMonths)));
+  }, [clubMeetings]);
+
+  useEffect(() => {
+    setSelectedMonth(months[0]);
+    setSelectedYear(years[0]);
+  }, [months, years]);
+
+  useEffect(() => {
+    if (clubs == []) return;
+    (async () => {
+      setFiltered(
+        clubMeetings.filter((meeting) => {
+          const meetingDate = new Date(meeting.date);
+          const meetingMonth = meetingDate.toLocaleString("default", {
+            month: "long",
+          });
+          const meetingYear = meetingDate.getFullYear().toString();
+          const monthMatches = selectedMonth === meetingMonth;
+          const yearMatches = selectedYear === meetingYear;
+          const clubMatches =
+            selectedClub === "All Clubs" || meeting.club === selectedClub;
+          if (selectedClub == "All Clubs") {
+            return monthMatches && yearMatches && clubMeetings;
+          } else {
+            return monthMatches && yearMatches && clubMatches;
+          }
+        })
+      );
+    })();
+  }, [clubs, selectedClub, selectedMonth, selectedYear]);
 
   return (
     <View style={styles.container}>
@@ -97,34 +187,41 @@ const ProfileScreen = () => {
         </TouchableOpacity>
 
         {/* Sorting Dropdowns */}
-        <View style={styles.sortingRow}>
-          <Picker
-            selectedValue={selectedMonth}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-          >
-            <Picker.Item label="Year" value="Year selected" />
-          </Picker>
-
-          <Picker
-            selectedValue={selectedYear}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedYear(itemValue)}
-          >
-            <Picker.Item label="Month" value="Month selected" />
-          </Picker>
-
-          <Picker
-            selectedValue={selectedClub}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedClub(itemValue)}
-          >
-            <Picker.Item label="Select Club" value="Club selected" />
-          </Picker>
-        </View>
+        <FilterButton onFilter={() => setFilterShow(!filterShow)} />
+        {filterShow && (
+          <View>
+            <Picker
+              selectedValue={selectedClub}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedClub(itemValue)}
+            >
+              {dropdownClubs.map((club) => (
+                <Picker.Item key={club} label={club} value={club}></Picker.Item>
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={selectedYear}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedYear(itemValue)}
+            >
+              {years.map((year) => (
+                <Picker.Item key={year} label={year} value={year} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={selectedMonth}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+            >
+              {months.map((month) => (
+                <Picker.Item key={month} label={month} value={month} />
+              ))}
+            </Picker>
+          </View>
+        )}
 
         {/* Meeting Buttons */}
-        {clubMeetings.map((meeting, index) => {
+        {filteredMeetings.map((meeting, index) => {
           const d = new Date(meeting.meeting_date);
 
           const dayName = new Intl.DateTimeFormat("en-AU", {
@@ -184,11 +281,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   add: {
-    marginTop: 20,
+    marginTop: 10,
+    flex: 1,
   },
   addText: {
     color: "#065395",
     fontSize: 15,
+    flex: 1,
+    textAlign: "right",
   },
   container: {
     flex: 1,
@@ -217,7 +317,8 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
 
-    marginBottom: 20,  },
+    marginBottom: 20,
+  },
   symbol: {
     fontSize: 40,
   },
@@ -242,7 +343,8 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
-    height: 50,
+    backgroundColor: "#F1F6F5",
+    marginBottom: 5,
   },
   meetingBlock: {
     flex: 1,

@@ -371,6 +371,23 @@ app.get("/meeting/:id", (req, res) => {
     }
   });
 });
+app.get("/upcomingMeetings/:id", (req, res) => {
+  const clubId = req.params.id;
+  const query = "SELECT * FROM meeting WHERE club_id = ? AND meeting_date > NOW()";
+
+  db.query(query, [clubId], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(201).json({ message: "No Meetings Found" });
+    } else if (results.length > 0) {
+      res.json(results);
+    }
+  });
+});
 
 app.get("/meeting_details/:id", (req, res) => {
   const meetingId = req.params.id;

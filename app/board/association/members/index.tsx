@@ -30,7 +30,7 @@ const ClubMembersPage = () => {
   const [sortedIds, setSorted] = useState<any>([]);
 
   const [filterShow, setFilter] = useState(false);
-  const [sortBy, setSortByName] = useState("Sort By");
+  const [sortBy, setSortBy] = useState("Sort By");
 
   const [selectedClub, setSelectedClub] = useState("All Clubs");
   const [selectedClubId, setSelectedClubId] = useState(0);
@@ -213,7 +213,7 @@ const ClubMembersPage = () => {
           <Picker
             selectedValue={sortBy}
             style={styles.picker}
-            onValueChange={(itemValue) => setSortByName(itemValue)}
+            onValueChange={(itemValue) => setSortBy(itemValue)}
           >
             <Picker.Item label="Sort By" value="None"/>
             <Picker.Item label="Last Name A-Z" value="A-Z"/>

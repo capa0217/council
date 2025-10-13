@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   function: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-evenly",
     marginTop: 10,
   },
   titleText: {

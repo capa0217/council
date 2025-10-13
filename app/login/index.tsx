@@ -62,10 +62,10 @@ const LoginForm = () => {
           router.replace({
             pathname: "/login/selectDestination",
           });
-        } else if (member.data.guest == "1") {
+        } else if (member.data.paid == "0") {
           await AsyncStorage.setItem("userId", member.data.user_id.toString());
           router.replace({
-            pathname: "/GuestPage",
+            pathname: "/guest/limit",
           });
         }
       }

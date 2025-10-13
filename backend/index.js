@@ -88,7 +88,7 @@ app.post("/users/newMember", (req, res) => {
     join_date = yyyy + "-" + mm + "-" + dd;
   }
   const memberQuery =
-    "INSERT INTO members (user_id, first_name, last_name, email, phone_number, join_date, guest, paid) VALUES (?, ?, ?, ?, ?, ?, TRUE, FALSE)";
+    "INSERT INTO members (user_id, first_name, last_name, email, phone_number, join_date) VALUES (?, ?, ?, ?, ?, ?)";
   db.query(
     memberQuery,
     [user_id, first_name, last_name, email, phone_number || null, join_date],
@@ -304,7 +304,7 @@ app.get("/user/:id", (req, res) => {
 });
 
 app.get("/allGuests/", (req, res) => {
-  const query = "SELECT user_id FROM members WHERE guest = 1";
+  const query = "SELECT user_id FROM members WHERE paid = 0";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -591,15 +591,29 @@ app.post("/BoardMember", (req, res) => {
 
 //Update payment info for a user
 app.post("/updatePayment", (req, res) => {
-  const { user_id, paid, paid_date, guest } = req.body;
+  const { user_id, paid, paid_date } = req.body;
   const query =
-    "UPDATE members SET paid = ?, paid_date = ?, guest = ? WHERE user_id = ?";
-  db.query(query, [paid, paid_date, guest, user_id], (err, result) => {
+    "UPDATE members SET paid = ?, paid_date = ?, guest = 0 WHERE user_id = ?";
+  db.query(query, [paid, paid_date, user_id], (err, result) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json({ message: "Database Error" });
     }
     return res.status(200).json({ message: "Payment Updated Successfully" });
+  });
+});
+
+//Increment the amount of free meetings a guest has attended
+app.post("/guest/increment", (req, res) => {
+  const {user_id, guest} = req.body;
+  const query =
+    "UPDATE members SET guest = ? WHERE user_id = ?";
+  db.query(query, [guest, user_id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database Error" });
+    }
+    return res.status(200).json({ message: "Meetings Incremented Successfully" });
   });
 });
 

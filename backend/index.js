@@ -88,7 +88,7 @@ app.post("/users/newMember", (req, res) => {
     join_date = yyyy + "-" + mm + "-" + dd;
   }
   const memberQuery =
-    "INSERT INTO members (user_id, first_name, last_name, email, phone_number, join_date, guest, paid) VALUES (?, ?, ?, ?, ?, ?, TRUE, FALSE)";
+    "INSERT INTO members (user_id, first_name, last_name, email, phone_number, join_date) VALUES (?, ?, ?, ?, ?, ?)";
   db.query(
     memberQuery,
     [user_id, first_name, last_name, email, phone_number || null, join_date],
@@ -304,7 +304,7 @@ app.get("/user/:id", (req, res) => {
 });
 
 app.get("/allGuests/", (req, res) => {
-  const query = "SELECT user_id FROM members WHERE guest = 1";
+  const query = "SELECT user_id FROM members WHERE paid = 0";
 
   db.query(query, (err, results) => {
     if (err) {
@@ -405,6 +405,39 @@ app.get("/meeting_details/:id", (req, res) => {
 
     res.json(results); // Send only the first (and only) result
   });
+});
+
+app.post("/meeting/add/", (req, res) => {
+  const {
+    meetingname,
+    meetingplace,
+    meetingdate,
+    meetingstarttime,
+    meetingarrivaltime,
+    link,
+    instructions,
+  } = req.body;
+  const editProfileQuery =
+    "Insert into meeting SET meeting_name = ?, meeting_date = ?, meeting_time = ?, arrival_time = ?, meeting_place = ?, agenda_file_link = ?, entry_instructions = ?";
+  db.query(
+    editProfileQuery,
+    [
+      meetingname,
+      meetingdate,
+      meetingstarttime,
+      meetingarrivaltime,
+      meetingplace,
+      link,
+      instructions,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database Error" });
+      }
+      return res.status(200).json({ message: "Meeting Added Successfully" });
+    }
+  );
 });
 
 app.post("/meeting/edit/", (req, res) => {
@@ -591,15 +624,29 @@ app.post("/BoardMember", (req, res) => {
 
 //Update payment info for a user
 app.post("/updatePayment", (req, res) => {
-  const { user_id, paid, paid_date, guest } = req.body;
+  const { user_id, paid, paid_date } = req.body;
   const query =
-    "UPDATE members SET paid = ?, paid_date = ?, guest = ? WHERE user_id = ?";
-  db.query(query, [paid, paid_date, guest, user_id], (err, result) => {
+    "UPDATE members SET paid = ?, paid_date = ?, guest = 0 WHERE user_id = ?";
+  db.query(query, [paid, paid_date, user_id], (err, result) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json({ message: "Database Error" });
     }
     return res.status(200).json({ message: "Payment Updated Successfully" });
+  });
+});
+
+//Increment the amount of free meetings a guest has attended
+app.post("/guest/increment", (req, res) => {
+  const {user_id, guest} = req.body;
+  const query =
+    "UPDATE members SET guest = ? WHERE user_id = ?";
+  db.query(query, [guest, user_id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database Error" });
+    }
+    return res.status(200).json({ message: "Meetings Incremented Successfully" });
   });
 });
 
@@ -935,29 +982,25 @@ app.post("/member/projects/4", async (req, res) => {
   }
 });
 app.post("/request-project", async (req, res) => {
-  const { club_id, project_no } = req.body;
+  const { club_id, project_id } = req.body;
   const query =
     "INSERT INTO `program_requests` (project_id, club_id) VALUES (?, ?)";
-  db.query(query, [project_no, club_id], (err, result) => {
+  db.query(query, [project_id, club_id], (err, result) => {
     //need to change this to meeting
-    console.log(club_id);
-    console.log(project_no);
     if (err) {
+      if(`${err}`.slice(7,16) == "Duplicate") return res.status(201).json({ message: "Request already sent" });
       console.error("Database error:", err);
       return res.status(500).json({ message: "Database Error" });
     }
-    return res.status(200).json({ message: "New Request Successful" });
+    return res.status(200).json({ message: "New Request Successful"});
   });
 });
 
-app.post("/request-project", async (req, res) => {
-  const { club_id, project_no } = req.body;
+app.post("/projects/completeProject/:id", async (req, res) => {
+  const project_id = req.params.id;
   const query =
-    "INSERT INTO `program_requests` (project_id, club_id) VALUES (?, ?)";
-  db.query(query, [project_no, club_id], (err, result) => {
-    //need to change this to meeting
-    console.log(club_id);
-    console.log(project_no);
+    "UPDATE `development_program` SET `date_achieved` = NOW(), `completed` = 1, `has_signature` = 1 WHERE `project_id` = ?";
+  db.query(query, [project_id], (err, result) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json({ message: "Database Error" });
@@ -992,7 +1035,7 @@ app.post("/projects/deleteFeedback/:id", async (req, res) => {
   const id = req.params.id;
 
   const query =
-    "DELETE * FROM `project_feedback` WHERE feedback_id = ?";
+    "DELETE FROM `project_feedback` WHERE feedback_id = ?";
   db.query(
     query,
     [id],
@@ -1010,7 +1053,7 @@ app.post("/projects/deleteRequest/:id", async (req, res) => {
   const id = req.params.id;
 
   const query =
-    "DELETE * FROM `program_requests` WHERE request_id = ?";
+    "DELETE FROM `program_requests` WHERE request_id = ?";
   db.query(
     query,
     [id],
@@ -1038,7 +1081,7 @@ app.get("/projects/getFeedback/:id", async (req, res) => {
 
 app.get("/projects/getRequests/:id", async (req, res) => {
   const id = req.params.id;
-  const query = "SELECT A.project_id, B.user_id, B.project_title, B.project_number FROM program_requests as A Inner JOIN development_program AS B ON A.project_id = B.project_id where B.user_id = ? group by A.project_id";
+  const query = "SELECT A.project_id, A.request_id, B.project_title, B.project_number FROM program_requests as A Inner JOIN development_program AS B ON A.project_id = B.project_id where B.user_id = ?";
   db.query(query, [id], (err, result) => {
     if (err) {
       console.error("Database error:", err);

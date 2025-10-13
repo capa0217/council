@@ -23,7 +23,7 @@ export default function Layout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Project Feedback",
+          title: "Project Requests",
         }}
       />
     </Stack>

@@ -4,7 +4,8 @@ import {
   View,
   Alert,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from "react-native";
 import FormContainer from "@/PTComponents/FormContainer";
 import FormLabel from "@/PTComponents/FormLabel.js";
@@ -48,24 +49,11 @@ const EditForm = () => {
       }
     })();
   }, []);
-  useEffect(() => {
-    (async () => {
-      try {
-        const storedMeetingId = await AsyncStorage.getItem('meetingId');
-        if (storedMeetingId) {
-          console.log(storedMeetingId);
-          setMeetingId(storedMeetingId);
-        }
-      } catch (error) {
-        console.error('Error fetching meetingId from storage:', error);
-        Alert.alert('Error', 'Failed to load meeting ID');
-      }
-    })();
-  }, []);
+
   useEffect(() => {
     if (!userId) return;
     if (userId) {
-      axios.get(`${process.env.EXPO_PUBLIC_IP}:8081/clubAccess/${userId}`)
+      axios.get(`${process.env.EXPO_PUBLIC_IP}/clubAccess/${userId}`)
         .then(res => {
           console.log(res.data)
           const clubList = res.data.club_id;
@@ -78,35 +66,11 @@ const EditForm = () => {
         });
     }
   }, [userId]);
-  useEffect(() => {
-    if (meeting.length > 0) {
-      const m = meeting[0]; // assuming one meeting
 
-      const d = new Date(m.meeting_date);
-
-      const dateStr = new Intl.DateTimeFormat('en-AU', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        timeZone: 'Australia/Sydney',
-      }).format(d);
-      setname(m.meetingname);
-      setplace(m.meeting_place);
-      setdate(dateStr);
-      setStart(m.start_time);
-      setArrival(m.arrival_time);
-      setlinks(m.agenda_file_link);
-      setInstruct(m.entry_instructions);
-    }
-
-  }, [meeting]);
-  console.log(name);
-  const Edit = async () => {
-
+  const Add = async () => {
     try {
-      const access = await axios.post(
-        `${process.env.EXPO_PUBLIC_IP}/meeting/add`,
-        {
+      const payload =
+      {
           club_id: clubs,
           meetingname: name,
           meetingplace: place,
@@ -115,23 +79,26 @@ const EditForm = () => {
           meetingarrivaltime: arrival,
           link: links,
           instructions: instruct
-        }
+        };
+      await axios.post(
+        `${process.env.EXPO_PUBLIC_IP}/meeting/add/`, payload        
       );
-
-      console.log(access);
+      Alert.alert("Success", "Meeting Added");
+      router.back();
     } catch (error) {
-      Alert.alert("Error", "Failed to add member data");
+      Alert.alert("Error", "Failed to Add Meeting");
       console.log(error);
     }
 
   }
   function auToIso(date) {        // "02/10/2025" -> "2025-10-02"
-    const [dd, mm, yyyy] = date.split("/");
+    const [yyyy, mm, dd] = date.split("/");
     return `${yyyy}-${mm}-${dd}`;
   }
 
   return (
     <View style={styles.background}>
+      <ScrollView>
       <FormContainer>
         <View style={styles.inputs}>
           <FormLabel>Name:</FormLabel>
@@ -193,21 +160,19 @@ const EditForm = () => {
             />
           </View>
         </View>
-        <View style={styles.inputs}>
-          <FormLabel>Notes: </FormLabel>
-          <View
-            style={styles.inputGroup}>
-            <FormInput
-              placeholder="Notes"
-              onValueChange={setInstruct}
-            />
-          </View>
+        <FormLabel>Entry Instructions: </FormLabel>
+        <View
+          style={styles.inputGroup}>
+          <FormInput
+            placeholder="Entry Instructions"
+            onValueChange={setInstruct}
+          />
         </View>
         <View style={styles.buttons}>
-          <Button onPress={() => router.push('./ClubBoardMemberMeeting')}>Cancel</Button>
-          <Button onPress={Edit}> Add</Button>
+          <Button onPress={() => router.back()}>Cancel</Button>
+          <Button onPress={() => Add()}> Add</Button>
         </View>
-      </FormContainer>
+      </FormContainer></ScrollView>
     </View>
   );
 }
@@ -215,7 +180,7 @@ export default EditForm;
 
 const styles = StyleSheet.create({
   buttons: {
-    flex:1,
+    flex: 1,
     flexDirection: 'row',
   },
   background: {

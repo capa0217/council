@@ -935,29 +935,25 @@ app.post("/member/projects/4", async (req, res) => {
   }
 });
 app.post("/request-project", async (req, res) => {
-  const { club_id, project_no } = req.body;
+  const { club_id, project_id } = req.body;
   const query =
     "INSERT INTO `program_requests` (project_id, club_id) VALUES (?, ?)";
-  db.query(query, [project_no, club_id], (err, result) => {
+  db.query(query, [project_id, club_id], (err, result) => {
     //need to change this to meeting
-    console.log(club_id);
-    console.log(project_no);
     if (err) {
+      if(`${err}`.slice(7,16) == "Duplicate") return res.status(201).json({ message: "Request already sent" });
       console.error("Database error:", err);
       return res.status(500).json({ message: "Database Error" });
     }
-    return res.status(200).json({ message: "New Request Successful" });
+    return res.status(200).json({ message: "New Request Successful"});
   });
 });
 
-app.post("/request-project", async (req, res) => {
-  const { club_id, project_no } = req.body;
+app.post("/projects/completeProject/:id", async (req, res) => {
+  const project_id = req.params.id;
   const query =
-    "INSERT INTO `program_requests` (project_id, club_id) VALUES (?, ?)";
-  db.query(query, [project_no, club_id], (err, result) => {
-    //need to change this to meeting
-    console.log(club_id);
-    console.log(project_no);
+    "UPDATE `development_program` SET `date_achieved` = NOW(), `completed` = 1, `has_signature` = 1 WHERE `project_id` = ?";
+  db.query(query, [project_id], (err, result) => {
     if (err) {
       console.error("Database error:", err);
       return res.status(500).json({ message: "Database Error" });
@@ -992,7 +988,7 @@ app.post("/projects/deleteFeedback/:id", async (req, res) => {
   const id = req.params.id;
 
   const query =
-    "DELETE * FROM `project_feedback` WHERE feedback_id = ?";
+    "DELETE FROM `project_feedback` WHERE feedback_id = ?";
   db.query(
     query,
     [id],
@@ -1010,7 +1006,7 @@ app.post("/projects/deleteRequest/:id", async (req, res) => {
   const id = req.params.id;
 
   const query =
-    "DELETE * FROM `program_requests` WHERE request_id = ?";
+    "DELETE FROM `program_requests` WHERE request_id = ?";
   db.query(
     query,
     [id],
@@ -1038,7 +1034,7 @@ app.get("/projects/getFeedback/:id", async (req, res) => {
 
 app.get("/projects/getRequests/:id", async (req, res) => {
   const id = req.params.id;
-  const query = "SELECT A.project_id, B.user_id, B.project_title, B.project_number FROM program_requests as A Inner JOIN development_program AS B ON A.project_id = B.project_id where B.user_id = ? group by A.project_id";
+  const query = "SELECT A.project_id, A.request_id, B.project_title, B.project_number FROM program_requests as A Inner JOIN development_program AS B ON A.project_id = B.project_id where B.user_id = ?";
   db.query(query, [id], (err, result) => {
     if (err) {
       console.error("Database error:", err);

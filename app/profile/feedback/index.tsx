@@ -83,7 +83,7 @@ const Feedback = () => {
     <View style={styles.background}>
       <ScrollView>
         <View style={styles.information}>
-          {feedback.map((item: any, index: number) => (
+          {feedback.lenth>0?feedback.map((item: any, index: number) => (
             <View style={styles.feedback} key={index}>
               <View style={styles.feedbackInfo}>
               <View style={styles.row}>
@@ -99,7 +99,7 @@ const Feedback = () => {
                 <Text>Delete</Text>
                 </TouchableOpacity>
             </View>
-          ))}
+          )):(<Text>No Feedback</Text>)}
         </View>
       </ScrollView>
     </View>

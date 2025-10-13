@@ -67,13 +67,9 @@ const Feedback = () => {
   }, [clubAccess, loadFeedback]);
 
   
-  const handleComplete = async (projectId: any, userId:any, request_id:any) => {
+  const handleComplete = async (projectId: any, request_id:any) => {
     try {
-      const payload = {
-        project_id: projectId,
-        user_id: userId,
-      }
-      await axios.post(`${process.env.EXPO_PUBLIC_IP}/projects/completeRequest`, payload);
+      await axios.post(`${process.env.EXPO_PUBLIC_IP}/projects/completeProject/${projectId}`);
       await axios.post(`${process.env.EXPO_PUBLIC_IP}/projects/deleteRequest/${request_id}`);
       Alert.alert("Success", "Request Signed Off");
       setLoaded(false);
@@ -83,11 +79,12 @@ const Feedback = () => {
   };
 
   if (!loadFeedback) return;
+
   return (
     <View style={styles.background}>
       <ScrollView>
         <View style={styles.information}>
-          {requests.map((item: any, index: number) => (
+          {requests.length>0?requests.map((item: any, index: number) => (
             <View style={styles.feedback} key={index}>
               <View style={styles.feedbackInfo}>
               <View style={styles.row}>
@@ -96,11 +93,11 @@ const Feedback = () => {
                 </Text>
               </View>
               </View>
-              <TouchableOpacity onPress={()=>handleComplete(item.project_id, item.user_id, item.request_id)} style={styles.delete}>
+              <TouchableOpacity onPress={()=>handleComplete(item.project_id, item.request_id)} style={styles.delete}>
                 <Text>Sign Off</Text>
                 </TouchableOpacity>
             </View>
-          ))}
+          )):(<Text>No Requests</Text>)}
         </View>
       </ScrollView>
     </View>

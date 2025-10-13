@@ -23,6 +23,7 @@ const EditForm = () => {
   const router = useRouter();
   const local = useLocalSearchParams();
   const meetingId = local.meetingID;
+
   const [meeting, setMeeting] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
@@ -74,10 +75,10 @@ const EditForm = () => {
         day: '2-digit',
         timeZone: 'Australia/Sydney',
       }).format(d);
-      setname(m.meetingname);
+      setname(m.meeting_name);
       setplace(m.meeting_place);
       setdate(dateStr);
-      setStart(m.start_time);
+      setStart(m.meeting_time);
       setArrival(m.arrival_time);
       setlinks(m.agenda_file_link);
       setInstruct(m.entry_instructions);
@@ -86,8 +87,7 @@ const EditForm = () => {
   const Edit = async () => {
 
     try {
-      const access = await axios.post(
-        `http://${process.env.EXPO_PUBLIC_IP}/meeting/edit`,
+      const payload = 
         {
           meetingid: meetingId,
           meetingname: name,
@@ -97,10 +97,13 @@ const EditForm = () => {
           meetingarrivaltime: arrival,
           link: links,
           instructions: instruct
-        }
+        };
+        console.log(payload);
+      const access = await axios.post(
+        `${process.env.EXPO_PUBLIC_IP}/meeting/edit`,payload
       );
 
-      console.log(access);
+      console.log(access.status);
     } catch (error) {
       Alert.alert("Error", "Failed to add member data");
       console.error(error.message);
@@ -205,22 +208,20 @@ const EditForm = () => {
 
             </View>
           </View>
-          <View style={styles.inputs}>
-            <FormLabel>Note: </FormLabel>
+          <FormLabel>Entry Instructions: </FormLabel>
 
-            <View
-              style={styles.inputGroup}>
+          <View
+            style={styles.inputGroup}>
 
-              <FormInput
-                placeholder="Email"
-                value={instruct}
+            <FormInput
+              placeholder="Entry Instructions"
+              value={instruct}
 
-                onValueChange={setInstruct}
-              />
+              onValueChange={setInstruct}
+            />
 
-            </View>
           </View>
-          <View style={styles.buttons}>
+          <View style={styles.function}>
 
             <Button onPress={() => router.back()}>Cancel</Button>
             <Button onPress={Edit}> Save</Button>

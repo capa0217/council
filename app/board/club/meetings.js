@@ -198,7 +198,7 @@ const ProfileScreen = () => {
           const date = new Date(meeting.date).toISOString().split("T")[0];
           return (
             <View key={meeting.id} style={styles.row}>
-              <TouchableOpacity onPress={() => router.push({pathname:'/board/club/editMeeting/[meetingID]', params: {meetingID: meeting.id}})}>
+              <TouchableOpacity onPress={() => router.push({ pathname: '/board/club/editMeeting/[meetingID]', params: { meetingID: meeting.id } })}>
                 <Pencil />
               </TouchableOpacity>
               <TouchableOpacity
@@ -206,12 +206,12 @@ const ProfileScreen = () => {
                 style={styles.meetingBlock}
                 onPress={() => {
                   console.log(meeting.id);
-                  router.navigate({pathname:'/club/meetings/[meetingID]', params: {meetingID: meeting.id}});}}
+                  router.navigate({ pathname: '/club/meetings/[meetingID]', params: { meetingID: meeting.id } });
+                }}
               >
-                <Text style={styles.meetingClub}>
-                  {meeting.meetingname} #{meeting.meeting_id}
-                </Text>
-                <Text style={styles.meetingClub}>Date: {date}</Text>
+                <Text style={styles.meetingClub}>#{meeting.id}</Text>
+                <Text style={styles.meetingName}>{meeting.name}</Text>
+                <Text style={styles.meetingDate}>Date: {date}</Text>
               </TouchableOpacity>
             </View>
           );

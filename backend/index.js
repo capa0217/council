@@ -407,6 +407,39 @@ app.get("/meeting_details/:id", (req, res) => {
   });
 });
 
+app.post("/meeting/add/", (req, res) => {
+  const {
+    meetingname,
+    meetingplace,
+    meetingdate,
+    meetingstarttime,
+    meetingarrivaltime,
+    link,
+    instructions,
+  } = req.body;
+  const editProfileQuery =
+    "Insert into meeting SET meeting_name = ?, meeting_date = ?, meeting_time = ?, arrival_time = ?, meeting_place = ?, agenda_file_link = ?, entry_instructions = ?";
+  db.query(
+    editProfileQuery,
+    [
+      meetingname,
+      meetingdate,
+      meetingstarttime,
+      meetingarrivaltime,
+      meetingplace,
+      link,
+      instructions,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database Error" });
+      }
+      return res.status(200).json({ message: "Meeting Added Successfully" });
+    }
+  );
+});
+
 app.post("/meeting/edit/", (req, res) => {
   const {
     meetingid,

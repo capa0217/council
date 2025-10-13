@@ -371,6 +371,23 @@ app.get("/meeting/:id", (req, res) => {
     }
   });
 });
+app.get("/upcomingMeetings/:id", (req, res) => {
+  const clubId = req.params.id;
+  const query = "SELECT * FROM meeting WHERE club_id = ? AND meeting_date > NOW()";
+
+  db.query(query, [clubId], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(201).json({ message: "No Meetings Found" });
+    } else if (results.length > 0) {
+      res.json(results);
+    }
+  });
+});
 
 app.get("/meeting_details/:id", (req, res) => {
   const meetingId = req.params.id;
@@ -463,6 +480,7 @@ app.get("/clubAccess/:id", (req, res) => {
 
 app.get("/clubBoard/:id", (req, res) => {
   const clubId = req.params.id;
+  
   const query = "SELECT User_id FROM `member's club` WHERE Club_id = ?";
 
   db.query(query, [clubId], (err, results) => {
@@ -516,10 +534,20 @@ app.get("/clubBoardMembers/:id", (req, res) => {
 });
 
 app.get("/members", (req, res) => {
-  const query = "SELECT * FROM members";
+  const query = "SELECT user_id FROM members where paid = 1";
   db.query(query, (err, results) => {
-    const user = results;
-    res.json({ user });
+    res.json(results);
+  });
+});
+
+app.get("/association/boardMembers/:access", (req, res) => {
+  const access = req.params.access;
+  const levels = ['club','council','association'];
+
+  const query = `SELECT user_id FROM board_members WHERE level_of_access IN ('${levels.slice(access-1).join("','")}')`;
+  
+  db.query(query, (err, results) => {
+    res.json(results);
   });
 });
 
@@ -576,7 +604,7 @@ app.post("/updatePayment", (req, res) => {
 });
 
 app.get("/clubs", (req, res) => {
-  const query = "SELECT Club_id, Club_name FROM club";
+  const query = "SELECT club_id, club_name FROM club";
   db.query(query, (err, results) => {
     if (err) return res.status(500).json({ message: "Internal server error" });
     res.json(results);
@@ -656,6 +684,25 @@ app.get("/projectss/:id/:level", (req, res) => {
     res.json(result);
   });
 });
+app.get("/projects/completed", (req, res) => {
+  const query =
+    "SELECT user_id, SUM(completed) as completed from `development_program` Group By user_id";
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    if (result.length === 0) {
+      return res.status(201).json({ message: "No Projects Found" });
+    }
+
+    res.json(result);
+  });
+});
+
+
 app.post("/member/projects/1", async (req, res) => {
   const projectnames = [
     "Thoughts for the Day/Inspiration",
@@ -902,6 +949,22 @@ app.post("/request-project", async (req, res) => {
     return res.status(200).json({ message: "New Request Successful" });
   });
 });
+
+app.post("/request-project", async (req, res) => {
+  const { club_id, project_no } = req.body;
+  const query =
+    "INSERT INTO `program_requests` (project_id, club_id) VALUES (?, ?)";
+  db.query(query, [project_no, club_id], (err, result) => {
+    //need to change this to meeting
+    console.log(club_id);
+    console.log(project_no);
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database Error" });
+    }
+    return res.status(200).json({ message: "New Request Successful" });
+  });
+});
 app.post("/projects/sendFeedback", async (req, res) => {
   const { project_id, recipient_id, feedback } = req.body;
 
@@ -938,13 +1001,44 @@ app.post("/projects/deleteFeedback/:id", async (req, res) => {
         console.error("Database error:", err);
         return res.status(500).json({ message: "Database Error" });
       }
-      return res.status(200).json({ message: "New Request Successful" });
+      return res.status(200).json({ message: "Feedback Deleted Successfully" });
     }
   );
 });
+
+app.post("/projects/deleteRequest/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const query =
+    "DELETE * FROM `program_requests` WHERE request_id = ?";
+  db.query(
+    query,
+    [id],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ message: "Database Error" });
+      }
+      return res.status(200).json({ message: "Request Deleted Successfully" });
+    }
+  );
+});
+
 app.get("/projects/getFeedback/:id", async (req, res) => {
   const id = req.params.id;
   const query = "SELECT * FROM project_feedback as A LEFT JOIN development_program AS B ON A.project_id = B.project_id WHERE a.recipient_id = ?";
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ message: "Database Error" });
+    }
+    res.json(result);
+  });
+});
+
+app.get("/projects/getRequests/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = "SELECT A.project_id, B.user_id, B.project_title, B.project_number FROM program_requests as A Inner JOIN development_program AS B ON A.project_id = B.project_id where B.user_id = ? group by A.project_id";
   db.query(query, [id], (err, result) => {
     if (err) {
       console.error("Database error:", err);

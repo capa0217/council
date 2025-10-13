@@ -105,7 +105,7 @@ const EditForm = () => {
 
     try {
       const access = await axios.post(
-        `${process.env.EXPO_PUBLIC_IP}:8081/meeting/add`,
+        `${process.env.EXPO_PUBLIC_IP}/meeting/add`,
         {
           club_id: clubs,
           meetingname: name,

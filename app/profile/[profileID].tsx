@@ -91,7 +91,7 @@ const Profile = () => {
                 onPress={() =>
                   router.navigate({
                     pathname: "/profile/editProfile",
-                    params: { profileID: local.profileID }
+                    params: { profileID: local.profileID },
                   })
                 }
               >
@@ -108,16 +108,18 @@ const Profile = () => {
           <Text style={styles.infoText}>
             <Finger /> Email: {profiles.email}
           </Text>
-          {profiles.phone_number && (isOwnProfile || profiles.phone_private == 0) && (
-            <Text style={styles.infoText}>
-              <Finger /> Phone Number: {profiles.phone_number}
-            </Text>
-          )}
-          {profiles.address && (isOwnProfile || profiles.address_private == 0) && (
-            <Text style={styles.infoText}>
-              <Finger /> Address: {profiles.address}, {profiles.postcode}
-            </Text>
-          )}
+          {profiles.phone_number &&
+            (isOwnProfile || profiles.phone_private == 0) && (
+              <Text style={styles.infoText}>
+                <Finger /> Phone Number: {profiles.phone_number}
+              </Text>
+            )}
+          {profiles.address &&
+            (isOwnProfile || profiles.address_private == 0) && (
+              <Text style={styles.infoText}>
+                <Finger /> Address: {profiles.address}, {profiles.postcode}
+              </Text>
+            )}
 
           {profiles.notes && (
             <Text style={styles.infoText}>
@@ -136,19 +138,35 @@ const Profile = () => {
           </Text>
 
           {clubAccess && profiles.paid_date && (
-            <Text style={styles.infoText}>
-              <Finger /> Paid Date:
-              {new Date(profiles.paid_date).toLocaleDateString()}
-            </Text>
+            <View>
+              <Text style={styles.infoText}>
+                <Finger /> Paid Date:
+                {new Date(profiles.paid_date).toLocaleDateString()}
+              </Text>
+              <View style={styles.function}>
+                <Button
+                  onPress={() =>
+                    router.navigate({
+                      pathname: "/profile/feedback",
+                      params: { profileID: local.profileID },
+                    })
+                  }
+                >
+                  Feedback
+                </Button>
+                <Button
+                  onPress={() =>
+                    router.navigate({
+                      pathname: "/profile/requests",
+                      params: { profileID: local.profileID },
+                    })
+                  }
+                >
+                  Requests
+                </Button>
+              </View>
+            </View>
           )}
-          <Button
-                onPress={() =>
-                  router.navigate({
-                    pathname: "/profile/feedback",
-                    params: { profileID: local.profileID }
-                  })
-                }
-              >Feedback</Button>
         </View>
       </ScrollView>
     </View>
@@ -160,7 +178,7 @@ export default Profile;
 const styles = StyleSheet.create({
   background: {
     backgroundColor: "#F1F6F5",
-    flex:1,
+    flex: 1,
   },
   title: {
     padding: 10,

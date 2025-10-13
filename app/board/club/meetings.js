@@ -22,8 +22,8 @@ const ProfileScreen = () => {
   const router = useRouter();
   const nav = useNavigation();
 
-  const [userId, setUserId] = useState(null);
-  const [club, setClub] = useState([]);
+  const [userId, setUserId] = useState("");
+  const [clubs, setClubs] = useState([]);
   const [clubMeetings, setClubwithMeetings] = useState([]);
   const [filteredMeetings, setFiltered] = useState([]);
 
@@ -34,18 +34,13 @@ const ProfileScreen = () => {
 
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
-  const [selectedClub, setSelectedClub] = useState("All Clubs");
 
-  const clubss = clubMeetings.map((club) => club.club);
-  const uniqueClubs = Array.from(new Set(clubss));
-  const dropdownClubs = ["All Clubs", ...uniqueClubs];
-
-  const [id, setid] = useState(null);
   useEffect(() => {
     (async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
+          console.log(storedUserId);
           setUserId(storedUserId);
         }
       } catch (error) {
@@ -55,58 +50,51 @@ const ProfileScreen = () => {
     })();
   }, []);
 
-  // Fetch user and club info
   useEffect(() => {
-    if (!userId) return;
+    nav.setOptions({ headerShown: true, title: "Club Meetings" });
+  });
 
+  useEffect(() => {
+    if (userId != "") return;
     (async () => {
       try {
         // Step 1: Get club list from user info
         const { data } = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/clubAccess/${userId}`
+          `${process.env.EXPO_PUBLIC_IP}/allClubs/`
         );
-        const clubID = data.club_id || [];
-        setClub(clubID);
-
-        const resMeet = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/meeting/${clubID}`
-        );
-        setClubwithMeetings(resMeet.data);
-        setid(resMeet.data.meeting_id);
+        const allList = data || [];
+        setClubs(allList);
       } catch (error) {
-        console.error("Error fetching user or club data:", error);
-        Alert.alert("Error", "Failed to fetch user or club data");
+        console.error("Error fetching all club data:", error);
+        Alert.alert("Error", "Failed to fetch all clubs");
       }
     })();
   }, [userId]);
 
   useEffect(() => {
-    nav.setOptions({ headerShown: true, title: "Upcoming Meetings" });
-  });
-
-  const handlePress = async (meetingId) => {
-    router.push(`club/meetings/${meetingId}`);
-  };
-
-  const handlePre = async (meetingId) => {
-    router.push(`board/club/editMeeting/${meetingId}`);
-  };
-
-  useEffect(() => {
-    if (club == []) return;
+    if (!clubs) return;
     (async () => {
       try {
-        const res = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/club/${club}`
-        );
-        const clubNames = res.data.club_name;
+        // Step 2: Fetch names for all clubs
+        const clubMeetingDetails = await Promise.all(
+          clubs.map(async (item) => {
+            const res = await axios.get(
+              `${process.env.EXPO_PUBLIC_IP}/club/${item.club_id}`
+            );
+            const clubNames = res.data.club_name;
 
-        const resMeet = await axios.get(
-          `${process.env.EXPO_PUBLIC_IP}/upcomingMeetings/${club}`
+            const resMeet = await axios.get(
+              `${process.env.EXPO_PUBLIC_IP}/upcomingMeetings/${item.club_id}`
+            );
+            const MeetNames = resMeet.data;
+            if (resMeet.status != 200) return null;
+            return {
+              clubNames,
+              MeetNames,
+            };
+          })
         );
-        const MeetNames = resMeet.data;
-        if (resMeet.status != 200) return null;
-        const clubMeetingDetails = { clubNames, MeetNames };
+
         const flattenedMeetings = clubMeetingDetails.flatMap((club) => {
           if (club == null) {
             return [];
@@ -128,9 +116,10 @@ const ProfileScreen = () => {
         Alert.alert("Error", "Failed to fetch user or club data");
       }
     })();
-  }, [club]);
+  }, [clubs]);
 
   useEffect(() => {
+    console.log(clubMeetings);
     const allYears = clubMeetings.map((meeting) =>
       new Date(meeting.date).getFullYear().toString()
     );
@@ -150,9 +139,8 @@ const ProfileScreen = () => {
     setSelectedMonth(months[0]);
     setSelectedYear(years[0]);
   }, [months, years]);
-
   useEffect(() => {
-    if (clubs == []) return;
+    if (!clubs) return;
     (async () => {
       setFiltered(
         clubMeetings.filter((meeting) => {
@@ -163,17 +151,11 @@ const ProfileScreen = () => {
           const meetingYear = meetingDate.getFullYear().toString();
           const monthMatches = selectedMonth === meetingMonth;
           const yearMatches = selectedYear === meetingYear;
-          const clubMatches =
-            selectedClub === "All Clubs" || meeting.club === selectedClub;
-          if (selectedClub == "All Clubs") {
-            return monthMatches && yearMatches && clubMeetings;
-          } else {
-            return monthMatches && yearMatches && clubMatches;
-          }
+          return monthMatches && yearMatches && clubMeetings;
         })
       );
     })();
-  }, [clubs, selectedClub, selectedMonth, selectedYear]);
+  }, [clubs, selectedMonth, selectedYear]);
 
   return (
     <View style={styles.container}>
@@ -190,15 +172,6 @@ const ProfileScreen = () => {
         <FilterButton onFilter={() => setFilterShow(!filterShow)} />
         {filterShow && (
           <View>
-            <Picker
-              selectedValue={selectedClub}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSelectedClub(itemValue)}
-            >
-              {dropdownClubs.map((club) => (
-                <Picker.Item key={club} label={club} value={club}></Picker.Item>
-              ))}
-            </Picker>
             <Picker
               selectedValue={selectedYear}
               style={styles.picker}
@@ -222,35 +195,23 @@ const ProfileScreen = () => {
 
         {/* Meeting Buttons */}
         {filteredMeetings.map((meeting, index) => {
-          const d = new Date(meeting.meeting_date);
-
-          const dayName = new Intl.DateTimeFormat("en-AU", {
-            weekday: "long",
-            timeZone: "Australia/Sydney",
-          }).format(d);
-
-          const dateStr = new Intl.DateTimeFormat("en-AU", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            timeZone: "Australia/Sydney",
-          }).format(d);
+          const date = new Date(meeting.date).toISOString().split("T")[0];
           return (
-            <View key={meeting.meeting_id} style={styles.row}>
-              <TouchableOpacity onPress={() => handlePre(meeting.meeting_id)}>
+            <View key={meeting.id} style={styles.row}>
+              <TouchableOpacity onPress={() => router.push({pathname:'/board/club/editMeeting/[meetingID]', params: {meetingID: meeting.id}})}>
                 <Pencil />
               </TouchableOpacity>
               <TouchableOpacity
                 key={index}
                 style={styles.meetingBlock}
-                onPress={() => handlePress(meeting.meeting_id)}
+                onPress={() => {
+                  console.log(meeting.id);
+                  router.navigate({pathname:'/club/meetings/[meetingID]', params: {meetingID: meeting.id}});}}
               >
                 <Text style={styles.meetingClub}>
                   {meeting.meetingname} #{meeting.meeting_id}
                 </Text>
-                <Text style={styles.meetingClub}>
-                  Date: {dateStr} {dayName}
-                </Text>
+                <Text style={styles.meetingClub}>Date: {date}</Text>
               </TouchableOpacity>
             </View>
           );

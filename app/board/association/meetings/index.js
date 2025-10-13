@@ -36,11 +36,10 @@ const ProfileScreen = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedClub, setSelectedClub] = useState("All Clubs");
-  
+
   const clubss = clubMeetings.map((club) => club.club);
   const uniqueClubs = Array.from(new Set(clubss));
   const dropdownClubs = ["All Clubs", ...uniqueClubs];
-
 
   useEffect(() => {
     (async () => {
@@ -78,7 +77,6 @@ const ProfileScreen = () => {
     })();
   }, [userId]);
 
-  
   useEffect(() => {
     if (clubs == []) return;
     (async () => {
@@ -127,21 +125,21 @@ const ProfileScreen = () => {
   }, [clubs]);
 
   useEffect(() => {
-  const allYears = clubMeetings.map((meeting) =>
-    new Date(meeting.date).getFullYear().toString()
-  );
-  const uniquesyears = new Set([]);
-  allYears.forEach((year) => {
-    uniquesyears.add(year);
-  });
-  setYears(Array.from(uniquesyears));
+    const allYears = clubMeetings.map((meeting) =>
+      new Date(meeting.date).getFullYear().toString()
+    );
+    const uniquesyears = new Set([]);
+    allYears.forEach((year) => {
+      uniquesyears.add(year);
+    });
+    setYears(Array.from(uniquesyears));
 
-  const allMonths = clubMeetings.map((meeting) =>
-    new Date(meeting.date).toLocaleString("default", { month: "long" })
-  );
-  setMonths(Array.from(new Set(allMonths)));
+    const allMonths = clubMeetings.map((meeting) =>
+      new Date(meeting.date).toLocaleString("default", { month: "long" })
+    );
+    setMonths(Array.from(new Set(allMonths)));
   }, [clubMeetings]);
-  
+
   useEffect(() => {
     setSelectedMonth(months[0]);
     setSelectedYear(years[0]);
@@ -169,8 +167,6 @@ const ProfileScreen = () => {
       );
     })();
   }, [clubs, selectedClub, selectedMonth, selectedYear]);
-
-
 
   return (
     <View style={styles.container}>

@@ -38,13 +38,13 @@ const CouncilClubMemberPage = () => {
         if (!match) throw new Error('No clubs data available');
         const clubId = match.Club_id;
 
-        // 连接数据库：获取该俱乐部成员用户ID
+        // 获取该俱乐部成员用户ID
   
       const { data: boardIds } = await axios.get(
         `${process.env.EXPO_PUBLIC_IP}/clubBoard/${clubId}`
       );
 
-        // 连接数据库：根据用户ID获取个人信息
+        // 根据用户ID获取个人信息
  
         const memberList = await Promise.all(
           (boardIds || []).map(async (item) => {
@@ -91,7 +91,7 @@ const CouncilClubMemberPage = () => {
     loadMembers();
   }, [params.clubName]);
 
-  // 解析日期字符串 (DD/MM/YYYY) 为 Date 对象
+  //  Date
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split('/');
     return new Date(year, month - 1, day); // month - 1 因为 JavaScript 月份从 0 开始
@@ -106,11 +106,11 @@ const CouncilClubMemberPage = () => {
     return months[monthNumber - 1];
   };
 
-  // 根据选择的月份和年份过滤成员
+  
   useEffect(() => {
     let filtered = [...members];
 
-    // 根据加入月份过滤
+    
     if (selectedMonth !== 'Join Month') {
       filtered = filtered.filter(member => {
         const joinDate = parseDate(member.joinDate);
@@ -119,7 +119,7 @@ const CouncilClubMemberPage = () => {
       });
     }
 
-    // 根据加入年份过滤
+    
     if (selectedYear !== 'Join Year') {
       filtered = filtered.filter(member => {
         const joinDate = parseDate(member.joinDate);
@@ -181,7 +181,7 @@ const CouncilClubMemberPage = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content}>
-        {/* 蓝色标题块 - 显示俱乐部名称和人数 */}
+        
         <View style={styles.headerBlock}>
           <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
             <Text style={styles.backButtonText}>←</Text>
@@ -189,7 +189,7 @@ const CouncilClubMemberPage = () => {
           <Text style={styles.headerText}>{clubData.name} ({clubData.memberCount} mbrs)</Text>
         </View>
 
-        {/* 排序框区域 - 使用 Association 页面样式 */}
+        
         <View style={styles.sortingRow}>
           <Picker
             selectedValue={selectedMonth}
@@ -228,7 +228,7 @@ const CouncilClubMemberPage = () => {
         </View>
 
 
-        {/* 成员列表 */}
+        
         <View style={styles.membersContainer}>
           {filteredMembers.length > 0 ? (
             filteredMembers.map((member) => (

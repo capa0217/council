@@ -14,7 +14,7 @@ const CouncilsPage = () => {
   const navigation = useNavigation();
   const router = useRouter();
 
-  // 从数据库加载的 councils（以具备 council 访问权限的俱乐部名作为 Council 名称）
+ 
   const [councils, setCouncils] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,18 +23,18 @@ const CouncilsPage = () => {
     try {
       setLoading(true);
       setError('');
-      // 后端：获取全部俱乐部get all club api
+      
       const clubsRes = await axios.get(`${process.env.EXPO_PUBLIC_IP}/clubs`);
       const allClubs = clubsRes.data || [];
 
-      // 对每个俱乐部查询其成员与访问权限，筛选出拥有 council 权限的俱乐部
+     
       const councilClubNames = [];
       for (const club of allClubs) {
         const clubId = club.Club_id ?? club.club_id;
         const clubName = club.Club_name ?? club.club_name;
         if (!clubId || !clubName) continue;
         try {
-          // 获取该俱乐部的成员用户get all board member api
+       
           const { data: boardIds } = await axios.get(
             `${process.env.EXPO_PUBLIC_IP}/clubBoard/${clubId}`
           );
@@ -43,7 +43,7 @@ const CouncilsPage = () => {
             const uid = item.User_id ?? item.user_id ?? item.member_id ?? item.UserId ?? item.id;
             if (uid == null) continue;
             try {
-              // 查询访问权限，判断是否为 council access api
+            
               const accessRes = await axios.get(
                 `${process.env.EXPO_PUBLIC_IP}/clubAccess/${uid}`
               );
@@ -53,7 +53,7 @@ const CouncilsPage = () => {
                 break;
               }
             } catch (inner) {
-              // 单个成员权限查询失败不影响整体流程
+              
               console.log('Fetch access failed:', inner);
             }
           }
@@ -65,7 +65,7 @@ const CouncilsPage = () => {
         }
       }
 
-      // 去重后设置列表
+   
       const uniqueNames = Array.from(new Set(councilClubNames));
       setCouncils(uniqueNames.length > 0 ? uniqueNames : (allClubs.map(c => c.Club_name).filter(Boolean)));
     } catch (err) {

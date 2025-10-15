@@ -31,7 +31,7 @@ const CouncilMemberDetails = () => {
         setLoading(true);
         setError(null);
         if (memberId) {
-          // 连接数据库接口：优先通过 memberId 获取成员详情
+          // memberId 获取成员详情
           const { data } = await axios.get(
             `${process.env.EXPO_PUBLIC_IP}/clubBoardMembers/${memberId}`
           );
@@ -52,8 +52,8 @@ const CouncilMemberDetails = () => {
         }
 
         if (memberName) {
-          // 连接数据库接口：从成员列表中按姓名匹配
-          // 示例：GET ${process.env.EXPO_PUBLIC_IP}/members（返回 { user: [...] }）
+          // 从成员列表中按姓名匹配
+        
           const { data: res } = await axios.get(`${process.env.EXPO_PUBLIC_IP}/members`);
           const list = res?.user || [];
           const found = list.find((m) => {

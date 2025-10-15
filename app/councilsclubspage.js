@@ -20,7 +20,7 @@ const CouncilsClubsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // 否则从数据库加载所有具备 council 权限的俱乐部列表。
+  //  council 权限的俱乐部列表。
   useEffect(() => {
     (async () => {
       try {
@@ -32,7 +32,7 @@ const CouncilsClubsPage = () => {
           return;
         }
 
-        // 后端：获取全部俱乐部get all club api
+        // get all club api
       const clubsRes = await axios.get(`${process.env.EXPO_PUBLIC_IP}/clubs`);
         const allClubs = clubsRes.data || [];
 
